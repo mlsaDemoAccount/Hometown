@@ -10,7 +10,6 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }
-    public event System.Action OnGridChanged;
 
     [Header("Grid Settings")]
     public int width = 100;   // try 100 first, bump to 1000 once perf is validated
@@ -18,14 +17,17 @@ public class GridManager : MonoBehaviour
     public float cellSize = 1f; // meters per cell
     public Vector3 origin = Vector3.zero;
 
-    public enum CellType { Empty, Building, Road, Blocked }
+    public enum CellType { Empty, Building, Road, Blocked, Locked }
 
-public GameObject GridGenerateObject; //sprite generated on each grid
-public Transform GridsSpriteParent; //parent of all grid sprites
+    /// What kind of thing occupies a cell - lets you distinguish "a building" from
+    /// "an environment prop" (tree/rock) when both just show up as an occupied cell.
+    public enum OccupantKind { None, Building, Road, EnvironmentProp }
+
     private struct Cell
     {
         public CellType type;
         public int occupantId; // id into BuildingInstance/Road registry, -1 if none
+        public OccupantKind occupantKind;
     }
 
     private Cell[,] grid;
@@ -37,15 +39,7 @@ public Transform GridsSpriteParent; //parent of all grid sprites
         grid = new Cell[width, height];
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
-            {
-                grid[x, y] = new Cell { type = CellType.Empty, occupantId = -1 };
-                // GameObject gameObject = Instantiate(GridGenerateObject, new Vector3((float)x + 0.5f, 0.1f, (float)y + 0.5f), GridGenerateObject.transform.rotation, GridsSpriteParent);
-                // GridCellScript cell = gameObject.GetComponent<GridCellScript>();
-				// cell.isDark = (x + y) % 2 != 0;
-
-
-				// grid[x, y] = cell;	
-            }
+                grid[x, y] = new Cell { type = CellType.Empty, occupantId = -1, occupantKind = OccupantKind.None };
     }
 
     public bool InBounds(Vector2Int c) =>
@@ -76,6 +70,9 @@ public Transform GridsSpriteParent; //parent of all grid sprites
     public int GetOccupant(Vector2Int c) =>
         InBounds(c) ? grid[c.x, c.y].occupantId : -1;
 
+    public OccupantKind GetOccupantKind(Vector2Int c) =>
+        InBounds(c) ? grid[c.x, c.y].occupantKind : OccupantKind.None;
+
     /// Checks a whole footprint (for multi-cell buildings), returns true only if ALL cells free.
     public bool CanPlaceFootprint(Vector2Int origin, Vector2Int size)
     {
@@ -88,21 +85,29 @@ public Transform GridsSpriteParent; //parent of all grid sprites
         return true;
     }
 
-    public void SetFootprint(Vector2Int origin, Vector2Int size, CellType type, int occupantId)
+    public void SetFootprint(Vector2Int origin, Vector2Int size, CellType type, int occupantId, OccupantKind kind = OccupantKind.None)
     {
         for (int x = 0; x < size.x; x++)
             for (int y = 0; y < size.y; y++)
             {
                 Vector2Int c = origin + new Vector2Int(x, y);
                 if (!InBounds(c)) continue;
-                grid[c.x, c.y] = new Cell { type = type, occupantId = occupantId };
+                grid[c.x, c.y] = new Cell { type = type, occupantId = occupantId, occupantKind = kind };
             }
-        OnGridChanged?.Invoke();
     }
 
     public void ClearFootprint(Vector2Int origin, Vector2Int size)
     {
-        SetFootprint(origin, size, CellType.Empty, -1);
+        SetFootprint(origin, size, CellType.Empty, -1, OccupantKind.None);
+    }
+
+    /// Marks a single cell as permanently locked (tree, rock, water, out-of-bounds terrain
+    /// feature). Locked cells behave like Blocked for placement purposes but are semantically
+    /// distinct so you can tell "can't build here because of scenery" apart from "occupied".
+    public void LockCell(Vector2Int cell, int propId)
+    {
+        if (!InBounds(cell)) return;
+        grid[cell.x, cell.y] = new Cell { type = CellType.Locked, occupantId = propId, occupantKind = OccupantKind.EnvironmentProp };
     }
 
     /// World-space clamp bounds - used by the camera controller so it can't pan off the map.

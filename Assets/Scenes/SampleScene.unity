@@ -363,6 +363,7 @@ Transform:
   - {fileID: 69336823}
   - {fileID: 892068561}
   - {fileID: 92659528}
+  - {fileID: 921196225}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &116396013
@@ -413,8 +414,6 @@ MonoBehaviour:
   height: 100
   cellSize: 1
   origin: {x: 0, y: 0, z: 0}
-  GridGenerateObject: {fileID: 718943760035092855, guid: aeb7eb685979b474eb90d064bd371243, type: 3}
-  GridsSpriteParent: {fileID: 116396014}
 --- !u!1 &201985553
 GameObject:
   m_ObjectHideFlags: 0
@@ -1551,7 +1550,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &921196222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1564,17 +1563,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bbfab4eb94ec446992e27f3a5bbecc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridVisualizer
-  emptyColor: {r: 0.8207547, g: 0.76245934, b: 0.10453009, a: 0.29803923}
-  roadColor: {r: 0.6, g: 0.6, b: 0.6, a: 0.35}
-  gridLineColor: {r: 0.7830189, g: 0.0110804355, b: 0.0110804355, a: 0.5019608}
-  gizmoHeight: 0.02
-  drawGridLines: 1
-  categoryColors:
-  - {r: 0.22, g: 0.62, b: 0.95, a: 0.35}
-  - {r: 0.09, g: 0.76, b: 0.16, a: 0.35}
-  - {r: 0.95, g: 0.32, b: 0.24, a: 0.35}
-  - {r: 0.98, g: 0.76, b: 0.18, a: 0.35}
-  - {r: 0.67, g: 0.12, b: 0.76, a: 0.35}
+  lightColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
+  darkColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+  showOccupancyOverlay: 0
+  lockedColor: {r: 0.6, g: 0.4, b: 0.2, a: 0.5}
+  buildingColor: {r: 0.2, g: 0.6, b: 1, a: 0.3}
 --- !u!23 &921196223
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1640,12 +1633,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 921196221}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.5, y: 3.34747, z: 0.45499}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 96308724}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &924014276
 GameObject:
@@ -2141,7 +2134,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &1051404969
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2362,6 +2355,137 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1191544374}
   m_CullTransparentMesh: 1
+--- !u!1 &1219307208
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1219307213}
+  - component: {fileID: 1219307212}
+  - component: {fileID: 1219307211}
+  - component: {fileID: 1219307210}
+  - component: {fileID: 1219307209}
+  m_Layer: 6
+  m_Name: GridGround
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1219307209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219307208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bbfab4eb94ec446992e27f3a5bbecc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridVisualizer
+  lightColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
+  darkColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+  showOccupancyOverlay: 1
+  lockedColor: {r: 0.6, g: 0.4, b: 0.2, a: 0.5}
+  buildingColor: {r: 0.2, g: 0.6, b: 1, a: 0.3}
+--- !u!64 &1219307210
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219307208}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1219307211
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219307208}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1219307212
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219307208}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1219307213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219307208}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 44.49999, y: -0, z: 34.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1334946175
 GameObject:
   m_ObjectHideFlags: 0
@@ -2515,8 +2639,13 @@ MonoBehaviour:
   cam: {fileID: 963194227}
   panSpeed: 1
   edgePadding: 5
-  minZoom: 5
-  maxZoom: 40
+  useManualPanLimits: 0
+  minX: 0
+  maxX: 100
+  minZ: 0
+  maxZ: 100
+  minZoom: -40
+  maxZoom: -10
   zoomSpeed: 0.05
 --- !u!4 &1365644027
 Transform:
@@ -3742,5 +3871,5 @@ SceneRoots:
   - {fileID: 218276596}
   - {fileID: 1645248076}
   - {fileID: 8343373649530758136}
-  - {fileID: 921196225}
   - {fileID: 2695161779824696931}
+  - {fileID: 1219307213}
