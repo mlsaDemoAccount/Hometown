@@ -33,19 +33,19 @@ public class TrafficSpawner : MonoBehaviour
 
     private void TrySpawnVehicle()
     {
-        var roads = RoadManager.Instance.RoadCells;
-        if (roads.Count < 2) return;
+        var roadNodes = RoadManager.Instance.RoadNodes;
+        if (roadNodes.Count < 2) return;
 
-        var roadList = new List<Vector2Int>(roads);
-        Vector2Int start = roadList[Random.Range(0, roadList.Count)];
-        Vector2Int goal = roadList[Random.Range(0, roadList.Count)];
+        var cellList = new List<Vector2Int>(roadNodes.Keys);
+        Vector2Int start = cellList[Random.Range(0, cellList.Count)];
+        Vector2Int goal = cellList[Random.Range(0, cellList.Count)];
         if (start == goal) return;
 
-        var path = RoadManager.Instance.FindPath(start, goal);
+        var path = RoadManager.Instance.FindPath(start, goal); // now List<RoadNode>, not List<Vector2Int>
         if (path == null || path.Count < 2) return;
 
         var prefab = vehiclePrefabs[Random.Range(0, vehiclePrefabs.Length)];
-        var go = Instantiate(prefab, GridManager.Instance.GridToWorld(start), Quaternion.identity);
+        var go = Instantiate(prefab, path[0].worldPosition, Quaternion.identity);
         var agent = go.GetComponent<TrafficAgent>();
         if (agent == null) agent = go.AddComponent<TrafficAgent>();
         agent.SetPath(path);
@@ -53,16 +53,18 @@ public class TrafficSpawner : MonoBehaviour
     }
 }
 
-/// Moves a single vehicle along a list of grid-cell waypoints.
+/// Moves a single vehicle along a list of road graph nodes.
+/// NOTE: this is still the simple placeholder mover from before - lanes, collision avoidance,
+/// stopping at intersections, traffic lights etc. are the "real" traffic system build to come.
 public class TrafficAgent : MonoBehaviour
 {
     public float moveSpeed = 4f;
     public float rotationSpeed = 8f;
 
-    private List<Vector2Int> path;
+    private List<RoadNode> path;
     private int currentIndex = 0;
 
-    public void SetPath(List<Vector2Int> newPath)
+    public void SetPath(List<RoadNode> newPath)
     {
         path = newPath;
         currentIndex = 0;
@@ -76,7 +78,7 @@ public class TrafficAgent : MonoBehaviour
             return;
         }
 
-        Vector3 target = GridManager.Instance.GridToWorld(path[currentIndex]);
+        Vector3 target = path[currentIndex].worldPosition;
         Vector3 dir = (target - transform.position);
         dir.y = 0;
 

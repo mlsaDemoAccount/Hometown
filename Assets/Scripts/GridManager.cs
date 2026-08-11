@@ -17,11 +17,11 @@ public class GridManager : MonoBehaviour
     public float cellSize = 1f; // meters per cell
     public Vector3 origin = Vector3.zero;
 
-    public enum CellType { Empty, Building, Road, Blocked, Locked }
+    public enum CellType { Empty, Building, Road, Footpath, Blocked, Locked }
 
     /// What kind of thing occupies a cell - lets you distinguish "a building" from
     /// "an environment prop" (tree/rock) when both just show up as an occupied cell.
-    public enum OccupantKind { None, Building, Road, EnvironmentProp }
+    public enum OccupantKind { None, Building, Road, Footpath, EnvironmentProp }
 
     private struct Cell
     {
@@ -59,6 +59,17 @@ public class GridManager : MonoBehaviour
             (cell.x + 0.5f) * cellSize,
             0f,
             (cell.y + 0.5f) * cellSize);
+    }
+
+    /// Correct world position for a MULTI-CELL building's center, given its origin (bottom-left)
+    /// cell and footprint size. Do NOT use GridToWorld() for anything bigger than 1x1 - that
+    /// only returns the center of the single origin cell, which visibly drifts off-center
+    /// (by half a cell for even sizes, a whole cell for odd sizes) as footprint size grows.
+    public Vector3 FootprintCenterToWorld(Vector2Int footprintOrigin, Vector2Int size)
+    {
+        float worldX = footprintOrigin.x * cellSize + (size.x * cellSize) / 2f;
+        float worldZ = footprintOrigin.y * cellSize + (size.y * cellSize) / 2f;
+        return origin + new Vector3(worldX, 0f, worldZ);
     }
 
     public bool IsFree(Vector2Int c) =>

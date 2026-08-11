@@ -1,13 +1,15 @@
 using UnityEngine;
 
-// The 5 stat categories every building contributes to (positively or negatively).
+// The 7 stat categories every building contributes to (positively or negatively).
 public enum BuildingCategory
 {
     Population,
     Jobs,
     Pollution,
-    Happiness,
-    Garbage
+    Garbage,
+    CrimeRate,
+    Traffic,
+    Lifestyle
 }
 
 [System.Serializable]
@@ -19,8 +21,10 @@ public class BuildingUpgradeLevel
     public float populationOutput;
     public float jobsOutput;
     public float pollutionOutput;
-    public float happinessOutput;
     public float garbageOutput;
+    public float crimeRateOutput;
+    public float trafficOutput;
+    public float lifestyleOutput;
 }
 
 [CreateAssetMenu(fileName = "NewBuilding", menuName = "CityBuilder/Building Data")]
@@ -35,7 +39,13 @@ public class BuildingData : ScriptableObject
     [Header("Placement")]
     public Vector2Int footprintSize = new Vector2Int(1, 1); // e.g. 2x2 for bigger buildings
     public int placementCost = 100;
-    public bool requiresRoadAdjacency = true; // most buildings need to touch a road
+    public bool requiresFootpathAdjacency = true; // most buildings connect to the sidewalk, not the vehicle lane
+
+    [Header("Placeholder Art")]
+    // If true, stretches the visual prefab's X/Z scale to exactly fill footprintSize * cellSize -
+    // useful while you're using default Unity primitives (Cube, etc.) as placeholder buildings.
+    // Turn this OFF once you swap in a real model that's already correctly sized/modeled.
+    public bool autoScaleToFootprint = true;
 
     [Header("Upgrades (index 0 = level 1)")]
     public BuildingUpgradeLevel[] levels;

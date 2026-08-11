@@ -10,8 +10,10 @@ public class CityStatsManager : MonoBehaviour
     public float TotalPopulation { get; private set; }
     public float TotalJobs { get; private set; }
     public float TotalPollution { get; private set; }
-    public float TotalHappiness { get; private set; }
     public float TotalGarbage { get; private set; }
+    public float TotalCrimeRate { get; private set; }
+    public float TotalTraffic { get; private set; }
+    public float TotalLifestyle { get; private set; }
 
     private List<BuildingInstance> allBuildings = new List<BuildingInstance>();
 
@@ -37,16 +39,18 @@ public class CityStatsManager : MonoBehaviour
 
     public void RecalculateAll()
     {
-        TotalPopulation = TotalJobs = TotalPollution = TotalHappiness = TotalGarbage = 0f;
+        TotalPopulation = TotalJobs = TotalPollution = TotalGarbage = TotalCrimeRate = TotalTraffic = TotalLifestyle = 0f;
 
         foreach (var b in allBuildings)
         {
-            var (pop, jobs, pollution, happiness, garbage) = b.GetStats();
+            var (pop, jobs, pollution, garbage, crimeRate, traffic, lifestyle) = b.GetStats();
             TotalPopulation += pop;
             TotalJobs += jobs;
             TotalPollution += pollution;
-            TotalHappiness += happiness;
             TotalGarbage += garbage;
+            TotalCrimeRate += crimeRate;
+            TotalTraffic += traffic;
+            TotalLifestyle += lifestyle;
         }
 
         OnStatsChanged?.Invoke();

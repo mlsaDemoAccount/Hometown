@@ -18,13 +18,16 @@ MonoBehaviour:
   primaryCategory: 0
   footprintSize: {x: 3, y: 3}
   placementCost: 100
-  requiresRoadAdjacency: 0
+  requiresFootpathAdjacency: 1
+  autoScaleToFootprint: 1
   levels:
   - level: 1
     visualPrefab: {fileID: 6893710804190749707, guid: a314ae0eef54a4e0a874de4853162be4, type: 3}
     upgradeCost: 0
-    populationOutput: 0
+    populationOutput: 20
     jobsOutput: 0
-    pollutionOutput: 0
-    happinessOutput: 0
-    garbageOutput: 0
+    pollutionOutput: 10
+    garbageOutput: 10
+    crimeRateOutput: 1
+    trafficOutput: 1
+    lifestyleOutput: 10

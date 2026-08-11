@@ -16,7 +16,10 @@ public class BuildingInstance : MonoBehaviour
         gridOrigin = origin;
         instanceId = id;
         currentLevelIndex = 0;
-        ApplyVisualForLevel();
+        // NOTE: visual is instantiated externally (by BuildingPlacementController) and this
+        // component is added to that same object - do NOT spawn another visual here or you'll
+        // get a duplicate nested under this one. Upgrade visual-swapping is disabled for now;
+        // TryUpgrade below only updates stats/level, not the model. Revisit when needed.
         CityStatsManager.Instance?.RegisterBuilding(this);
     }
 
@@ -32,7 +35,8 @@ public class BuildingInstance : MonoBehaviour
         if (!economy.TrySpend(cost)) return false;
 
         currentLevelIndex++;
-        ApplyVisualForLevel();
+        // Visual swapping on upgrade is disabled for now (see note in Initialize).
+        // ApplyVisualForLevel();
         CityStatsManager.Instance?.RecalculateAll(); // level change affects totals
         return true;
     }
@@ -40,20 +44,21 @@ public class BuildingInstance : MonoBehaviour
     private void ApplyVisualForLevel()
     {
         var level = data.GetLevel(currentLevelIndex);
-        // if (currentVisual != null) Destroy(currentVisual);
-        // if (level != null && level.visualPrefab != null)
-        // {
-        //     currentVisual = Instantiate(level.visualPrefab, transform);
-        //     currentVisual.transform.localPosition = Vector3.zero;
-        // }
+        if (currentVisual != null) Destroy(currentVisual);
+        if (level != null && level.visualPrefab != null)
+        {
+            currentVisual = Instantiate(level.visualPrefab, transform);
+            currentVisual.transform.localPosition = Vector3.zero;
+        }
     }
 
     /// Current stat contribution based on upgrade level.
-    public (float pop, float jobs, float pollution, float happiness, float garbage) GetStats()
+    public (float pop, float jobs, float pollution, float garbage, float crimeRate, float traffic, float lifestyle) GetStats()
     {
         var lvl = data.GetLevel(currentLevelIndex);
-        if (lvl == null) return (0, 0, 0, 0, 0);
-        return (lvl.populationOutput, lvl.jobsOutput, lvl.pollutionOutput, lvl.happinessOutput, lvl.garbageOutput);
+        if (lvl == null) return (0, 0, 0, 0, 0, 0, 0);
+        return (lvl.populationOutput, lvl.jobsOutput, lvl.pollutionOutput, lvl.garbageOutput,
+                lvl.crimeRateOutput, lvl.trafficOutput, lvl.lifestyleOutput);
     }
 
     void OnDestroy()

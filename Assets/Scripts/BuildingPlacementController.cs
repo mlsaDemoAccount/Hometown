@@ -61,7 +61,7 @@ public class BuildingPlacementController : MonoBehaviour
         CancelCurrentAction();
         selectedBuildingData = data;
         currentMode = Mode.Placing;
-        SpawnGhost(data.levels[0].visualPrefab);
+        SpawnGhost(data.levels[0].visualPrefab, data);
         controlPanel?.Show(); // show immediately - must not depend on anything that could throw below
 
         if (mainCamera == null) mainCamera = Camera.main; // camera may not have been ready at Awake
@@ -75,7 +75,7 @@ public class BuildingPlacementController : MonoBehaviour
                 Vector2Int cell = GridManager.Instance.WorldToGrid(hit.point);
                 lastGhostCell = cell;
                 lastGhostValid = GridManager.Instance.CanPlaceFootprint(cell, data.footprintSize) && PassesRoadCheck(cell);
-                ghostObject.transform.position = GridManager.Instance.GridToWorld(cell);
+                ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, data.footprintSize);
                 SetGhostMaterial(lastGhostValid);
             }
         }
@@ -91,10 +91,10 @@ public class BuildingPlacementController : MonoBehaviour
         Vector2Int origin = instance.gridOrigin;
         // Free the old footprint immediately so the ghost can preview over it.
         GridManager.Instance.ClearFootprint(origin, instance.data.footprintSize);
-        SpawnGhost(instance.data.GetLevel(instance.currentLevelIndex).visualPrefab);
+        SpawnGhost(instance.data.GetLevel(instance.currentLevelIndex).visualPrefab, instance.data);
 
         // Start the ghost exactly where the building already is, not at world origin.
-        ghostObject.transform.position = GridManager.Instance.GridToWorld(origin);
+        ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(origin, instance.data.footprintSize);
         lastGhostCell = origin;
         lastGhostValid = GridManager.Instance.CanPlaceFootprint(origin, instance.data.footprintSize);
         SetGhostMaterial(lastGhostValid);
@@ -127,10 +127,23 @@ public class BuildingPlacementController : MonoBehaviour
 
     // ---------- Placement / move flow ----------
 
-    private void SpawnGhost(GameObject prefab)
+    /// Stretches a placeholder cube (or similar unit-sized primitive) so its X/Z footprint
+    /// exactly matches footprintSize * cellSize. Leaves height (Y) untouched. No-op if
+    /// data.autoScaleToFootprint is false (i.e. you're using a properly-sized real model).
+    private void ApplyFootprintScale(GameObject obj, BuildingData data)
+    {
+        if (!data.autoScaleToFootprint) return;
+        Vector3 scale = obj.transform.localScale;
+        scale.x = data.footprintSize.x * GridManager.Instance.cellSize;
+        scale.z = data.footprintSize.y * GridManager.Instance.cellSize;
+        obj.transform.localScale = scale;
+    }
+
+    private void SpawnGhost(GameObject prefab, BuildingData data)
     {
         ghostObject = Instantiate(prefab);
         ghostObject.transform.SetParent(null, true); // force to scene root, ignore any inherited context
+        ApplyFootprintScale(ghostObject, data);
         SetGhostMaterial(false);
     }
 
@@ -145,7 +158,7 @@ public class BuildingPlacementController : MonoBehaviour
         if (cell != lastGhostCell)
         {
             lastGhostCell = cell;
-            ghostObject.transform.position = GridManager.Instance.GridToWorld(cell);
+            ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, selectedBuildingData.footprintSize);
         }
         lastGhostValid = canPlace;
         SetGhostMaterial(canPlace);
@@ -172,8 +185,9 @@ public class BuildingPlacementController : MonoBehaviour
                 return; // not enough funds - stay in placing mode
 
             GameObject obj = Instantiate(selectedBuildingData.levels[0].visualPrefab,
-                GridManager.Instance.GridToWorld(cell), Quaternion.identity);
+                GridManager.Instance.FootprintCenterToWorld(cell, selectedBuildingData.footprintSize), Quaternion.identity);
             obj.transform.SetParent(null, true); // force to scene root
+            ApplyFootprintScale(obj, selectedBuildingData);
             var instance = obj.AddComponent<BuildingInstance>();
             int id = nextInstanceId++;
             instance.Initialize(selectedBuildingData, cell, id);
@@ -182,7 +196,7 @@ public class BuildingPlacementController : MonoBehaviour
         }
         else if (currentMode == Mode.Moving)
         {
-            movingInstance.transform.position = GridManager.Instance.GridToWorld(cell);
+            movingInstance.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, movingInstance.data.footprintSize);
             movingInstance.gridOrigin = cell;
             movingInstance.gameObject.SetActive(true);
             GridManager.Instance.SetFootprint(cell, movingInstance.data.footprintSize, GridManager.CellType.Building, movingInstance.instanceId);
@@ -214,10 +228,8 @@ public class BuildingPlacementController : MonoBehaviour
                 Destroy(instance.gameObject);
             }
         }
-        else if (type == GridManager.CellType.Road && RoadManager.Instance != null)
-        {
-            RoadManager.Instance.DemolishRoadAt(cell);
-        }
+        // NOTE: roads are pre-built static geometry now (see RoadFootprintScanner) - they can't
+        // be demolished by the player, so there's no "else if road" branch here anymore.
     }
 
     // ---------- Helpers ----------
@@ -248,13 +260,15 @@ public class BuildingPlacementController : MonoBehaviour
             r.material = mat;
     }
 
-    /// Returns true if the building doesn't require a road, OR RoadManager isn't in the scene yet
-    /// (so you can test placement before implementing roads), OR the road check passes.
+    /// Returns true if the building doesn't require footpath adjacency, OR RoadManager isn't in
+    /// the scene yet (so you can test placement before the road/footpath system exists), OR the
+    /// footpath check passes. Checks footpath, not road - buildings connect to the sidewalk,
+    /// not the vehicle lane, since the two run parallel to each other.
     private bool PassesRoadCheck(Vector2Int cell)
     {
-        if (!selectedBuildingData.requiresRoadAdjacency) return true;
-        if (RoadManager.Instance == null) return true; // roads not implemented yet - don't block placement
-        return RoadManager.Instance.IsAdjacentToRoad(cell, selectedBuildingData.footprintSize);
+        if (!selectedBuildingData.requiresFootpathAdjacency) return true;
+        if (RoadManager.Instance == null) return true; // road/footpath not implemented yet - don't block placement
+        return RoadManager.Instance.IsAdjacentToFootpath(cell, selectedBuildingData.footprintSize);
     }
 
     private bool RaycastGround(Vector2 screenPos, out Vector3 worldPoint)

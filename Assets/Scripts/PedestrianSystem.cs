@@ -46,11 +46,11 @@ public class PedestrianSpawner : MonoBehaviour
         Vector2Int goal = NearestRoadCell(job.gridOrigin);
         if (start == goal) return;
 
-        var path = RoadManager.Instance.FindPath(start, goal);
+        var path = RoadManager.Instance.FindPath(start, goal); // now List<RoadNode>, not List<Vector2Int>
         if (path == null || path.Count < 2) return;
 
         var prefab = pedestrianPrefabs[Random.Range(0, pedestrianPrefabs.Length)];
-        var go = Instantiate(prefab, GridManager.Instance.GridToWorld(start), Quaternion.identity);
+        var go = Instantiate(prefab, path[0].worldPosition, Quaternion.identity);
         var agent = go.GetComponent<PedestrianAgent>() ?? go.AddComponent<PedestrianAgent>();
         agent.SetPath(path);
         active.Add(agent);
@@ -58,7 +58,7 @@ public class PedestrianSpawner : MonoBehaviour
 
     private Vector2Int NearestRoadCell(Vector2Int origin)
     {
-        // Simple ring search outward from the building for the closest road tile.
+        // Simple ring search outward from the building for the closest road cell.
         for (int r = 1; r < 10; r++)
         {
             for (int x = -r; x <= r; x++)
@@ -72,13 +72,15 @@ public class PedestrianSpawner : MonoBehaviour
     }
 }
 
+/// NOTE: still the simple placeholder mover from before - proper footpath-only movement,
+/// crowd avoidance, etc. are part of the "real" pedestrian system build to come after traffic.
 public class PedestrianAgent : MonoBehaviour
 {
     public float moveSpeed = 1.5f;
-    private List<Vector2Int> path;
+    private List<RoadNode> path;
     private int currentIndex = 0;
 
-    public void SetPath(List<Vector2Int> newPath)
+    public void SetPath(List<RoadNode> newPath)
     {
         path = newPath;
         currentIndex = 0;
@@ -92,7 +94,7 @@ public class PedestrianAgent : MonoBehaviour
             return;
         }
 
-        Vector3 target = GridManager.Instance.GridToWorld(path[currentIndex]);
+        Vector3 target = path[currentIndex].worldPosition;
         // offset slightly off road center so people don't overlap vehicles exactly - optional polish
         Vector3 dir = target - transform.position;
         dir.y = 0;
