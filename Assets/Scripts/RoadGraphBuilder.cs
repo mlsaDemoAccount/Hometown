@@ -43,8 +43,8 @@ public class RoadGraphBuilder : MonoBehaviour
         var grid = GridManager.Instance;
         if (grid == null) { Debug.LogError("[RoadGraphBuilder] GridManager not found - aborted."); return; }
 
-        var roadNodes = DetectAndBuildGraph(grid, roadLayerMask, GridManager.CellType.Road, GridManager.OccupantKind.Road);
-        var footpathNodes = DetectAndBuildGraph(grid, footpathLayerMask, GridManager.CellType.Footpath, GridManager.OccupantKind.Footpath);
+        var roadNodes = DetectAndBuildGraph(grid, roadLayerMask, GridManager.CellType.Road, GridManager.OccupantKind.Road, isFootpathPass: false);
+        var footpathNodes = DetectAndBuildGraph(grid, footpathLayerMask, GridManager.CellType.Footpath, GridManager.OccupantKind.Footpath, isFootpathPass: true);
 
         RoadManager.Instance.SetGraphs(roadNodes, footpathNodes);
 
@@ -53,7 +53,7 @@ public class RoadGraphBuilder : MonoBehaviour
         Debug.Log($"[RoadGraphBuilder] Road: {roadNodes.Count} nodes ({intersections} intersections). Footpath: {footpathNodes.Count} nodes.");
     }
 
-    private Dictionary<Vector2Int, RoadNode> DetectAndBuildGraph(GridManager grid, LayerMask layerMask, GridManager.CellType markAsType, GridManager.OccupantKind markAsKind)
+    private Dictionary<Vector2Int, RoadNode> DetectAndBuildGraph(GridManager grid, LayerMask layerMask, GridManager.CellType markAsType, GridManager.OccupantKind markAsKind, bool isFootpathPass)
     {
         // Pass 1: detect every cell this mesh covers - the FULL width, not just a centerline.
         var rawCells = new HashSet<Vector2Int>();
@@ -80,11 +80,23 @@ public class RoadGraphBuilder : MonoBehaviour
         // a 4-way intersection (road neighbors on all sides) - see GridSkeletonizer for why.
         var skeletonCells = GridSkeletonizer.Thin(rawCells);
 
+        // If you've baked + hand-adjusted RoadWaypointMarker objects for this layer, use their
+        // CURRENT position instead of the raw auto-detected cell center - lets you nudge
+        // individual waypoints for better-looking movement without losing the auto-detected
+        // topology (which nodes connect to which is still derived from the skeleton itself).
+        var markerOverrides = new Dictionary<Vector2Int, Vector3>();
+        foreach (var marker in FindObjectsOfType<RoadWaypointMarker>())
+            if (marker.isFootpath == isFootpathPass)
+                markerOverrides[marker.cell] = marker.transform.position;
+
         // Pass 3: build the node graph from the SKELETON only - this is what traffic/pedestrians
         // path along, and what intersection detection (3+ edges) is based on.
         var nodes = new Dictionary<Vector2Int, RoadNode>();
         foreach (var cell in skeletonCells)
-            nodes[cell] = new RoadNode(cell, grid.GridToWorld(cell));
+        {
+            Vector3 pos = markerOverrides.TryGetValue(cell, out var overridden) ? overridden : grid.GridToWorld(cell);
+            nodes[cell] = new RoadNode(cell, pos);
+        }
 
         foreach (var kvp in nodes)
         {
@@ -100,5 +112,76 @@ public class RoadGraphBuilder : MonoBehaviour
         }
 
         return nodes;
+    }
+
+    // ---------- Visualization ----------
+
+    private void OnDrawGizmos()
+    {
+        if (RoadManager.Instance == null) return;
+        DrawGraphGizmos(RoadManager.Instance.RoadNodes, Color.yellow);
+        DrawGraphGizmos(RoadManager.Instance.FootpathNodes, new Color(0.2f, 0.8f, 1f));
+    }
+
+    private void DrawGraphGizmos(Dictionary<Vector2Int, RoadNode> nodes, Color color)
+    {
+        if (nodes == null) return;
+        Gizmos.color = color;
+        Vector3 lift = Vector3.up * 0.1f; // lift slightly so gizmos aren't clipped into the ground mesh
+
+        foreach (var node in nodes.Values)
+        {
+            Gizmos.DrawSphere(node.worldPosition + lift, node.IsIntersection ? 0.25f : 0.12f);
+            foreach (var edge in node.edges)
+                Gizmos.DrawLine(node.worldPosition + lift, edge.to.worldPosition + lift);
+        }
+    }
+
+    // ---------- Bake to hand-editable GameObjects ----------
+
+    /// Creates a real, draggable GameObject per node (RoadWaypointMarker) so you can nudge
+    /// individual waypoints in the Scene view for better-looking movement.
+    ///
+    /// WORKFLOW (important - read this):
+    /// Unity does NOT save changes made while in Play Mode. If you run this while playing,
+    /// the baked objects will be DELETED the moment you stop Play unless you rescue them first:
+    ///   1. Enter Play Mode, let the graph build (or right-click > Rebuild Road/Footpath Graph Now).
+    ///   2. Right-click this component > "Bake Waypoints To GameObjects".
+    ///   3. In the Hierarchy, select BOTH "RoadWaypoints (Baked)" and "FootpathWaypoints (Baked)".
+    ///   4. Copy them (Ctrl+C / Cmd+C).
+    ///   5. Stop Play Mode.
+    ///   6. Paste (Ctrl+V / Cmd+V) - Unity supports pasting Play-Mode-created objects back into
+    ///      the edited scene. They'll now persist normally.
+    ///   7. Drag individual waypoint markers to adjust their position as needed.
+    ///   8. Next time you enter Play Mode, RoadGraphBuilder will automatically use their
+    ///      positions instead of the raw auto-detected centers.
+    [ContextMenu("Bake Waypoints To GameObjects")]
+    public void BakeWaypoints()
+    {
+        if (RoadManager.Instance == null || RoadManager.Instance.RoadNodes.Count == 0)
+        {
+            Debug.LogWarning("[RoadGraphBuilder] Nothing to bake yet - run the scan first (Play, or right-click > Rebuild Road/Footpath Graph Now).");
+            return;
+        }
+
+        var roadContainer = new GameObject("RoadWaypoints (Baked)").transform;
+        foreach (var node in RoadManager.Instance.RoadNodes.Values)
+            CreateMarker(node, roadContainer, isFootpath: false);
+
+        var footpathContainer = new GameObject("FootpathWaypoints (Baked)").transform;
+        foreach (var node in RoadManager.Instance.FootpathNodes.Values)
+            CreateMarker(node, footpathContainer, isFootpath: true);
+
+        Debug.Log("[RoadGraphBuilder] Baked waypoint GameObjects created. If you're in Play Mode, copy them out before stopping - see the BakeWaypoints() comment for the exact steps, or Unity will discard them.");
+    }
+
+    private void CreateMarker(RoadNode node, Transform parent, bool isFootpath)
+    {
+        var go = new GameObject($"Waypoint_{node.cell.x}_{node.cell.y}");
+        go.transform.SetParent(parent);
+        go.transform.position = node.worldPosition;
+        var marker = go.AddComponent<RoadWaypointMarker>();
+        marker.cell = node.cell;
+        marker.isFootpath = isFootpath;
     }
 }
