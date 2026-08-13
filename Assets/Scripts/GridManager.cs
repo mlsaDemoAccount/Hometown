@@ -17,17 +17,18 @@ public class GridManager : MonoBehaviour
     public float cellSize = 1f; // meters per cell
     public Vector3 origin = Vector3.zero;
 
-    public enum CellType { Empty, Building, Road, Footpath, Blocked, Locked }
+    public enum CellType { Empty, Building, Road, Blocked, Locked }
 
     /// What kind of thing occupies a cell - lets you distinguish "a building" from
     /// "an environment prop" (tree/rock) when both just show up as an occupied cell.
-    public enum OccupantKind { None, Building, Road, Footpath, EnvironmentProp }
+    public enum OccupantKind { None, Building, Road, EnvironmentProp }
 
     private struct Cell
     {
         public CellType type;
         public int occupantId; // id into BuildingInstance/Road registry, -1 if none
         public OccupantKind occupantKind;
+        public bool hasFootpath; // independent of type - a Road cell can ALSO have a footpath attached
     }
 
     private Cell[,] grid;
@@ -83,6 +84,19 @@ public class GridManager : MonoBehaviour
 
     public OccupantKind GetOccupantKind(Vector2Int c) =>
         InBounds(c) ? grid[c.x, c.y].occupantKind : OccupantKind.None;
+
+    public bool HasFootpath(Vector2Int c) => InBounds(c) && grid[c.x, c.y].hasFootpath;
+
+    /// Marks/unmarks footpath presence on a cell WITHOUT touching its CellType - a road cell
+    /// can also have a footpath attached (they're fused into the same 1-wide cell now), so this
+    /// stays independent of SetFootprint's type marking.
+    public void SetFootpathFlag(Vector2Int c, bool value)
+    {
+        if (!InBounds(c)) return;
+        var cellData = grid[c.x, c.y];
+        cellData.hasFootpath = value;
+        grid[c.x, c.y] = cellData;
+    }
 
     /// Checks a whole footprint (for multi-cell buildings), returns true only if ALL cells free.
     public bool CanPlaceFootprint(Vector2Int origin, Vector2Int size)

@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// Holds the road and footpath NODE GRAPHS (not flat cell sets), built once at scene start by
-/// RoadGraphBuilder from your pre-authored static meshes. Vehicles/pedestrians move node-to-node
-/// along edges - this is what makes traffic lights, stop signs, one-way streets, and realistic
-/// queuing/jams possible later without another architecture rewrite.
+/// Holds the road and footpath movement graphs (List<RoadNode>, built by RoadGraphBuilder from
+/// hand-placed RoadWaypointMarker objects) and the pathfinding over them. Grid occupancy checks
+/// (is this cell road/footpath, is a building adjacent to one) are intentionally separate -
+/// those still read directly from GridManager, regardless of how the waypoint graph is built.
 public class RoadManager : MonoBehaviour
 {
     public static RoadManager Instance { get; private set; }
 
-    public Dictionary<Vector2Int, RoadNode> RoadNodes { get; private set; } = new Dictionary<Vector2Int, RoadNode>();
-    public Dictionary<Vector2Int, RoadNode> FootpathNodes { get; private set; } = new Dictionary<Vector2Int, RoadNode>();
+    public List<RoadNode> RoadNodes { get; private set; } = new List<RoadNode>();
+    public List<RoadNode> FootpathNodes { get; private set; } = new List<RoadNode>();
 
     void Awake()
     {
@@ -18,30 +18,31 @@ public class RoadManager : MonoBehaviour
         Instance = this;
     }
 
-    /// Called by RoadGraphBuilder once it finishes scanning + linking the static meshes.
-    public void SetGraphs(Dictionary<Vector2Int, RoadNode> roadNodes, Dictionary<Vector2Int, RoadNode> footpathNodes)
+    /// Called by RoadGraphBuilder once it finishes building the graphs from waypoint markers.
+    public void SetGraphs(List<RoadNode> roadNodes, List<RoadNode> footpathNodes)
     {
         RoadNodes = roadNodes;
         FootpathNodes = footpathNodes;
     }
 
-    public bool IsRoad(Vector2Int cell) => RoadNodes.ContainsKey(cell);
-    public bool IsFootpath(Vector2Int cell) => FootpathNodes.ContainsKey(cell);
-    public RoadNode GetRoadNode(Vector2Int cell) => RoadNodes.TryGetValue(cell, out var n) ? n : null;
-    public RoadNode GetFootpathNode(Vector2Int cell) => FootpathNodes.TryGetValue(cell, out var n) ? n : null;
+    // ---------- Grid occupancy (unrelated to the waypoint graph - reads GridManager directly) ----------
 
-    /// Used by placement controller to enforce "buildings must touch a road". Checks the FULL
-    /// road footprint in GridManager, not RoadNodes - RoadNodes is now a thinned centerline
-    /// skeleton (see RoadGraphBuilder/GridSkeletonizer), so a building next to a wide road's
-    /// edge should still count as adjacent even if it's several cells from that centerline.
+    public bool IsRoad(Vector2Int cell) => GridManager.Instance.GetType(cell) == GridManager.CellType.Road;
+
+    /// There's no separate footpath grid marking anymore (no footpath mesh/collider exists) -
+    /// footpath is fused into the same cell as its road, so "is this cell footpath" is really
+    /// just "is this cell road."
+    public bool IsFootpath(Vector2Int cell) => IsRoad(cell);
+
+    /// Used by placement controller to enforce "buildings must touch a road/footpath". Checks
+    /// Road - footpath and road are the same physical cell now, so this single check covers both.
     public bool IsAdjacentToRoad(Vector2Int origin, Vector2Int footprint) =>
         IsAdjacentToCellType(origin, footprint, GridManager.CellType.Road);
 
-    /// Same idea, but for footpath - use this instead of IsAdjacentToRoad for buildings that
-    /// should connect to the sidewalk rather than the vehicle lane (the more realistic default
-    /// for most buildings, since roads and footpaths run parallel to each other).
+    /// Kept as an alias for readability at call sites that specifically mean "near a footpath" -
+    /// functionally identical to IsAdjacentToRoad now, since they're the same cell.
     public bool IsAdjacentToFootpath(Vector2Int origin, Vector2Int footprint) =>
-        IsAdjacentToCellType(origin, footprint, GridManager.CellType.Footpath);
+        IsAdjacentToRoad(origin, footprint);
 
     private bool IsAdjacentToCellType(Vector2Int origin, Vector2Int footprint, GridManager.CellType type)
     {
@@ -58,20 +59,14 @@ public class RoadManager : MonoBehaviour
         return false;
     }
 
-    // ---------- Pathfinding (BFS over the node graph, unweighted) ----------
-    // Swap for Dijkstra/A* later if edge weights start mattering (e.g. congestion cost) -
-    // the graph structure already supports weighted edges via RoadEdge.length, this just
-    // doesn't use that weight yet since a plain grid has uniform edge lengths anyway.
+    // ---------- Pathfinding over the waypoint graph (BFS, unweighted) ----------
 
-    public List<RoadNode> FindPath(Vector2Int startCell, Vector2Int goalCell) =>
-        FindPathOn(RoadNodes, startCell, goalCell);
+    public List<RoadNode> FindPath(RoadNode start, RoadNode goal) => FindPathOn(start, goal);
+    public List<RoadNode> FindFootpathPath(RoadNode start, RoadNode goal) => FindPathOn(start, goal);
 
-    public List<RoadNode> FindFootpathPath(Vector2Int startCell, Vector2Int goalCell) =>
-        FindPathOn(FootpathNodes, startCell, goalCell);
-
-    private List<RoadNode> FindPathOn(Dictionary<Vector2Int, RoadNode> graph, Vector2Int startCell, Vector2Int goalCell)
+    private List<RoadNode> FindPathOn(RoadNode start, RoadNode goal)
     {
-        if (!graph.TryGetValue(startCell, out var start) || !graph.TryGetValue(goalCell, out var goal)) return null;
+        if (start == null || goal == null) return null;
 
         var visited = new HashSet<RoadNode> { start };
         var cameFrom = new Dictionary<RoadNode, RoadNode>();
@@ -94,7 +89,7 @@ public class RoadManager : MonoBehaviour
                 }
             }
         }
-        return null; // no path
+        return null;
     }
 
     private List<RoadNode> ReconstructPath(Dictionary<RoadNode, RoadNode> cameFrom, RoadNode start, RoadNode goal)

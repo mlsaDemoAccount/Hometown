@@ -38,15 +38,16 @@ public class PedestrianSpawner : MonoBehaviour
         var homes = CityStatsManager.Instance.GetBuildingsByCategory(BuildingCategory.Population);
         var jobs = CityStatsManager.Instance.GetBuildingsByCategory(BuildingCategory.Jobs);
         if (homes.Count == 0 || jobs.Count == 0) return;
+        if (RoadManager.Instance.FootpathNodes.Count < 2) return;
 
         var home = homes[Random.Range(0, homes.Count)];
         var job = jobs[Random.Range(0, jobs.Count)];
 
-        Vector2Int start = NearestRoadCell(home.gridOrigin);
-        Vector2Int goal = NearestRoadCell(job.gridOrigin);
-        if (start == goal) return;
+        RoadNode start = NearestFootpathNode(GridManager.Instance.GridToWorld(home.gridOrigin));
+        RoadNode goal = NearestFootpathNode(GridManager.Instance.GridToWorld(job.gridOrigin));
+        if (start == null || goal == null || start == goal) return;
 
-        var path = RoadManager.Instance.FindPath(start, goal); // now List<RoadNode>, not List<Vector2Int>
+        var path = RoadManager.Instance.FindFootpathPath(start, goal);
         if (path == null || path.Count < 2) return;
 
         var prefab = pedestrianPrefabs[Random.Range(0, pedestrianPrefabs.Length)];
@@ -56,19 +57,18 @@ public class PedestrianSpawner : MonoBehaviour
         active.Add(agent);
     }
 
-    private Vector2Int NearestRoadCell(Vector2Int origin)
+    /// Finds the closest FOOTPATH waypoint (by straight-line distance) to a world position -
+    /// used to find where a building "enters" the footpath network.
+    private RoadNode NearestFootpathNode(Vector3 worldPos)
     {
-        // Simple ring search outward from the building for the closest road cell.
-        for (int r = 1; r < 10; r++)
+        RoadNode nearest = null;
+        float bestSqrDist = float.MaxValue;
+        foreach (var node in RoadManager.Instance.FootpathNodes)
         {
-            for (int x = -r; x <= r; x++)
-                for (int y = -r; y <= r; y++)
-                {
-                    var c = origin + new Vector2Int(x, y);
-                    if (RoadManager.Instance.IsRoad(c)) return c;
-                }
+            float d = (node.worldPosition - worldPos).sqrMagnitude;
+            if (d < bestSqrDist) { bestSqrDist = d; nearest = node; }
         }
-        return origin;
+        return nearest;
     }
 }
 

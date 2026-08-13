@@ -1,34 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// Runs once at scene start: detects road/footpath cells from your pre-built static meshes
-/// (downward raycasts - work fine against non-convex MeshColliders, unlike overlap/box checks),
-/// then links each detected cell to its 4-directional neighbors to build a proper NODE GRAPH
-/// (RoadManager.RoadNodes / FootpathNodes) - not just a flat "is this cell road" set.
+/// Two separate jobs, kept deliberately independent:
 ///
-/// This graph is what lets traffic lights, stop signs, one-way streets, and real queuing/jams
-/// slot in later without another rewrite: intersections fall out automatically as any node with
-/// 3+ edges, and each RoadNode already has a reserved `controlType` field for future signals.
+/// 1. GRID OCCUPANCY MARKING (automatic, road only): scans the static road mesh via raycasts
+///    and marks every covered grid cell in GridManager as Road. There is no separate footpath
+///    mesh/collider/layer at all - footpath is purely visual, fused into the road geometry, so
+///    there's nothing to auto-detect for it. Building placement checks Road adjacency, which
+///    now also covers "next to the footpath," since they're the same physical cell.
+///
+/// 2. CAR/PEDESTRIAN MOVEMENT GRAPH (fully manual): built ONLY from RoadWaypointMarker objects
+///    already placed in the scene, connected via their `connections` list. Road waypoints can
+///    be bootstrapped with the auto-generate tool below (real, detectable geometry); footpath
+///    waypoints are 100% hand-placed - position them yourself on the sides of the road, there's
+///    no mesh to generate them from.
 ///
 /// SETUP:
-/// 1. Road mesh needs a Collider (MeshCollider is fine - does NOT need to be convex, since we
-///    raycast rather than use overlap/box checks).
+/// 1. Road mesh needs a Collider (MeshCollider is fine, does not need to be convex).
 /// 2. Put it on a dedicated layer (e.g. "Road"), assign to roadLayerMask below.
-/// 3. Same for footpath mesh on its own layer (e.g. "Footpath"), assign to footpathLayerMask.
-/// 4. Attach this to your Managers object alongside RoadManager and GridManager.
+/// 3. Attach this to your Managers object alongside RoadManager and GridManager.
+/// 4. Create waypoints: empty GameObject + RoadWaypointMarker component, positioned on the
+///    road centerline (vehicles) or off to the side (pedestrians), with `isFootpath` set
+///    correctly. Drag neighboring waypoints into each marker's `connections` list to link them.
 public class RoadGraphBuilder : MonoBehaviour
 {
-    [Header("Detection Layers")]
+    [Header("Grid Occupancy Detection (automatic, road only)")]
     public LayerMask roadLayerMask;      // your pre-built road mesh's collider layer
-    public LayerMask footpathLayerMask;  // your pre-built footpath mesh's collider layer
-
-    [Header("Raycast Settings")]
-    public float rayStartHeight = 50f;   // start well above the tallest point of your meshes
+    public float rayStartHeight = 50f;   // start well above the tallest point of your mesh
     public float rayDistance = 200f;     // must comfortably reach from rayStartHeight down through the mesh
-
-    private static readonly Vector2Int[] Dirs4 = {
-        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-    };
 
     void Start()
     {
@@ -36,82 +35,79 @@ public class RoadGraphBuilder : MonoBehaviour
     }
 
     /// Right-click this component in the Inspector to re-run without pressing Play - handy
-    /// after editing the road mesh in the Editor.
+    /// after editing the road mesh, or after adding/rewiring waypoint markers.
     [ContextMenu("Rebuild Road/Footpath Graph Now")]
     public void BuildGraphs()
     {
         var grid = GridManager.Instance;
         if (grid == null) { Debug.LogError("[RoadGraphBuilder] GridManager not found - aborted."); return; }
 
-        var roadNodes = DetectAndBuildGraph(grid, roadLayerMask, GridManager.CellType.Road, GridManager.OccupantKind.Road, isFootpathPass: false);
-        var footpathNodes = DetectAndBuildGraph(grid, footpathLayerMask, GridManager.CellType.Footpath, GridManager.OccupantKind.Footpath, isFootpathPass: true);
+        // Job 1: grid occupancy marking, automatic from the road mesh only.
+        int roadCellCount = ScanAndMarkRoadCells(grid, roadLayerMask);
+        Debug.Log($"[RoadGraphBuilder] Mesh scan: {roadCellCount} road cell(s) detected. (0 here means the collider/layer setup isn't being hit.)");
 
+        // Job 2: movement graph, entirely from hand-placed markers - nothing auto-generated.
+        var roadNodes = BuildGraphFromMarkers(isFootpath: false);
+        var footpathNodes = BuildGraphFromMarkers(isFootpath: true);
         RoadManager.Instance.SetGraphs(roadNodes, footpathNodes);
 
         int intersections = 0;
-        foreach (var n in roadNodes.Values) if (n.IsIntersection) intersections++;
-        Debug.Log($"[RoadGraphBuilder] Road: {roadNodes.Count} nodes ({intersections} intersections). Footpath: {footpathNodes.Count} nodes.");
+        foreach (var n in roadNodes) if (n.IsIntersection) intersections++;
+        Debug.Log($"[RoadGraphBuilder] Waypoint graph (from RoadWaypointMarker objects in scene): Road {roadNodes.Count} waypoints ({intersections} intersections), Footpath {footpathNodes.Count} waypoints. (0 here just means no markers exist yet - separate from the mesh scan above.)");
     }
 
-    private Dictionary<Vector2Int, RoadNode> DetectAndBuildGraph(GridManager grid, LayerMask layerMask, GridManager.CellType markAsType, GridManager.OccupantKind markAsKind, bool isFootpathPass)
+    private int ScanAndMarkRoadCells(GridManager grid, LayerMask layerMask)
     {
-        // Pass 1: detect every cell this mesh covers - the FULL width, not just a centerline.
-        var rawCells = new HashSet<Vector2Int>();
+        int count = 0;
         for (int x = 0; x < grid.width; x++)
         {
             for (int y = 0; y < grid.height; y++)
             {
                 Vector2Int cell = new Vector2Int(x, y);
                 Vector3 rayOrigin = grid.GridToWorld(cell) + Vector3.up * rayStartHeight;
-
                 if (Physics.Raycast(rayOrigin, Vector3.down, rayDistance, layerMask))
                 {
-                    rawCells.Add(cell);
-                    // Mark the FULL raw footprint in GridManager - both road and footpath block
-                    // building placement, and building road-adjacency checks need to know about
-                    // the real, full-width edge, not just a thin centerline.
-                    grid.SetFootprint(cell, Vector2Int.one, markAsType, -1, markAsKind);
+                    grid.SetFootprint(cell, Vector2Int.one, GridManager.CellType.Road, -1, GridManager.OccupantKind.Road);
+                    count++;
                 }
             }
         }
+        return count;
+    }
 
-        // Pass 2: reduce the (possibly many-cells-wide) raw footprint to a 1-cell-wide skeleton.
-        // Without this, a road wider than 1 cell would make almost every interior cell look like
-        // a 4-way intersection (road neighbors on all sides) - see GridSkeletonizer for why.
-        var skeletonCells = GridSkeletonizer.Thin(rawCells);
+    private List<RoadNode> BuildGraphFromMarkers(bool isFootpath)
+    {
+        var markers = new List<RoadWaypointMarker>();
+        foreach (var m in FindObjectsOfType<RoadWaypointMarker>())
+            if (m.isFootpath == isFootpath) markers.Add(m);
 
-        // If you've baked + hand-adjusted RoadWaypointMarker objects for this layer, use their
-        // CURRENT position instead of the raw auto-detected cell center - lets you nudge
-        // individual waypoints for better-looking movement without losing the auto-detected
-        // topology (which nodes connect to which is still derived from the skeleton itself).
-        var markerOverrides = new Dictionary<Vector2Int, Vector3>();
-        foreach (var marker in FindObjectsOfType<RoadWaypointMarker>())
-            if (marker.isFootpath == isFootpathPass)
-                markerOverrides[marker.cell] = marker.transform.position;
+        var nodeByMarker = new Dictionary<RoadWaypointMarker, RoadNode>();
+        foreach (var m in markers)
+            nodeByMarker[m] = new RoadNode(m.cell, m.transform.position);
 
-        // Pass 3: build the node graph from the SKELETON only - this is what traffic/pedestrians
-        // path along, and what intersection detection (3+ edges) is based on.
-        var nodes = new Dictionary<Vector2Int, RoadNode>();
-        foreach (var cell in skeletonCells)
+        foreach (var m in markers)
         {
-            Vector3 pos = markerOverrides.TryGetValue(cell, out var overridden) ? overridden : grid.GridToWorld(cell);
-            nodes[cell] = new RoadNode(cell, pos);
-        }
-
-        foreach (var kvp in nodes)
-        {
-            var node = kvp.Value;
-            foreach (var dir in Dirs4)
+            var node = nodeByMarker[m];
+            foreach (var connectedMarker in m.connections)
             {
-                if (nodes.TryGetValue(node.cell + dir, out var neighbor))
+                if (connectedMarker == null) continue;
+                if (!nodeByMarker.TryGetValue(connectedMarker, out var neighborNode))
                 {
-                    float dist = Vector3.Distance(node.worldPosition, neighbor.worldPosition);
-                    node.edges.Add(new RoadEdge(node, neighbor, dist));
+                    Debug.LogWarning($"[RoadGraphBuilder] Waypoint '{m.name}' connects to '{connectedMarker.name}', but that marker is missing from the scene or has a mismatched isFootpath flag. Skipped.");
+                    continue;
                 }
+
+                float dist = Vector3.Distance(node.worldPosition, neighborNode.worldPosition);
+                node.edges.Add(new RoadEdge(node, neighborNode, dist));
+
+                // Auto-add the reverse edge - a normal two-way road only needs wiring one
+                // direction. (One-way roads later: add a per-connection flag and skip this.)
+                if (!neighborNode.edges.Exists(e => e.to == node))
+                    neighborNode.edges.Add(new RoadEdge(neighborNode, node, dist));
             }
         }
 
-        return nodes;
+        return new List<RoadNode>(nodeByMarker.Values);
     }
 
     // ---------- Visualization ----------
@@ -123,13 +119,13 @@ public class RoadGraphBuilder : MonoBehaviour
         DrawGraphGizmos(RoadManager.Instance.FootpathNodes, new Color(0.2f, 0.8f, 1f));
     }
 
-    private void DrawGraphGizmos(Dictionary<Vector2Int, RoadNode> nodes, Color color)
+    private void DrawGraphGizmos(List<RoadNode> nodes, Color color)
     {
         if (nodes == null) return;
         Gizmos.color = color;
-        Vector3 lift = Vector3.up * 0.1f; // lift slightly so gizmos aren't clipped into the ground mesh
+        Vector3 lift = Vector3.up * 0.1f;
 
-        foreach (var node in nodes.Values)
+        foreach (var node in nodes)
         {
             Gizmos.DrawSphere(node.worldPosition + lift, node.IsIntersection ? 0.25f : 0.12f);
             foreach (var edge in node.edges)
@@ -137,51 +133,67 @@ public class RoadGraphBuilder : MonoBehaviour
         }
     }
 
-    // ---------- Bake to hand-editable GameObjects ----------
+    // ---------- Baseline waypoint generation (optional starting point, not automatic every run) ----------
 
-    /// Creates a real, draggable GameObject per node (RoadWaypointMarker) so you can nudge
-    /// individual waypoints in the Scene view for better-looking movement.
+    /// Creates a starting set of ROAD waypoint markers by scanning the road mesh directly - one
+    /// per detected cell, auto-linked to its grid-adjacent neighbors. FOOTPATH waypoints are NOT
+    /// generated here - there's no footpath mesh/collider to detect, so place those entirely by
+    /// hand, positioned to the side of the road waypoints this generates.
     ///
-    /// WORKFLOW (important - read this):
-    /// Unity does NOT save changes made while in Play Mode. If you run this while playing,
-    /// the baked objects will be DELETED the moment you stop Play unless you rescue them first:
-    ///   1. Enter Play Mode, let the graph build (or right-click > Rebuild Road/Footpath Graph Now).
-    ///   2. Right-click this component > "Bake Waypoints To GameObjects".
-    ///   3. In the Hierarchy, select BOTH "RoadWaypoints (Baked)" and "FootpathWaypoints (Baked)".
-    ///   4. Copy them (Ctrl+C / Cmd+C).
-    ///   5. Stop Play Mode.
-    ///   6. Paste (Ctrl+V / Cmd+V) - Unity supports pasting Play-Mode-created objects back into
-    ///      the edited scene. They'll now persist normally.
-    ///   7. Drag individual waypoint markers to adjust their position as needed.
-    ///   8. Next time you enter Play Mode, RoadGraphBuilder will automatically use their
-    ///      positions instead of the raw auto-detected centers.
-    [ContextMenu("Bake Waypoints To GameObjects")]
-    public void BakeWaypoints()
+    /// This is a FAST STARTING POINT for roads, not the final network: delete markers you don't
+    /// need (e.g. thin out long straight stretches), and add/move markers where you want
+    /// smoother curves or better-placed intersections.
+    ///
+    /// PLAY MODE CAVEAT: if you run this while playing, copy the generated container out
+    /// (Ctrl+C) before stopping Play, or Unity will discard it.
+    [ContextMenu("Auto-Generate Baseline Road Waypoints From Mesh")]
+    public void AutoGenerateBaselineWaypoints()
     {
-        if (RoadManager.Instance == null || RoadManager.Instance.RoadNodes.Count == 0)
-        {
-            Debug.LogWarning("[RoadGraphBuilder] Nothing to bake yet - run the scan first (Play, or right-click > Rebuild Road/Footpath Graph Now).");
-            return;
-        }
+        var grid = GridManager.Instance;
+        if (grid == null) { Debug.LogError("[RoadGraphBuilder] GridManager not found - aborted."); return; }
 
-        var roadContainer = new GameObject("RoadWaypoints (Baked)").transform;
-        foreach (var node in RoadManager.Instance.RoadNodes.Values)
-            CreateMarker(node, roadContainer, isFootpath: false);
+        var roadContainer = new GameObject("RoadWaypoints (Auto-Generated)").transform;
+        GenerateWaypointsForLayer(grid, roadLayerMask, roadContainer, isFootpath: false);
 
-        var footpathContainer = new GameObject("FootpathWaypoints (Baked)").transform;
-        foreach (var node in RoadManager.Instance.FootpathNodes.Values)
-            CreateMarker(node, footpathContainer, isFootpath: true);
-
-        Debug.Log("[RoadGraphBuilder] Baked waypoint GameObjects created. If you're in Play Mode, copy them out before stopping - see the BakeWaypoints() comment for the exact steps, or Unity will discard them.");
+        Debug.Log("[RoadGraphBuilder] Baseline ROAD waypoints generated. Thin out straight stretches, add waypoints on curves, and move intersection waypoints as needed. Footpath waypoints still need to be placed by hand - no mesh to generate them from. If in Play Mode, copy the container out before stopping.");
     }
 
-    private void CreateMarker(RoadNode node, Transform parent, bool isFootpath)
+    private void GenerateWaypointsForLayer(GridManager grid, LayerMask layerMask, Transform container, bool isFootpath)
     {
-        var go = new GameObject($"Waypoint_{node.cell.x}_{node.cell.y}");
-        go.transform.SetParent(parent);
-        go.transform.position = node.worldPosition;
-        var marker = go.AddComponent<RoadWaypointMarker>();
-        marker.cell = node.cell;
-        marker.isFootpath = isFootpath;
+        var detectedCells = new HashSet<Vector2Int>();
+        for (int x = 0; x < grid.width; x++)
+        {
+            for (int y = 0; y < grid.height; y++)
+            {
+                Vector2Int cell = new Vector2Int(x, y);
+                Vector3 rayOrigin = grid.GridToWorld(cell) + Vector3.up * rayStartHeight;
+                if (Physics.Raycast(rayOrigin, Vector3.down, rayDistance, layerMask))
+                    detectedCells.Add(cell);
+            }
+        }
+
+        var markerByCell = new Dictionary<Vector2Int, RoadWaypointMarker>();
+        foreach (var cell in detectedCells)
+        {
+            var go = new GameObject($"Waypoint_{cell.x}_{cell.y}");
+            go.transform.SetParent(container);
+            go.transform.position = grid.GridToWorld(cell);
+            var marker = go.AddComponent<RoadWaypointMarker>();
+            marker.cell = cell;
+            marker.isFootpath = isFootpath;
+            markerByCell[cell] = marker;
+        }
+
+        // Link each marker to its right/up neighbor only (if present) - the reverse edge is
+        // added automatically when the graph builds, so this avoids redundant double-linking.
+        foreach (var kvp in markerByCell)
+        {
+            var cell = kvp.Key;
+            var marker = kvp.Value;
+            if (markerByCell.TryGetValue(cell + Vector2Int.right, out var rightNeighbor))
+                marker.connections.Add(rightNeighbor);
+            if (markerByCell.TryGetValue(cell + Vector2Int.up, out var upNeighbor))
+                marker.connections.Add(upNeighbor);
+        }
     }
 }

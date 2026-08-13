@@ -1,22 +1,42 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-/// A hand-tunable road/footpath waypoint, created by RoadGraphBuilder's "Bake Waypoints To
-/// GameObjects" tool. Drag this in the Scene view to nudge its position - e.g. centering it in
-/// a curve or a wide/irregular intersection for better-looking car movement. If ANY of these
-/// exist in the scene when RoadGraphBuilder runs, their current position is used instead of the
-/// raw auto-detected grid-cell center for that specific cell.
+/// A hand-placed waypoint for the car/pedestrian movement graph. NOTHING is auto-generated for
+/// this graph at runtime anymore - you create these yourself (one GameObject + this component
+/// per waypoint) and wire up which ones connect to which by dragging references into
+/// `connections` in the Inspector. This lets you build out a small, curated waypoint network
+/// for exactly the roads you're testing, instead of the whole map at once.
 ///
-/// IMPORTANT: objects created/edited while in Play Mode are lost when you stop Play - Unity
-/// doesn't save Play Mode changes to the scene. See RoadGraphBuilder's bake instructions for
-/// the safe workflow (bake in Play Mode, copy-paste the container out before stopping).
+/// A normal two-way road only needs you to link each waypoint to its neighbor ONE direction -
+/// the reverse edge is added automatically when the graph builds. (When one-way roads are
+/// added later, that's the point where a per-connection "oneWay" flag would skip the auto
+/// reverse edge.)
+[ExecuteAlways]
 public class RoadWaypointMarker : MonoBehaviour
 {
-    public Vector2Int cell;      // which grid cell this corresponds to - don't change this by hand
-    public bool isFootpath;      // true = footpath graph, false = road graph
+    [Tooltip("Auto-computed from this object's position - which grid cell it's sitting in. Informational/debugging only, not used for pathfinding (that's driven by `connections` below). You never need to type this in by hand.")]
+    public Vector2Int cell;
+
+    [Tooltip("true = footpath graph (pedestrians), false = road graph (vehicles).")]
+    public bool isFootpath;
+
+    [Tooltip("Drag other RoadWaypointMarker objects here that this one connects directly to.")]
+    public List<RoadWaypointMarker> connections = new List<RoadWaypointMarker>();
+
+    void Update()
+    {
+        if (Application.isPlaying) return; // position is fixed once you're playing - no need to keep recalculating
+        var grid = FindObjectOfType<GridManager>();
+        if (grid != null) cell = grid.WorldToGrid(transform.position);
+    }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = isFootpath ? new Color(0.2f, 0.8f, 1f) : Color.yellow;
         Gizmos.DrawSphere(transform.position, 0.15f);
+
+        Gizmos.color = Color.white;
+        foreach (var other in connections)
+            if (other != null) Gizmos.DrawLine(transform.position, other.transform.position);
     }
 }
