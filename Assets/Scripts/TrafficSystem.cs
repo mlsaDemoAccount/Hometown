@@ -78,6 +78,11 @@ public class TrafficSpawner : MonoBehaviour
         agent.laneOffset = laneOffset;
         agent.driveOnRight = driveOnRight;
 
+        // Apply vertical offset to the actual spawn position too - Instantiate's position
+        // argument above ignores anything set on the prefab, so this has to be corrected
+        // explicitly here rather than relying on the prefab's own transform.
+        go.transform.position = path[0].worldPosition + Vector3.up * agent.verticalOffset;
+
         var speedProfile = go.GetComponent<VehicleSpeedProfile>();
         agent.moveSpeed = speedProfile != null
             ? Random.Range(speedProfile.minSpeed, speedProfile.maxSpeed)
@@ -145,14 +150,6 @@ public class TrafficSpawner : MonoBehaviour
     }
 }
 
-/// Optional - attach to a specific vehicle prefab to give it its own speed range instead of
-/// using TrafficSpawner's global min/max (e.g. a truck slower than a sports car).
-public class VehicleSpeedProfile : MonoBehaviour
-{
-    public float minSpeed = 3f;
-    public float maxSpeed = 6f;
-}
-
 /// Moves a single vehicle along a road-graph path, offset sideways onto its correct lane so
 /// opposing traffic doesn't drive head-on down the centerline.
 /// NOTE: still no collision avoidance, intersection stopping, or traffic lights yet - those
@@ -161,6 +158,8 @@ public class TrafficAgent : MonoBehaviour
 {
     public float moveSpeed = 4f;
     public float rotationSpeed = 8f;
+    [Tooltip("Lifts the vehicle above the waypoint's height - tune this per prefab if the model's pivot isn't at its base/wheels (most common cause of a car appearing to sink into the road).")]
+    public float verticalOffset = 0f;
     [HideInInspector] public float laneOffset = 0.4f;
     [HideInInspector] public bool driveOnRight = true;
 
@@ -229,7 +228,7 @@ public class TrafficAgent : MonoBehaviour
             return;
         }
 
-        Vector3 target = waypoints[currentIndex];
+        Vector3 target = waypoints[currentIndex] + Vector3.up * verticalOffset;
         Vector3 toTarget = target - transform.position;
         toTarget.y = 0;
 
