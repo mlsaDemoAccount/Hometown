@@ -24,12 +24,18 @@ public class TrafficAgent : MonoBehaviour
     public float minFollowDistance = 1.2f;
     [Tooltip("How far in front of the vehicle's center the check ray starts - roughly your model's front bumper, so it doesn't detect its own collider.")]
     public float rayOriginForwardOffset = 0.6f;
+    [Tooltip("Vertical height of the check ray, relative to the vehicle's pivot - tune this so the ray actually crosses through other vehicles' colliders instead of passing over/under them.")]
+    public float rayHeightOffset = 0.3f;
+    [Tooltip("Draws the forward check ray in the Scene view while playing - green = clear, yellow = slowing down, red = stopped.")]
+    public bool showDebugRay = true;
 
     private List<Vector3> waypoints; // lane-offset positions, computed once from the raw node path
+    private List<RoadNode> currentNodePath; // kept around so we know where we ended up on arrival
     private int currentIndex = 0;
 
     public void SetPath(List<RoadNode> nodePath)
     {
+        currentNodePath = nodePath;
         waypoints = BuildLaneOffsetWaypoints(nodePath);
         currentIndex = 0;
     }
@@ -86,7 +92,7 @@ public class TrafficAgent : MonoBehaviour
     {
         if (waypoints == null || currentIndex >= waypoints.Count)
         {
-            Destroy(gameObject); // reached destination -> despawn (simple approach for now)
+            TryContinueToNewDestination();
             return;
         }
 
@@ -126,6 +132,34 @@ public class TrafficAgent : MonoBehaviour
         // right-of-way at crossings, so perpendicular traffic can still meet at an intersection.
     }
 
+    /// Called on arrival instead of despawning immediately. Asks TrafficSpawner for a new
+    /// destination from here; only actually despawns if that returns null (a dead end, or no
+    /// route found), which is now the rare case rather than happening on every arrival.
+    private void TryContinueToNewDestination()
+    {
+        RoadNode endNode = (currentNodePath != null && currentNodePath.Count > 0)
+            ? currentNodePath[currentNodePath.Count - 1]
+            : null;
+
+        // The node just before arrival - used to reject a continuation route that would
+        // immediately double back the way we came (see RequestContinuationPath).
+        RoadNode arrivedFromNode = (currentNodePath != null && currentNodePath.Count >= 2)
+            ? currentNodePath[currentNodePath.Count - 2]
+            : null;
+
+        var newPath = (endNode != null && TrafficSpawner.Instance != null)
+            ? TrafficSpawner.Instance.RequestContinuationPath(endNode, arrivedFromNode)
+            : null;
+
+        if (newPath == null || newPath.Count < 2)
+        {
+            Destroy(gameObject); // dead end reached, or no further route - "left the city"
+            return;
+        }
+
+        SetPath(newPath);
+    }
+
     /// Returns 0-1: how much of moveSpeed to actually use this frame, based on whether another
     /// vehicle is close ahead. 1 = full speed (nothing ahead), 0 = fully stopped (too close).
     /// Between minFollowDistance and lookAheadDistance, speed scales smoothly - this is what
@@ -133,18 +167,34 @@ public class TrafficAgent : MonoBehaviour
     /// instantly to zero at the same moment.
     private float GetSpeedMultiplierFromVehicleAhead(Vector3 moveDir)
     {
-        Vector3 rayOrigin = transform.position + moveDir * rayOriginForwardOffset + Vector3.up * 0.3f;
+        Vector3 rayOrigin = transform.position + moveDir * rayOriginForwardOffset + Vector3.up * rayHeightOffset;
+
+        float multiplier = 1f;
+        float debugRayLength = lookAheadDistance;
+        Color debugColor = Color.green;
 
         if (Physics.Raycast(rayOrigin, moveDir, out RaycastHit hit, lookAheadDistance, vehicleLayerMask))
         {
-            if (hit.collider.gameObject == gameObject) return 1f; // safety check, shouldn't happen given the forward offset
+            debugRayLength = hit.distance; // draw only up to the hit point, not the full lookAheadDistance
 
-            if (hit.distance <= minFollowDistance) return 0f;
-
-            float t = Mathf.InverseLerp(minFollowDistance, lookAheadDistance, hit.distance);
-            return Mathf.Clamp01(t);
+            if (hit.collider.gameObject != gameObject) // safety check, shouldn't hit self given the forward offset
+            {
+                if (hit.distance <= minFollowDistance)
+                {
+                    multiplier = 0f;
+                    debugColor = Color.red;
+                }
+                else
+                {
+                    multiplier = Mathf.Clamp01(Mathf.InverseLerp(minFollowDistance, lookAheadDistance, hit.distance));
+                    debugColor = Color.yellow;
+                }
+            }
         }
 
-        return 1f; // nothing ahead within range - full speed
+        if (showDebugRay)
+            Debug.DrawRay(rayOrigin, moveDir * debugRayLength, debugColor);
+
+        return multiplier;
     }
 }

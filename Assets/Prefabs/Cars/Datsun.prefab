@@ -310,6 +310,8 @@ MonoBehaviour:
   vehicleLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  lookAheadDistance: 3
-  minFollowDistance: 1.2
-  rayOriginForwardOffset: 0.6
+  lookAheadDistance: 0.3
+  minFollowDistance: 0.5
+  rayOriginForwardOffset: 0.14
+  rayHeightOffset: 0
+  showDebugRay: 1

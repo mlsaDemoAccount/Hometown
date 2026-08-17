@@ -24,6 +24,10 @@ public class TrafficSpawner : MonoBehaviour
     public float minSpeed = 3f;
     public float maxSpeed = 6f;
 
+    [Header("Spawn Safety")]
+    [Tooltip("Don't spawn if an existing vehicle is already this close to the spawn point - prevents new cars appearing on top of one already there.")]
+    public float spawnClearRadius = 1.5f;
+
     private List<TrafficAgent> activeVehicles = new List<TrafficAgent>();
     private float timer;
 
@@ -71,8 +75,20 @@ public class TrafficSpawner : MonoBehaviour
             return;
         }
 
+        if (!IsSpawnPointClear(path[0].worldPosition))
+            return; // another vehicle is already at/near the spawn point - try again next interval
+
+        // Face the direction of the first path segment, not a fixed world direction - otherwise
+        // every car spawns facing the same way regardless of the road's actual orientation and
+        // visibly snaps to the correct heading over the next few frames.
+        Vector3 initialDir = path[1].worldPosition - path[0].worldPosition;
+        initialDir.y = 0;
+        Quaternion initialRotation = initialDir.sqrMagnitude > 0.0001f
+            ? Quaternion.LookRotation(initialDir.normalized, Vector3.up)
+            : Quaternion.identity;
+
         var prefab = vehiclePrefabs[Random.Range(0, vehiclePrefabs.Length)];
-        var go = Instantiate(prefab, path[0].worldPosition, Quaternion.identity);
+        var go = Instantiate(prefab, path[0].worldPosition, initialRotation);
         var agent = go.GetComponent<TrafficAgent>();
         if (agent == null) agent = go.AddComponent<TrafficAgent>();
         agent.laneOffset = laneOffset;
@@ -90,6 +106,56 @@ public class TrafficSpawner : MonoBehaviour
 
         agent.SetPath(path);
         activeVehicles.Add(agent);
+    }
+
+    private bool IsSpawnPointClear(Vector3 spawnPos)
+    {
+        float sqrRadius = spawnClearRadius * spawnClearRadius;
+        foreach (var v in activeVehicles)
+        {
+            if (v == null) continue;
+            if ((v.transform.position - spawnPos).sqrMagnitude < sqrRadius) return false;
+        }
+        return true;
+    }
+
+    /// Called by a TrafficAgent when it arrives at its destination - picks a new one from the
+    /// same connected component instead of despawning, so cars keep driving indefinitely rather
+    /// than vanishing every time they arrive somewhere. Returns null if fromNode is a dead end
+    /// (map edge) or no suitable route could be found - the agent treats null as "time to
+    /// despawn," which now reads as "left the city" rather than "car disappeared mid-street."
+    ///
+    /// avoidFirstStepTo: the node the vehicle just arrived FROM. Explicitly avoids picking a new
+    /// route whose very first step goes straight back there - without this, a car would
+    /// sometimes spin 180 degrees in place right after arriving, which looks wrong and can
+    /// overlap traffic that was following behind it.
+    public List<RoadNode> RequestContinuationPath(RoadNode fromNode, RoadNode avoidFirstStepTo)
+    {
+        if (fromNode == null) return null;
+        if (fromNode.edges.Count == 1) return null; // dead end - let it despawn here, this is the rare "leaving the city" case
+
+        EnsureComponentsBuilt(RoadManager.Instance.RoadNodes);
+        var component = connectedComponents.Find(c => c.Contains(fromNode));
+        if (component == null || component.Count < 2) return null;
+
+        const int maxAttempts = 5;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            RoadNode newGoal = PickDifferentSpawnNodeInComponent(component, fromNode);
+            if (newGoal == fromNode) continue;
+
+            var path = RoadManager.Instance.FindPath(fromNode, newGoal);
+            if (path == null || path.Count < 2) continue;
+
+            // Reject if the very next step would backtrack to where we just came from.
+            if (avoidFirstStepTo != null && path[1] == avoidFirstStepTo) continue;
+
+            return path;
+        }
+
+        // Couldn't find a non-U-turn route after several tries (likely a dead-end-ish spur) -
+        // despawn instead of forcing a jarring in-place spin.
+        return null;
     }
 
     /// Groups the road graph into connected components via BFS, once. Cached for the rest of
