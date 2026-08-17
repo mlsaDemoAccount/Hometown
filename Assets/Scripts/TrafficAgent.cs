@@ -40,53 +40,9 @@ public class TrafficAgent : MonoBehaviour
         currentIndex = 0;
     }
 
-    /// Converts raw centerline node positions into lane-offset waypoints. For each segment
-    /// (node i -> node i+1), the direction of travel determines a perpendicular "right" vector;
-    /// the waypoint gets shifted sideways along that vector by laneOffset. A node shared by two
-    /// segments (a corner) uses the outgoing segment's direction, except the final node which
-    /// uses the incoming segment's - this gives a clean offset path with a small "kink" at
-    /// corners rather than a smooth curve, which is fine for now and easy to spline-smooth later.
-    private List<Vector3> BuildLaneOffsetWaypoints(List<RoadNode> nodePath)
-    {
-        var result = new List<Vector3>(nodePath.Count);
-        float sideSign = driveOnRight ? 1f : -1f;
-
-        for (int i = 0; i < nodePath.Count; i++)
-        {
-            Vector3 dir;
-
-            if (i == 0)
-            {
-                dir = nodePath[1].worldPosition - nodePath[0].worldPosition;
-            }
-            else if (i == nodePath.Count - 1)
-            {
-                dir = nodePath[i].worldPosition - nodePath[i - 1].worldPosition;
-            }
-            else
-            {
-                // Blend incoming and outgoing direction so the offset turns smoothly through a
-                // corner/intersection instead of snapping from one side-vector to a very
-                // different one - this is what was causing the "jogs left then suddenly right"
-                // glitch at intersections.
-                Vector3 incoming = (nodePath[i].worldPosition - nodePath[i - 1].worldPosition).normalized;
-                Vector3 outgoing = (nodePath[i + 1].worldPosition - nodePath[i].worldPosition).normalized;
-                dir = incoming + outgoing;
-                if (dir.sqrMagnitude < 0.0001f) dir = outgoing; // near-180 turn (rare on a grid) - fall back
-            }
-
-            dir.y = 0f;
-            if (dir.sqrMagnitude < 0.0001f) { result.Add(nodePath[i].worldPosition); continue; }
-            dir.Normalize();
-
-            // Cross(up, dir) points to the right of the direction of travel in Unity's
-            // left-handed, Y-up coordinate system.
-            Vector3 right = Vector3.Cross(Vector3.up, dir).normalized;
-            result.Add(nodePath[i].worldPosition + right * (laneOffset * sideSign));
-        }
-
-        return result;
-    }
+    /// Converts raw centerline node positions into lane-offset waypoints via the shared utility.
+    private List<Vector3> BuildLaneOffsetWaypoints(List<RoadNode> nodePath) =>
+        PathOffsetUtility.BuildOffsetWaypoints(nodePath, laneOffset, driveOnRight);
 
     void Update()
     {
