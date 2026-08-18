@@ -28,6 +28,13 @@ public class TrafficSpawner : MonoBehaviour
     [Tooltip("Don't spawn if an existing vehicle is already this close to the spawn point - prevents new cars appearing on top of one already there.")]
     public float spawnClearRadius = 1.5f;
 
+    [Header("Manual Spawn Points (optional)")]
+    [Tooltip("If assigned, a fraction of spawns will originate from these specific points instead of random dead-ends - useful for guaranteeing traffic reaches a specific area of a large city that random selection rarely visits.")]
+    public List<Transform> manualSpawnPoints = new List<Transform>();
+    [Range(0f, 1f)]
+    [Tooltip("Fraction of spawn attempts that use a manual point (when any are assigned) instead of normal random selection. 0.5 = about half.")]
+    public float manualSpawnChance = 0.5f;
+
     private List<TrafficAgent> activeVehicles = new List<TrafficAgent>();
     private float timer;
 
@@ -57,12 +64,33 @@ public class TrafficSpawner : MonoBehaviour
 
         EnsureComponentsBuilt(roadNodes);
 
-        // Only consider components with 2+ nodes - a lone isolated node can't have a route.
-        var validComponents = connectedComponents.FindAll(c => c.Count >= 2);
-        if (validComponents.Count == 0) return;
-        var component = validComponents[Random.Range(0, validComponents.Count)];
+        RoadNode start;
+        List<RoadNode> component;
 
-        RoadNode start = PickSpawnNodeInComponent(component);
+        bool useManualPoint = manualSpawnPoints != null && manualSpawnPoints.Count > 0 && Random.value < manualSpawnChance;
+        if (useManualPoint)
+        {
+            var point = manualSpawnPoints[Random.Range(0, manualSpawnPoints.Count)];
+            if (point == null) return;
+
+            start = NearestRoadNode(point.position);
+            component = start != null ? connectedComponents.Find(c => c.Contains(start)) : null;
+
+            if (start == null || component == null || component.Count < 2)
+            {
+                Debug.LogWarning($"[TrafficSpawner] Manual spawn point '{point.name}' has no reachable road waypoint nearby - this means there's no waypoint graph coverage there yet (place/connect RoadWaypointMarker objects in that area), not just a spawn-selection issue.");
+                return;
+            }
+        }
+        else
+        {
+            // Only consider components with 2+ nodes - a lone isolated node can't have a route.
+            var validComponents = connectedComponents.FindAll(c => c.Count >= 2);
+            if (validComponents.Count == 0) return;
+            component = validComponents[Random.Range(0, validComponents.Count)];
+            start = PickSpawnNodeInComponent(component);
+        }
+
         RoadNode goal = PickDifferentSpawnNodeInComponent(component, start);
         if (goal == start) return; // degenerate case - shouldn't normally happen given the component size check above
 
@@ -106,6 +134,20 @@ public class TrafficSpawner : MonoBehaviour
 
         agent.SetPath(path);
         activeVehicles.Add(agent);
+    }
+
+    /// Finds the closest road waypoint (by straight-line distance) to a world position - used
+    /// to resolve a manual spawn point Transform to an actual graph node.
+    private RoadNode NearestRoadNode(Vector3 worldPos)
+    {
+        RoadNode nearest = null;
+        float bestSqrDist = float.MaxValue;
+        foreach (var node in RoadManager.Instance.RoadNodes)
+        {
+            float d = (node.worldPosition - worldPos).sqrMagnitude;
+            if (d < bestSqrDist) { bestSqrDist = d; nearest = node; }
+        }
+        return nearest;
     }
 
     private bool IsSpawnPointClear(Vector3 spawnPos)
