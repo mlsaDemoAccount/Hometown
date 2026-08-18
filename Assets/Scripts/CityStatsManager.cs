@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-/// Aggregates Population / Jobs / Pollution / Happiness / Garbage across every placed building.
+/// Aggregates Population / Jobs / Pollution / CrimeRate / Traffic / Lifestyle across every placed building.
 public class CityStatsManager : MonoBehaviour
 {
     public static CityStatsManager Instance { get; private set; }
@@ -10,7 +10,6 @@ public class CityStatsManager : MonoBehaviour
     public float TotalPopulation { get; private set; }
     public float TotalJobs { get; private set; }
     public float TotalPollution { get; private set; }
-    public float TotalGarbage { get; private set; }
     public float TotalCrimeRate { get; private set; }
     public float TotalTraffic { get; private set; }
     public float TotalLifestyle { get; private set; }
@@ -39,15 +38,14 @@ public class CityStatsManager : MonoBehaviour
 
     public void RecalculateAll()
     {
-        TotalPopulation = TotalJobs = TotalPollution = TotalGarbage = TotalCrimeRate = TotalTraffic = TotalLifestyle = 0f;
+        TotalPopulation = TotalJobs = TotalPollution = TotalCrimeRate = TotalTraffic = TotalLifestyle = 0f;
 
         foreach (var b in allBuildings)
         {
-            var (pop, jobs, pollution, garbage, crimeRate, traffic, lifestyle) = b.GetStats();
+            var (pop, jobs, pollution, crimeRate, traffic, lifestyle) = b.GetStats();
             TotalPopulation += pop;
             TotalJobs += jobs;
             TotalPollution += pollution;
-            TotalGarbage += garbage;
             TotalCrimeRate += crimeRate;
             TotalTraffic += traffic;
             TotalLifestyle += lifestyle;

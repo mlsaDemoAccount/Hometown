@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6277198906226581633}
   - component: {fileID: 6773645805643895958}
   - component: {fileID: 8116496408607698886}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Hatchback Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 7972778156774833157}
   - component: {fileID: 2652961085093566175}
   - component: {fileID: 5654724840432696598}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_B_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,7 +195,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2663878396406917765}
-  m_Layer: 0
+  - component: {fileID: 7912693619800790679}
+  - component: {fileID: 599415663465760125}
+  - component: {fileID: -8939916577698620918}
+  m_Layer: 9
   m_Name: Car_ (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,12 +215,72 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6277198906226581633}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7912693619800790679
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100880993906367625}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.7605052, y: 0.8772448, z: 4.3998528}
+  m_Center: {x: -0.013984367, y: 0.6871154, z: 0.016028248}
+--- !u!114 &599415663465760125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100880993906367625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e5d52d08a61f4cbaab4731ffb27286e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleSpeedProfile
+  minSpeed: 0.4
+  maxSpeed: 1
+--- !u!114 &-8939916577698620918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100880993906367625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a71eef11011342bb88eaa45f9badcf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrafficAgent
+  moveSpeed: 4
+  rotationSpeed: 8
+  verticalOffset: 0.017
+  laneOffset: 0.4
+  driveOnRight: 1
+  vehicleLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  lookAheadDistance: 0.3
+  minFollowDistance: 0.5
+  rayOriginForwardOffset: 0.14
+  rayHeightOffset: 0.05
+  showDebugRay: 1
 --- !u!1 &5913056835708821508
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,7 +292,7 @@ GameObject:
   - component: {fileID: 2824453894704252211}
   - component: {fileID: 8023270117317472966}
   - component: {fileID: 3134140592360490306}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_F_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +382,7 @@ GameObject:
   - component: {fileID: 4353799072545824996}
   - component: {fileID: 1776736453000905168}
   - component: {fileID: 1655935150073659845}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_B_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +472,7 @@ GameObject:
   - component: {fileID: 2230519953106059537}
   - component: {fileID: 5928494250119266577}
   - component: {fileID: 1925015243530570532}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_F_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 36f7f965d381742a08f80a95a90655c3, type: 3}
-  m_Name: Apartment 2
+  m_Name: Cone
   m_EditorClassIdentifier: Assembly-CSharp::BuildingData
-  buildingId: apartment
-  displayName: Apartment
+  buildingId: cone
+  displayName: Cone
   icon: {fileID: 0}
-  primaryCategory: 0
-  footprintSize: {x: 5, y: 5}
-  placementCost: 400
-  requiresFootpathAdjacency: 1
-  autoScaleToFootprint: 1
+  primaryCategory: 5
+  footprintSize: {x: 1, y: 1}
+  placementCost: 100
+  requiresFootpathAdjacency: 0
+  autoScaleToFootprint: 0
   levels:
-  - level: 0
-    visualPrefab: {fileID: 6893710804190749707, guid: 8906d7522f2c543b0a76cee849b4c80f, type: 3}
+  - level: 1
+    visualPrefab: {fileID: 6893710804190749707, guid: f04b1ba7d9ae941a1978e5eba501de3d, type: 3}
     upgradeCost: 0
-    populationOutput: 200
+    populationOutput: 0
     jobsOutput: 0
-    pollutionOutput: 40
-    garbageOutput: 40
-    crimeRateOutput: 4
-    trafficOutput: 4
-    lifestyleOutput: 40
+    pollutionOutput: 0
+    garbageOutput: 0
+    crimeRateOutput: 0
+    trafficOutput: 0
+    lifestyleOutput: 10

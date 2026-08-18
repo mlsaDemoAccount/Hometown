@@ -53,11 +53,11 @@ public class BuildingInstance : MonoBehaviour
     }
 
     /// Current stat contribution based on upgrade level.
-    public (float pop, float jobs, float pollution, float garbage, float crimeRate, float traffic, float lifestyle) GetStats()
+    public (float pop, float jobs, float pollution, float crimeRate, float traffic, float lifestyle) GetStats()
     {
         var lvl = data.GetLevel(currentLevelIndex);
-        if (lvl == null) return (0, 0, 0, 0, 0, 0, 0);
-        return (lvl.populationOutput, lvl.jobsOutput, lvl.pollutionOutput, lvl.garbageOutput,
+        if (lvl == null) return (0, 0, 0, 0, 0, 0);
+        return (lvl.populationOutput, lvl.jobsOutput, lvl.pollutionOutput,
                 lvl.crimeRateOutput, lvl.trafficOutput, lvl.lifestyleOutput);
     }
 

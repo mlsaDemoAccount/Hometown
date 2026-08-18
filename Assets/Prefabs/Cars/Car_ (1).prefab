@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4525241864394883318}
   - component: {fileID: 7668094650327038848}
   - component: {fileID: 5863184231421030483}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_B_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6486801903980740271}
-  m_Layer: 0
+  - component: {fileID: 7465817863886482751}
+  - component: {fileID: -8583656740553835526}
+  - component: {fileID: -7268076322810376099}
+  m_Layer: 9
   m_Name: Car_ (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,12 +119,72 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3695266887838516583}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7465817863886482751
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2995854341368982185}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.7793752, y: 0.80731547, z: 4.739519}
+  m_Center: {x: -0.0045493245, y: 0.7570451, z: -0.07832228}
+--- !u!114 &-8583656740553835526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2995854341368982185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e5d52d08a61f4cbaab4731ffb27286e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleSpeedProfile
+  minSpeed: 0.4
+  maxSpeed: 1
+--- !u!114 &-7268076322810376099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2995854341368982185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a71eef11011342bb88eaa45f9badcf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrafficAgent
+  moveSpeed: 4
+  rotationSpeed: 8
+  verticalOffset: 0.017
+  laneOffset: 0.4
+  driveOnRight: 1
+  vehicleLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  lookAheadDistance: 0.3
+  minFollowDistance: 0.5
+  rayOriginForwardOffset: 0.14
+  rayHeightOffset: 0.05
+  showDebugRay: 1
 --- !u!1 &4428701665230963926
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +196,7 @@ GameObject:
   - component: {fileID: 3695266887838516583}
   - component: {fileID: 7296565148809658450}
   - component: {fileID: 9024093375657552928}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wagon Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -229,7 +292,7 @@ GameObject:
   - component: {fileID: 7476086873360455397}
   - component: {fileID: 2408627173704108831}
   - component: {fileID: 5256598737954176054}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_F_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +382,7 @@ GameObject:
   - component: {fileID: 5162619593455823908}
   - component: {fileID: 5683327119376036934}
   - component: {fileID: 2409846827641385005}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_F_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +472,7 @@ GameObject:
   - component: {fileID: 3745944246728132865}
   - component: {fileID: 882253080337975811}
   - component: {fileID: 6810586491070510212}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wheel_B_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}

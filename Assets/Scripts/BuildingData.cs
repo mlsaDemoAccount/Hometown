@@ -1,12 +1,12 @@
 using UnityEngine;
 
-// The 7 stat categories every building contributes to (positively or negatively).
+// The 6 stat categories every building contributes to (positively or negatively).
+// Garbage has been merged into Pollution - use Pollution for both going forward.
 public enum BuildingCategory
 {
     Population,
     Jobs,
     Pollution,
-    Garbage,
     CrimeRate,
     Traffic,
     Lifestyle
@@ -21,7 +21,6 @@ public class BuildingUpgradeLevel
     public float populationOutput;
     public float jobsOutput;
     public float pollutionOutput;
-    public float garbageOutput;
     public float crimeRateOutput;
     public float trafficOutput;
     public float lifestyleOutput;
