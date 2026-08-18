@@ -23,6 +23,10 @@ public class RoadWaypointMarker : MonoBehaviour
     [Tooltip("Drag other RoadWaypointMarker objects here that this one connects directly to.")]
     public List<RoadWaypointMarker> connections = new List<RoadWaypointMarker>();
 
+    [Header("Debug")]
+    [Tooltip("Shows this waypoint (yellow = road, cyan = footpath) and its connections in the Scene view. Purely visual - turning this off doesn't change any functionality, just hides the gizmo.")]
+    public bool showDebugGizmo = true;
+
     void Update()
     {
         if (Application.isPlaying) return; // position is fixed once you're playing - no need to keep recalculating
@@ -32,6 +36,8 @@ public class RoadWaypointMarker : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!showDebugGizmo) return;
+
         Gizmos.color = isFootpath ? new Color(0.2f, 0.8f, 1f) : Color.yellow;
         Gizmos.DrawSphere(transform.position, 0.15f);
 

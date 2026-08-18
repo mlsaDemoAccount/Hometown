@@ -112,8 +112,13 @@ public class RoadGraphBuilder : MonoBehaviour
 
     // ---------- Visualization ----------
 
+    [Header("Debug")]
+    [Tooltip("Draws the built graph (nodes + edges) in the Scene view during Play mode. Usually redundant with each RoadWaypointMarker's own gizmo - turn on only if you specifically want to see the FINAL built graph (e.g. to confirm connections resolved correctly), not just where markers are placed.")]
+    public bool showBuiltGraphGizmo = false;
+
     private void OnDrawGizmos()
     {
+        if (!showBuiltGraphGizmo) return;
         if (RoadManager.Instance == null) return;
         DrawGraphGizmos(RoadManager.Instance.RoadNodes, Color.yellow);
         DrawGraphGizmos(RoadManager.Instance.FootpathNodes, new Color(0.2f, 0.8f, 1f));
