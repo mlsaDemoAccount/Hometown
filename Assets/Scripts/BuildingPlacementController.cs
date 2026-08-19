@@ -10,12 +10,25 @@ public class BuildingPlacementController : MonoBehaviour
 
     public Camera mainCamera;
     public LayerMask groundLayerMask;
-    public Material ghostValidMaterial;
     public Material ghostInvalidMaterial;
+    [Range(0.1f, 1f)]
+    [Tooltip("Opacity of the building's own materials when the ghost is on a valid position.")]
+    public float ghostValidAlpha = 0.5f;
+    [Header("Ground Indicator Sprite (centralized - not per-building)")]
+    public Sprite indicatorValidSprite;
+    public Sprite indicatorInvalidSprite;
     public PlacementControlPanel controlPanel; // assign in Inspector - the Done/Cancel panel
 
     private bool lastGhostValid = false;
     public bool IsCurrentGhostValid() => lastGhostValid;
+
+    // Ghost material state - caches each renderer's real materials (all slots, including
+    // multi-material meshes) so they can be restored transparently on a valid position, and
+    // avoids recreating transparent material instances every frame when nothing has changed.
+    private Dictionary<Renderer, Material[]> ghostOriginalMaterials = new Dictionary<Renderer, Material[]>();
+    private List<Material> ghostTransparentInstances = new List<Material>();
+    private bool? lastAppliedGhostState = null;
+    private GhostBaseIndicator ghostBaseIndicator; // base decal sprite, handled separately from the generic material loop
 
     private enum Mode { None, Placing, Moving, Demolishing }
     private Mode currentMode = Mode.None;
@@ -29,6 +42,7 @@ public class BuildingPlacementController : MonoBehaviour
     private BuildingData selectedBuildingData; // from shop
     private GameObject ghostObject;
     private Vector2Int lastGhostCell;
+    private int ghostRotationSteps = 0; // 0-3, each step = 90 degrees clockwise
 
     private BuildingInstance movingInstance; // set when repositioning an existing building
     private int nextInstanceId = 0;
@@ -61,6 +75,7 @@ public class BuildingPlacementController : MonoBehaviour
         CancelCurrentAction();
         selectedBuildingData = data;
         currentMode = Mode.Placing;
+        ghostRotationSteps = 0; // fresh placement always starts unrotated
         SpawnGhost(data.levels[0].visualPrefab, data);
         controlPanel?.Show(); // show immediately - must not depend on anything that could throw below
 
@@ -73,9 +88,10 @@ public class BuildingPlacementController : MonoBehaviour
             if (Physics.Raycast(centerRay, out RaycastHit hit, 500f, groundLayerMask))
             {
                 Vector2Int cell = GridManager.Instance.WorldToGrid(hit.point);
+                Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(data.footprintSize, ghostRotationSteps);
                 lastGhostCell = cell;
-                lastGhostValid = GridManager.Instance.CanPlaceFootprint(cell, data.footprintSize) && PassesRoadCheck(cell);
-                ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, data.footprintSize);
+                lastGhostValid = GridManager.Instance.CanPlaceFootprint(cell, effectiveSize) && PassesRoadCheck(cell, effectiveSize);
+                ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize);
                 SetGhostMaterial(lastGhostValid);
             }
         }
@@ -87,16 +103,19 @@ public class BuildingPlacementController : MonoBehaviour
         movingInstance = instance;
         selectedBuildingData = instance.data;
         currentMode = Mode.Moving;
+        ghostRotationSteps = instance.rotationSteps; // start the ghost matching its current orientation
 
         Vector2Int origin = instance.gridOrigin;
+        Vector2Int existingEffectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
         // Free the old footprint immediately so the ghost can preview over it.
-        GridManager.Instance.ClearFootprint(origin, instance.data.footprintSize);
+        GridManager.Instance.ClearFootprint(origin, existingEffectiveSize);
         SpawnGhost(instance.data.GetLevel(instance.currentLevelIndex).visualPrefab, instance.data);
+        ghostObject.transform.rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
 
         // Start the ghost exactly where the building already is, not at world origin.
-        ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(origin, instance.data.footprintSize);
+        ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(origin, existingEffectiveSize);
         lastGhostCell = origin;
-        lastGhostValid = GridManager.Instance.CanPlaceFootprint(origin, instance.data.footprintSize);
+        lastGhostValid = GridManager.Instance.CanPlaceFootprint(origin, existingEffectiveSize);
         SetGhostMaterial(lastGhostValid);
 
         instance.gameObject.SetActive(false);
@@ -113,13 +132,15 @@ public class BuildingPlacementController : MonoBehaviour
     {
         if (movingInstance != null)
         {
-            // put it back where it was if cancelled
-            GridManager.Instance.SetFootprint(movingInstance.gridOrigin, movingInstance.data.footprintSize,
+            // put it back where it was if cancelled - use its EXISTING rotation's effective
+            // size, not the raw footprint, in case it was already rotated before this move began.
+            Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(movingInstance.data.footprintSize, movingInstance.rotationSteps);
+            GridManager.Instance.SetFootprint(movingInstance.gridOrigin, effectiveSize,
                 GridManager.CellType.Building, movingInstance.instanceId);
             movingInstance.gameObject.SetActive(true);
             movingInstance = null;
         }
-        if (ghostObject != null) Destroy(ghostObject);
+        if (ghostObject != null) { ClearGhostMaterialState(); Destroy(ghostObject); }
         selectedBuildingData = null;
         currentMode = Mode.None;
         controlPanel?.Hide();
@@ -144,7 +165,40 @@ public class BuildingPlacementController : MonoBehaviour
         ghostObject = Instantiate(prefab);
         ghostObject.transform.SetParent(null, true); // force to scene root, ignore any inherited context
         ApplyFootprintScale(ghostObject, data);
+
+        CacheOriginalMaterials(ghostObject);
+        lastAppliedGhostState = null; // force the first SetGhostMaterial call to actually apply
         SetGhostMaterial(false);
+    }
+
+    /// Records each renderer's real materials (every slot, including multi-material meshes)
+    /// before any ghost tinting happens - this is what gets restored (transparently) when the
+    /// ghost is on a valid position, instead of a flat placeholder color. Excludes the base
+    /// indicator sprite (if present) - that gets dedicated handling via GhostBaseIndicator.
+    private void CacheOriginalMaterials(GameObject obj)
+    {
+        ghostOriginalMaterials.Clear();
+
+        ghostBaseIndicator = obj.GetComponentInChildren<GhostBaseIndicator>();
+        Renderer indicatorRenderer = ghostBaseIndicator != null ? ghostBaseIndicator.spriteRenderer : null;
+
+        foreach (var r in obj.GetComponentsInChildren<Renderer>())
+        {
+            if (r == indicatorRenderer) continue; // handled separately, not via the generic transparency system
+            ghostOriginalMaterials[r] = r.materials; // .materials already returns per-instance copies
+        }
+    }
+
+    /// Destroys any transparent material instances created for the current ghost - call before
+    /// discarding the ghost object entirely, since these are plain C# objects that don't get
+    /// cleaned up automatically just because the Renderer referencing them was destroyed.
+    private void ClearGhostMaterialState()
+    {
+        foreach (var m in ghostTransparentInstances) if (m != null) Destroy(m);
+        ghostTransparentInstances.Clear();
+        ghostOriginalMaterials.Clear();
+        ghostBaseIndicator = null;
+        lastAppliedGhostState = null;
     }
 
     private void HandlePlacingOrMoving(Vector2 screenPos)
@@ -152,13 +206,14 @@ public class BuildingPlacementController : MonoBehaviour
         if (!RaycastGround(screenPos, out Vector3 worldPoint)) return;
 
         Vector2Int cell = GridManager.Instance.WorldToGrid(worldPoint);
-        bool canPlace = GridManager.Instance.CanPlaceFootprint(cell, selectedBuildingData.footprintSize)
-            && PassesRoadCheck(cell);
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(selectedBuildingData.footprintSize, ghostRotationSteps);
+        bool canPlace = GridManager.Instance.CanPlaceFootprint(cell, effectiveSize)
+            && PassesRoadCheck(cell, effectiveSize);
 
         if (cell != lastGhostCell)
         {
             lastGhostCell = cell;
-            ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, selectedBuildingData.footprintSize);
+            ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize);
         }
         lastGhostValid = canPlace;
         SetGhostMaterial(canPlace);
@@ -177,6 +232,23 @@ public class BuildingPlacementController : MonoBehaviour
         ConfirmPlacement(lastGhostCell);
     }
 
+    /// Rotates the current ghost 90 degrees clockwise. Call from a Rotate button during
+    /// placement or move. Re-validates the position and re-centers the ghost, since a
+    /// non-square footprint's effective width/depth swaps on a 90/270 degree rotation.
+    public void RotateGhost()
+    {
+        if (ghostObject == null || selectedBuildingData == null) return;
+
+        ghostRotationSteps = (ghostRotationSteps + 1) % 4;
+        ghostObject.transform.rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
+
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(selectedBuildingData.footprintSize, ghostRotationSteps);
+        bool canPlace = GridManager.Instance.CanPlaceFootprint(lastGhostCell, effectiveSize) && PassesRoadCheck(lastGhostCell, effectiveSize);
+        lastGhostValid = canPlace;
+        ghostObject.transform.position = GridManager.Instance.FootprintCenterToWorld(lastGhostCell, effectiveSize);
+        SetGhostMaterial(canPlace);
+    }
+
     private void ConfirmPlacement(Vector2Int cell)
     {
         if (currentMode == Mode.Placing)
@@ -184,29 +256,48 @@ public class BuildingPlacementController : MonoBehaviour
             if (!EconomyManager.Instance.TrySpend(selectedBuildingData.placementCost))
                 return; // not enough funds - stay in placing mode
 
+            Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(selectedBuildingData.footprintSize, ghostRotationSteps);
+            Quaternion rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
+
             GameObject obj = Instantiate(selectedBuildingData.levels[0].visualPrefab,
-                GridManager.Instance.FootprintCenterToWorld(cell, selectedBuildingData.footprintSize), Quaternion.identity);
+                GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
             obj.transform.SetParent(null, true); // force to scene root
             ApplyFootprintScale(obj, selectedBuildingData);
+            DisableIndicatorOnRealBuilding(obj); // indicator sprite is only for the ghost preview
             var instance = obj.AddComponent<BuildingInstance>();
             int id = nextInstanceId++;
             instance.Initialize(selectedBuildingData, cell, id);
+            instance.rotationSteps = ghostRotationSteps;
             instances[id] = instance;
-            GridManager.Instance.SetFootprint(cell, selectedBuildingData.footprintSize, GridManager.CellType.Building, id);
+            GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, id);
         }
         else if (currentMode == Mode.Moving)
         {
-            movingInstance.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, movingInstance.data.footprintSize);
+            Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(movingInstance.data.footprintSize, ghostRotationSteps);
+            movingInstance.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize);
+            movingInstance.transform.rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
             movingInstance.gridOrigin = cell;
+            movingInstance.rotationSteps = ghostRotationSteps;
             movingInstance.gameObject.SetActive(true);
-            GridManager.Instance.SetFootprint(cell, movingInstance.data.footprintSize, GridManager.CellType.Building, movingInstance.instanceId);
+            DisableIndicatorOnRealBuilding(movingInstance.gameObject); // defensive - should already be disabled from original placement
+            GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, movingInstance.instanceId);
             movingInstance = null;
         }
 
+        ClearGhostMaterialState();
         Destroy(ghostObject);
         selectedBuildingData = null;
         currentMode = Mode.None;
         controlPanel?.Hide();
+    }
+
+    /// Disables the base indicator sprite on a REAL, placed building - it's part of the prefab
+    /// so it comes along automatically when instantiated, but should only ever be visible on
+    /// the ghost preview, not on a building that's actually been placed.
+    private void DisableIndicatorOnRealBuilding(GameObject obj)
+    {
+        var indicator = obj.GetComponentInChildren<GhostBaseIndicator>();
+        if (indicator != null) indicator.gameObject.SetActive(false);
     }
 
     private void HandleDemolishTap(Vector2 screenPos)
@@ -222,7 +313,8 @@ public class BuildingPlacementController : MonoBehaviour
             int id = GridManager.Instance.GetOccupant(cell);
             if (instances.TryGetValue(id, out var instance))
             {
-                GridManager.Instance.ClearFootprint(instance.gridOrigin, instance.data.footprintSize);
+                Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
+                GridManager.Instance.ClearFootprint(instance.gridOrigin, effectiveSize);
                 EconomyManager.Instance.RefundDemolish(instance.data.placementCost);
                 instances.Remove(id);
                 Destroy(instance.gameObject);
@@ -246,7 +338,8 @@ public class BuildingPlacementController : MonoBehaviour
     public void DemolishInstance(BuildingInstance instance)
     {
         if (instance == null) return;
-        GridManager.Instance.ClearFootprint(instance.gridOrigin, instance.data.footprintSize);
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
+        GridManager.Instance.ClearFootprint(instance.gridOrigin, effectiveSize);
         EconomyManager.Instance.RefundDemolish(instance.data.placementCost);
         instances.Remove(instance.instanceId);
         BuildingSelectionController.Instance?.Deselect();
@@ -255,20 +348,58 @@ public class BuildingPlacementController : MonoBehaviour
 
     private void SetGhostMaterial(bool valid)
     {
-        var mat = valid ? ghostValidMaterial : ghostInvalidMaterial;
-        foreach (var r in ghostObject.GetComponentsInChildren<Renderer>())
-            r.material = mat;
+        if (lastAppliedGhostState == valid) return; // nothing changed - avoid recreating material instances every frame
+        lastAppliedGhostState = valid;
+
+        ghostBaseIndicator?.SetValid(valid, indicatorValidSprite, indicatorInvalidSprite);
+
+        // Discard any transparent instances from a previous valid-state application before
+        // creating new ones - these are plain objects, not cleaned up automatically.
+        foreach (var m in ghostTransparentInstances) if (m != null) Destroy(m);
+        ghostTransparentInstances.Clear();
+
+        foreach (var kvp in ghostOriginalMaterials)
+        {
+            var renderer = kvp.Key;
+            var originalMats = kvp.Value;
+            if (renderer == null) continue;
+
+            if (!valid)
+            {
+                // Fill EVERY material slot with the invalid material - a renderer.material
+                // (singular) assignment only ever touches slot 0, silently leaving any other
+                // slots on a multi-material mesh showing their real material underneath.
+                var invalidMats = new Material[originalMats.Length];
+                for (int i = 0; i < invalidMats.Length; i++) invalidMats[i] = ghostInvalidMaterial;
+                renderer.materials = invalidMats;
+            }
+            else
+            {
+                // Valid: restore the building's OWN materials, per slot, at reduced opacity -
+                // works for any building since it's driven entirely by whatever this specific
+                // ghost's renderers actually have, not a hardcoded material.
+                var transparentMats = new Material[originalMats.Length];
+                for (int i = 0; i < transparentMats.Length; i++)
+                {
+                    var t = GhostMaterialUtility.MakeTransparentInstance(originalMats[i], ghostValidAlpha);
+                    transparentMats[i] = t;
+                    ghostTransparentInstances.Add(t);
+                }
+                renderer.materials = transparentMats;
+            }
+        }
     }
 
     /// Returns true if the building doesn't require footpath adjacency, OR RoadManager isn't in
     /// the scene yet (so you can test placement before the road/footpath system exists), OR the
     /// footpath check passes. Checks footpath, not road - buildings connect to the sidewalk,
-    /// not the vehicle lane, since the two run parallel to each other.
-    private bool PassesRoadCheck(Vector2Int cell)
+    /// not the vehicle lane, since the two run parallel to each other. Takes the EFFECTIVE
+    /// (possibly rotated) footprint size, not the raw one, so rotation is checked correctly.
+    private bool PassesRoadCheck(Vector2Int cell, Vector2Int effectiveFootprintSize)
     {
         if (!selectedBuildingData.requiresFootpathAdjacency) return true;
         if (RoadManager.Instance == null) return true; // road/footpath not implemented yet - don't block placement
-        return RoadManager.Instance.IsAdjacentToFootpath(cell, selectedBuildingData.footprintSize);
+        return RoadManager.Instance.IsAdjacentToFootpath(cell, effectiveFootprintSize);
     }
 
     private bool RaycastGround(Vector2 screenPos, out Vector3 worldPoint)

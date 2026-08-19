@@ -18,7 +18,11 @@ public class SelectionBobEffect : MonoBehaviour
     void Update()
     {
         Vector3 pos = transform.position;
-        pos.y = baseY + Mathf.Sin(Time.time * bobSpeed) * bobHeight;
+        // Remapped from Mathf.Sin's normal -1..1 range to 0..1, so the building only ever
+        // lifts UP from baseY and back down to it - never below, which was sinking it into
+        // the ground on the downward half of a normal sine wave.
+        float bobT = (Mathf.Sin(Time.time * bobSpeed) + 1f) * 0.5f;
+        pos.y = baseY + bobT * bobHeight;
         transform.position = pos;
     }
 

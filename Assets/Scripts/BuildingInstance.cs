@@ -7,8 +7,18 @@ public class BuildingInstance : MonoBehaviour
     public BuildingData data;
     public Vector2Int gridOrigin;      // bottom-left cell of footprint
     public int currentLevelIndex = 0;
+    public int rotationSteps = 0;      // 0-3, each step = 90 degrees clockwise
 
     private GameObject currentVisual;
+
+    /// Swaps footprint width/height when rotated 90 or 270 degrees - a 3x4 footprint occupies
+    /// a 4x3 area in grid space once rotated a quarter turn. Static so BuildingPlacementController
+    /// can use the same logic for the ghost, before an actual BuildingInstance even exists.
+    public static Vector2Int GetRotatedFootprint(Vector2Int size, int rotationSteps)
+    {
+        bool swapped = (rotationSteps % 2) != 0; // 1 or 3 = 90/270 degrees
+        return swapped ? new Vector2Int(size.y, size.x) : size;
+    }
 
     public void Initialize(BuildingData buildingData, Vector2Int origin, int id)
     {

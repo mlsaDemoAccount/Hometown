@@ -9,6 +9,7 @@ public class PlacementControlPanel : MonoBehaviour
     public GameObject panelRoot; // can be this.gameObject
     public Button doneButton;
     public Button cancelButton;
+    public Button rotateButton; // optional - assign if you have a rotate button in this panel
 
     void Awake()
     {
@@ -16,6 +17,7 @@ public class PlacementControlPanel : MonoBehaviour
 
         doneButton.onClick.AddListener(OnDoneClicked);
         cancelButton.onClick.AddListener(OnCancelClicked);
+        if (rotateButton != null) rotateButton.onClick.AddListener(OnRotateClicked);
 
         // IMPORTANT: do NOT call Hide() here. If panelRoot starts inactive in the scene
         // (as it should - see setup notes), Awake() only runs the moment it's FIRST activated.
@@ -48,5 +50,10 @@ public class PlacementControlPanel : MonoBehaviour
     private void OnCancelClicked()
     {
         BuildingPlacementController.Instance.CancelCurrentAction();
+    }
+
+    private void OnRotateClicked()
+    {
+        BuildingPlacementController.Instance.RotateGhost();
     }
 }
