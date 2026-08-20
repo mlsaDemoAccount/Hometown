@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -34,11 +46,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -48,9 +60,49 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -6036239891180817152, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.0055465833
+      objectReference: {fileID: 0}
+    - target: {fileID: -6036239891180817152, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.0055465833
+      objectReference: {fileID: 0}
+    - target: {fileID: -6036239891180817152, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.0055465833
+      objectReference: {fileID: 0}
+    - target: {fileID: -6036239891180817152, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.002
+      objectReference: {fileID: 0}
+    - target: {fileID: -6036239891180817152, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.273
+      objectReference: {fileID: 0}
+    - target: {fileID: -6036239891180817152, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
       propertyPath: m_Name
       value: police station
+      objectReference: {fileID: 0}
+    - target: {fileID: 1370186828733160785, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.4348
+      objectReference: {fileID: 0}
+    - target: {fileID: 1370186828733160785, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0626
+      objectReference: {fileID: 0}
+    - target: {fileID: 1370186828733160785, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.1354
       objectReference: {fileID: 0}
     - target: {fileID: 8430697269911947539, guid: cd9d7fddbff41cd4e82fd18e1ed4dfc9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
