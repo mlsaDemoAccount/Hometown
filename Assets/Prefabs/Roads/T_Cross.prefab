@@ -182,7 +182,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8600199520546826281, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -254,19 +254,38 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4996998011104195413, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
+      propertyPath: connections.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4996998011104195413, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 172987428787155397}
     - target: {fileID: 8600199520546826281, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
       propertyPath: m_Name
       value: Waypoint_footpath
       objectReference: {fileID: 0}
     - target: {fileID: 8600199520546826281, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
+--- !u!114 &172987428787155397 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4996998011104195413, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
+  m_PrefabInstance: {fileID: 5133668242153636496}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!4 &4714611195649150782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 455952037586849198, guid: 3d799a9bea015425cbb58e2ac1ec8261, type: 3}
