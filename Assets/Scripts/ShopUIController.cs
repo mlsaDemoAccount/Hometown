@@ -17,6 +17,19 @@ public class ShopUIController : MonoBehaviour
     public GameObject tabButtonPrefab;    // prefab with CategoryTabButton component
     public bool includeAllTab = true;     // shows an "All" tab alongside the category ones
 
+    [System.Serializable]
+    public class CategoryIconSet
+    {
+        public BuildingCategory category;
+        public Sprite selectedIcon;
+        public Sprite unselectedIcon;
+    }
+
+    [Header("Category Tab Icons")]
+    public Sprite allTabSelectedIcon;
+    public Sprite allTabUnselectedIcon;
+    public List<CategoryIconSet> categoryIcons = new List<CategoryIconSet>();
+
     [Header("Item List")]
     public Transform itemListParent;      // Content of a ScrollView
     public GameObject shopItemButtonPrefab; // prefab with ShopItemButton component
@@ -71,13 +84,30 @@ public class ShopUIController : MonoBehaviour
             activeFilter = defaultFilter;
             SetActiveTab(defaultTab);
         }
+
+        if (tabParent is RectTransform tabParentRect)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(tabParentRect);
     }
 
     private CategoryTabButton CreateTab(string label, BuildingCategory? category)
     {
         var go = Instantiate(tabButtonPrefab, tabParent);
         var tab = go.GetComponent<CategoryTabButton>();
-        tab.Setup(label, category);
+
+        Sprite selectedIcon, unselectedIcon;
+        if (category == null)
+        {
+            selectedIcon = allTabSelectedIcon;
+            unselectedIcon = allTabUnselectedIcon;
+        }
+        else
+        {
+            var iconSet = categoryIcons.Find(c => c.category == category.Value);
+            selectedIcon = iconSet != null ? iconSet.selectedIcon : null;
+            unselectedIcon = iconSet != null ? iconSet.unselectedIcon : null;
+        }
+
+        tab.Setup(label, category, selectedIcon, unselectedIcon);
         tabButtons.Add(tab);
         return tab;
     }
@@ -110,6 +140,13 @@ public class ShopUIController : MonoBehaviour
             var item = go.GetComponent<ShopItemButton>();
             item.Setup(building);
         }
+
+        // Content Size Fitter doesn't recalculate automatically for runtime-instantiated
+        // children until Unity's next deferred layout pass - forcing it immediately here is
+        // what makes newly-spawned items actually show up this frame instead of sitting
+        // invisible inside a zero-sized Content rect (clipped by the ScrollView's Viewport mask).
+        if (itemListParent is RectTransform itemListRect)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(itemListRect);
     }
 
     /// Called directly by a ShopItemButton when tapped.
