@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36f7f965d381742a08f80a95a90655c3, type: 3}
+  m_Name: Barrel
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingData
+  buildingId: barrel
+  displayName: Barrel
+  icon: {fileID: 0}
+  primaryCategory: 5
+  footprintSize: {x: 1, y: 1}
+  placementCost: 30
+  requiresFootpathAdjacency: 0
+  autoScaleToFootprint: 0
+  levels:
+  - level: 1
+    visualPrefab: {fileID: 6893710804190749707, guid: 615ae3b92127748ebb307c9005701aef, type: 3}
+    upgradeCost: 0
+    populationOutput: 0
+    jobsOutput: 0
+    pollutionOutput: -40
+    crimeRateOutput: -10
+    trafficOutput: 0
+    lifestyleOutput: 20

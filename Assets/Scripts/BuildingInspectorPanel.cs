@@ -43,7 +43,7 @@ public class BuildingInspectorPanel : MonoBehaviour
         bool canUpgrade = instance.CanUpgrade;
         upgradeButton.interactable = canUpgrade;
         if (upgradeCostLabel != null)
-            upgradeCostLabel.text = canUpgrade ? $"Upgrade - ${instance.NextUpgradeCost}" : "Max Level";
+            upgradeCostLabel.text = canUpgrade ? $"Upgrade - {instance.NextUpgradeCost} WP" : "Max Level";
     }
 
     public void Hide()

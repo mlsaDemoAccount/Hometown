@@ -51,14 +51,26 @@ public class ShopUIController : MonoBehaviour
         foreach (Transform child in tabParent) Destroy(child.gameObject);
         tabButtons.Clear();
 
+        CategoryTabButton defaultTab = null;
+        BuildingCategory? defaultFilter = null;
+
         if (includeAllTab)
         {
-            var allTab = CreateTab("All", null);
-            SetActiveTab(allTab); // starts selected, matches activeFilter starting as null
+            defaultTab = CreateTab("All", null);
+            defaultFilter = null;
         }
 
         foreach (BuildingCategory category in System.Enum.GetValues(typeof(BuildingCategory)))
-            CreateTab(category.ToString(), category);
+        {
+            var tab = CreateTab(category.ToString(), category);
+            if (defaultTab == null) { defaultTab = tab; defaultFilter = category; } // no All tab - first category becomes the default instead
+        }
+
+        if (defaultTab != null)
+        {
+            activeFilter = defaultFilter;
+            SetActiveTab(defaultTab);
+        }
     }
 
     private CategoryTabButton CreateTab(string label, BuildingCategory? category)
@@ -103,12 +115,24 @@ public class ShopUIController : MonoBehaviour
     /// Called directly by a ShopItemButton when tapped.
     public void SelectBuilding(BuildingData data)
     {
-        if (shopPanel != null) shopPanel.SetActive(false); // close shop before placement starts
+        if (UiManager.Instance != null)
+        {
+            // Route through UiManager so the Gameplay panel (hidden when Shop opened) gets
+            // restored - directly toggling shopPanel here left UiManager's state out of sync,
+            // so Gameplay never came back after Cancel/Done.
+            UiManager.Instance.ShowHideShopPanel(false);
+            UiManager.Instance.ShowHideGameplayPanel(true);
+        }
+        else if (shopPanel != null)
+        {
+            shopPanel.SetActive(false); // fallback if UiManager isn't in the scene
+        }
+
         BuildingPlacementController.Instance.BeginPlacement(data);
     }
 
     private void UpdateFundsLabel(int funds)
     {
-        if (fundsLabel != null) fundsLabel.text = $"${funds}";
+        if (fundsLabel != null) fundsLabel.text = $"{funds} WP";
     }
 }
