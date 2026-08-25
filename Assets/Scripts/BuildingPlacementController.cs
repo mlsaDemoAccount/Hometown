@@ -48,6 +48,13 @@ public class BuildingPlacementController : MonoBehaviour
     private int nextInstanceId = 0;
     private Dictionary<int, BuildingInstance> instances = new Dictionary<int, BuildingInstance>();
 
+    /// Returns the visual prefab for a given upgrade level.
+    private GameObject GetVisualPrefab(BuildingData data, int levelIndex = 0)
+    {
+        var level = data.GetLevel(levelIndex);
+        return level != null ? level.visualPrefab : null;
+    }
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
@@ -76,7 +83,7 @@ public class BuildingPlacementController : MonoBehaviour
         selectedBuildingData = data;
         currentMode = Mode.Placing;
         ghostRotationSteps = 0; // fresh placement always starts unrotated
-        SpawnGhost(data.levels[0].visualPrefab, data);
+        SpawnGhost(GetVisualPrefab(data), data);
         controlPanel?.Show(); // show immediately - must not depend on anything that could throw below
 
         if (mainCamera == null) mainCamera = Camera.main; // camera may not have been ready at Awake
@@ -254,12 +261,15 @@ public class BuildingPlacementController : MonoBehaviour
         if (currentMode == Mode.Placing)
         {
             if (!EconomyManager.Instance.TrySpend(selectedBuildingData.placementCost))
+            {
+                Debug.LogWarning($"[BuildingPlacementController] Can't place '{selectedBuildingData.displayName}' - costs {selectedBuildingData.placementCost}, but only {EconomyManager.Instance.currentFunds} available. Ghost stays active; Done will keep failing until funds are sufficient.");
                 return; // not enough funds - stay in placing mode
+            }
 
             Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(selectedBuildingData.footprintSize, ghostRotationSteps);
             Quaternion rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
 
-            GameObject obj = Instantiate(selectedBuildingData.levels[0].visualPrefab,
+            GameObject obj = Instantiate(GetVisualPrefab(selectedBuildingData),
                 GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
             obj.transform.SetParent(null, true); // force to scene root
             ApplyFootprintScale(obj, selectedBuildingData);

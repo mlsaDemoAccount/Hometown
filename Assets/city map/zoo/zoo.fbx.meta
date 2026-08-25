@@ -1,2 +1,780 @@
 fileFormatVersion: 2
 guid: e2ce7fee476d6c244844f312fa869a07
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Billboard
+    second: {fileID: 2100000, guid: f64359277e85cb148b181004c54f8463, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bulb
+    second: {fileID: 2100000, guid: 0b7d85dda2428a54aa87334958892eb3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Emmisive
+    second: {fileID: 2100000, guid: 0b54085c7d36d3b4c83498a71b6df09b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass Lobby
+    second: {fileID: 2100000, guid: de087c9ec45906541b93735a6c854fc4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Last Exit_highway_metal_strips_a
+    second: {fileID: 2100000, guid: 493e9f468a49d634c84ff37bed65e50f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Last Exit_hut_roof_2
+    second: {fileID: 2100000, guid: 2c932ecfb44b2d74784611db9dbd9108, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Last Exit_walls_multi_metal_dull
+    second: {fileID: 2100000, guid: ad6732bd33b35524791df0d8ef0ce811, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lobby Interior Baked
+    second: {fileID: 2100000, guid: bed5fb479416bce41b2692612b550b4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lobby Interior Trimsheet
+    second: {fileID: 2100000, guid: 6d59dd62aede69148a8c662a2654d3b1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_elevator_cable
+    second: {fileID: 2100000, guid: 8fde032edaecc2046a7b4a620419c9fc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hub_sign_facade_tiles
+    second: {fileID: 2100000, guid: f83dc81d7fd4f24429b769aff86fc399, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_concrete_walls
+    second: {fileID: 2100000, guid: 96523316d311a1f489032169b7ddd52f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_dark_glass
+    second: {fileID: 2100000, guid: 2db0fb4692dfbb04d89151b7d18767e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_doors
+    second: {fileID: 2100000, guid: 0b68b134169943f4a883291c3a44fca1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_floor_tiles
+    second: {fileID: 2100000, guid: 721c527eca2dfe5409c595fef7aa0245, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_roof_1
+    second: {fileID: 2100000, guid: 2fa90f1a631c4564b8f008a5472d738e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_roof_2
+    second: {fileID: 2100000, guid: c02a844946822df4e95bd677c226ae28, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_universal_concrete
+    second: {fileID: 2100000, guid: e311266069c7d7b499d606fdab6adbd6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_hut_upper_railings
+    second: {fileID: 2100000, guid: d93854587e29b2148bacc92b39c4b6ee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_oni_interior_large_light
+    second: {fileID: 2100000, guid: 121abdeed203f654d97a3ae7a9207922, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_out_pinned_conc_slab
+    second: {fileID: 2100000, guid: 266ed427af485b14db7b06b990d3cc73, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_outtree_leaf
+    second: {fileID: 2100000, guid: 7705d25129777324faf2ab9b42d470ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_park_conc
+    second: {fileID: 2100000, guid: 5fe9529c58bb8ae429fb760f696e575f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_park_entrance_door
+    second: {fileID: 2100000, guid: a1ee54cf3ad90cc488f81b5c9da12925, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_park_trash_can
+    second: {fileID: 2100000, guid: 38c7820b086ea61458f12301b0fae1e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_tree_bark_smooth_acacia
+    second: {fileID: 2100000, guid: c97adb958ae09404abe1d96209eb0c67, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_tree_leaves_acacia
+    second: {fileID: 2100000, guid: b32992a23d3d131479da3f789b976501, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_wall_ext_v
+    second: {fileID: 2100000, guid: e29f5b58ea111ec468d60831d8ee402f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lost Platoon_windowbox_park_big
+    second: {fileID: 2100000, guid: 5640be2739fd6c94a950dbdc9c91007d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: 6b8a21dfe886760488556c7299925331, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #26
+    second: {fileID: 2100000, guid: 64f17603572045d4db23339e7f0ad53e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #67
+    second: {fileID: 2100000, guid: c757bd26a137b474c839f5761c7d7dd8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #68
+    second: {fileID: 2100000, guid: 5b280ce676191594fa214808cc816c94, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #83
+    second: {fileID: 2100000, guid: b97a9d29b795e4845913bd611324c7b0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: No Name
+    second: {fileID: 2100000, guid: cb06bcc9e0585194a974a5b6e9935fe4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Windows
+    second: {fileID: 2100000, guid: cec1907fcd6946f40b902e0212e6418e, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 360_F_69835876_aIPyC2FJYjTCaLoJ8htzWXTTsnyVC9fc
+    second: {fileID: 2800000, guid: 3f19bcc2fda593841aa4cbb2609b3685, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 61_concrete paving herringbone outdoor texture-seamless
+    second: {fileID: 2800000, guid: ba77b2162aceaad4793f7282483beabf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Bulb
+    second: {fileID: 2800000, guid: d4812ebbda6102444a0484c4c17e37f3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ChatGPT Image Aug 24, 2026, 10_20_59 PM
+    second: {fileID: 2800000, guid: 483fde3c86be4ce4ea31e758e9ed354c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Diffuse
+    second: {fileID: 2800000, guid: 4186f2521a3530649a865bee494598b6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Emmision
+    second: {fileID: 2800000, guid: c2b48af7e8c6e5542b43a3310c95021d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Lobby Interior Vents Diffuse
+    second: {fileID: 2800000, guid: 2fdd8d80acd565a4dac7351b76c86371, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Lobby Interior Vents Roughness
+    second: {fileID: 2800000, guid: dfabf12edc1cc364e89e691d1a0032d0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Normal
+    second: {fileID: 2800000, guid: f2e594ef012b2564c8f6e14f0a5e2a30, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Roughness
+    second: {fileID: 2800000, guid: 46f9161093ffa584c81aaf85d19f83ea, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Window_Diffuse
+    second: {fileID: 2800000, guid: 5e1b0400736619f46a8b9550bf6d1e82, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Window_Normal
+    second: {fileID: 2800000, guid: 0c76c0bcde3d9a54592a8ef83bb7d762, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Window_Roughness
+    second: {fileID: 2800000, guid: a27ecf97e875a5f45b295306c640aeb3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ant_antennas_diff
+    second: {fileID: 2800000, guid: cad59b9659a13ef48a5d648df0d081f4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ant_panels_diff
+    second: {fileID: 2800000, guid: 578aaf9f867308f4f8ea7c755cbed94b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: asphalt_a_diffuse
+    second: {fileID: 2800000, guid: f9e8661bd82a5b84cb7274bbe52d411f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: atlas_metal_base_trim_diff
+    second: {fileID: 2800000, guid: abdb8a1c247aac04bb0331d346128f62, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: atlas_metal_hut_doorframe_diff
+    second: {fileID: 2800000, guid: f93720c1484d9cc45b8dd1fc1abb6ceb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: bsp_concrete_panel_diffuse
+    second: {fileID: 2800000, guid: d13484c26df5f15469a505e94e657eef, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: bsp_concrete_strips_diffuse
+    second: {fileID: 2800000, guid: abfe420db4551014e8cc982fce768039, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: bsp_security_wall
+    second: {fileID: 2800000, guid: a6f23ff4aea2fed4e9124666bf0bf75e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: bsp_window_framed_panel
+    second: {fileID: 2800000, guid: f038e189917f8454a8847cf8c6c417c5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: concrete_finished
+    second: {fileID: 2800000, guid: f4664d81a4c2ca741b8ea60fc9b40e8e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: concrete_streets_extruded
+    second: {fileID: 2800000, guid: 0ccd62a7f0651624d9142a93df1ae445, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: d_concrete_waterlayer_dif
+    second: {fileID: 2800000, guid: 228c1921e625546488646ef12c9c6d7f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: d_light_street_lens_illum
+    second: {fileID: 2800000, guid: 46af7c25a6dd30648a93ec7d6a8d47d3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: d_metal_hub_detail_smudge
+    second: {fileID: 2800000, guid: 589a36b8c9e050a4c8cccc17e1dc9aa0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: damaged_palm_leaves_alpha_test
+    second: {fileID: 2800000, guid: be26b4d5e0d091747a16bda2d80ce27c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: damaged_palm_leaves_diffuse
+    second: {fileID: 2800000, guid: c35e22f1c76b62c4ca47190fb1d939a4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: damaged_palm_trunks_base_diff
+    second: {fileID: 2800000, guid: 92bd650f58ab7844ab3d2ba7fde691aa, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: elevator_cable_diffuse
+    second: {fileID: 2800000, guid: 0b3cd7c331115e847a93d43f77f61790, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_braces_dif
+    second: {fileID: 2800000, guid: bb8f1394e44005c448d1edd1283702c6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_braces_illum
+    second: {fileID: 2800000, guid: d1b9700257f2db54cba919d3e258237b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_glass_dif
+    second: {fileID: 2800000, guid: 17c494669dad65e48b504c05f6dda571, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_lanes_diff
+    second: {fileID: 2800000, guid: 9b536aa077da87a48bb938499e89ae5b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_lanes_illum
+    second: {fileID: 2800000, guid: a92d6bb24adead445905486ed9d37b60, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_metal_strips_a_diff
+    second: {fileID: 2800000, guid: 5792788bfd75e65439446141d2f4db36, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_park_entrance_sign_diff
+    second: {fileID: 2800000, guid: 746d0e3c9560ae849b8ceec3ade067c0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: highway_sides_dif
+    second: {fileID: 2800000, guid: 977b0dddcda5eda42a17a4b755ae7d06, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_grate_a_diffuse
+    second: {fileID: 2800000, guid: 50eb053de522be141b9c33b3fcda875c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_panels_diffuse
+    second: {fileID: 2800000, guid: 7f3285824f6bac941b25c77149ed3355, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_shutter_diffuse
+    second: {fileID: 2800000, guid: 244a0a5d495a5b048bda1ef70a8c5d32, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_sign_facade_glass_diff
+    second: {fileID: 2800000, guid: 564aba4a13af5634bb0809e8a612b95a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_sign_facade_tile_diffuse
+    second: {fileID: 2800000, guid: 0bc60529200b16e42a46a1c1a9b2d0a0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_simple_panel_diffuse
+    second: {fileID: 2800000, guid: 795674604ffb81742a89316f28e5d556, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_street_new_diff
+    second: {fileID: 2800000, guid: 21049078274682d41a46fdd822bd018a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_street_new_illum
+    second: {fileID: 2800000, guid: f587ad9f7c7b56d4992270f4ecd64ae1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hub_street_props_diffuse
+    second: {fileID: 2800000, guid: 79b6f5369f84d6e4883a09336d240c3a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hut_concrete_walls_diff
+    second: {fileID: 2800000, guid: a3c1d3ebb003e814aaf025b569e35d68, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hut_floor_panels_diffuse
+    second: {fileID: 2800000, guid: 7fa8ea65db427d944a13200d10223d2a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hut_metal_diff
+    second: {fileID: 2800000, guid: 55e27d77626ca9e4cbf35d5ed959250f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hut_roof_1_diff
+    second: {fileID: 2800000, guid: e429bca7ee2c2144c896b3d3d5b167f5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hut_roof_2_diff
+    second: {fileID: 2800000, guid: c88e6483e56bcb6418ee77ddb2277e61, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hut_upper_railings_diff
+    second: {fileID: 2800000, guid: 85b81ff53f6771b438e762db18f86beb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hwy_median_curved_dif
+    second: {fileID: 2800000, guid: aecd9efd20a8f6d43bafd593d227068b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: hwy_median_straight01
+    second: {fileID: 2800000, guid: 04790934902f753499cf1433ae152ad8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: mc_slatted_door_dif
+    second: {fileID: 2800000, guid: 017ff9e5fcadf3c49888ac48a45bb039, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: metal_m_cooling_conditioner
+    second: {fileID: 2800000, guid: fa853cdfb33d8854a944ab2a47f990f7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: oni_interior_large_light_dif
+    second: {fileID: 2800000, guid: 6b3474aac04f92c45bf7740cbb9e54e0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: oni_interior_large_light_illum
+    second: {fileID: 2800000, guid: 99b5ea45cbcae7d4d80c5b571fa6f363, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: oni_planter_black_marble_diff
+    second: {fileID: 2800000, guid: 2ae6d72b8f84b554d87d4c46181a649b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: outtree_leaf_isolation
+    second: {fileID: 2800000, guid: d867d597d395550449b227ce2f054a24, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_bench_diff
+    second: {fileID: 2800000, guid: 7251abfcbf647bb4c9fd2c08766578ad, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_bridge_arches_diff
+    second: {fileID: 2800000, guid: 8b70da96018b53348bb9c32306254ddc, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_conc_detail
+    second: {fileID: 2800000, guid: 50a222e12b5588f449c42e625bcf680a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_conc_diff
+    second: {fileID: 2800000, guid: 7298323ffdcd48a4789c3c6c5ea6a0a1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_conc_stairs_diff
+    second: {fileID: 2800000, guid: 9b514a9a017a3364c8b45f50e1c64650, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_directory_sign_diff
+    second: {fileID: 2800000, guid: 9399bcba72ee9174c8d0243610a4ab28, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_directory_sign_map_diff
+    second: {fileID: 2800000, guid: c5b569071dc7a6d40b61e526dfdac41b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_dirt_dif
+    second: {fileID: 2800000, guid: 8b87e1754cd95f14bb230e8d7529a525, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_drinking_fountain_diff
+    second: {fileID: 2800000, guid: fc249758527580e419ca67f22b97631a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_entrance_doors_diff
+    second: {fileID: 2800000, guid: 66a81e482b9ef984dbb333b927c20bae, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_ground_railings_diff
+    second: {fileID: 2800000, guid: 5e12cf9dcccbe1f4dbe26e99afa667ab, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_inner_wall_lower
+    second: {fileID: 2800000, guid: bfcfbd7c00752ed46acbf21dadc7ddf0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_inner_wall_upper
+    second: {fileID: 2800000, guid: 256138c01ea3fff4f894189805c794ba, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_ticket_booth_scroll
+    second: {fileID: 2800000, guid: c1b830fb17c6d7440af591d49afa0713, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: park_trash_can_diff
+    second: {fileID: 2800000, guid: 05e13c25f44d9314694088f9b4c5f9f3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: rock_crag512_dif
+    second: {fileID: 2800000, guid: 88a87da4d692d4b419b340846302edfa, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: roof_mulch_diff
+    second: {fileID: 2800000, guid: b10a0f7b5c5d01f41af446e1fb921aa8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: rubber_dif
+    second: {fileID: 2800000, guid: f0627956100ae8248ae6f231fd422d4c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: sc140_glass_panel_diffuse
+    second: {fileID: 2800000, guid: 7c34c4c16964bb7449b086a80f9a6f30, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: seawall_horiz_tech_strip
+    second: {fileID: 2800000, guid: ba0a81e15c4923443b21ee822c28f065, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: seawall_horiz_tech_strip_segmented
+    second: {fileID: 2800000, guid: 818e024882eab814db885051ac0c52f8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: seawall_top_windows
+    second: {fileID: 2800000, guid: f98b78ab12c674f42be7d76d3e727c44, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: seawall_vertical_section_angled
+    second: {fileID: 2800000, guid: 9a058285e9d9f244a920ddf83ed8eb9d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: seawall_vertical_section_bottom
+    second: {fileID: 2800000, guid: f4ff961fae2f5664ea08014e03fcf002, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: seawall_vertical_section_thin
+    second: {fileID: 2800000, guid: c7a03a78dab84a044b9205d7559d35a1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: statue_zebra_diffuse
+    second: {fileID: 2800000, guid: 6efe275e9b2ac2647b47281be769f167, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: tree2
+    second: {fileID: 2800000, guid: f66eceb4124012b4b8624ced4f39e41b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: tree_bark_smooth
+    second: {fileID: 2800000, guid: 3af8533d6b5c3ad46bc52c5c4cb45c2f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: tree_leaves_oval_park
+    second: {fileID: 2800000, guid: 889991c2a6c9b474fa3ad0584bb73fbf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: uniform_concrete_beige_bleached
+    second: {fileID: 2800000, guid: 58c8259a8eae82348a263aa4c5047896, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: valley_grass
+    second: {fileID: 2800000, guid: 61d44ddd10b59ca43a9f459e38d998a1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wall_ext_v
+    second: {fileID: 2800000, guid: a004c2fb95cca1241889bacfe66d9973, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: walls_multi_material_diff
+    second: {fileID: 2800000, guid: f3c60429c81119a4aa7b58571a8581d9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: zoo_banner_diff
+    second: {fileID: 2800000, guid: f937963133033184baa720aacfb3cf7e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: zoopanel_main
+    second: {fileID: 2800000, guid: 2abb5500c764b034aaa621f29295d352, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: zoopanel_tile
+    second: {fileID: 2800000, guid: 0ecf0ac7b8e5e024da924ed78c81de77, type: 3}
+  materials:
+    materialImportMode: 1
+    materialName: 3
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 1
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

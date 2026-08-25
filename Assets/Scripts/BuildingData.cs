@@ -1,7 +1,7 @@
 using UnityEngine;
 
-// The 6 stat categories every building contributes to (positively or negatively).
-// Garbage has been merged into Pollution - use Pollution for both going forward.
+// The 6 fixed stat categories. Signs and Decoration items get folded into these (Signs ->
+// Traffic, Decoration -> Lifestyle) rather than having their own categories.
 public enum BuildingCategory
 {
     Population,
@@ -38,7 +38,8 @@ public class BuildingData : ScriptableObject
     [Header("Placement")]
     public Vector2Int footprintSize = new Vector2Int(1, 1); // e.g. 2x2 for bigger buildings
     public int placementCost = 100;
-    public bool requiresFootpathAdjacency = true; // most buildings connect to the sidewalk, not the vehicle lane
+    [Tooltip("Real buildings usually need this ON. Standalone decoration/signs can turn it OFF.")]
+    public bool requiresFootpathAdjacency = true;
 
     [Header("Placeholder Art")]
     // If true, stretches the visual prefab's X/Z scale to exactly fill footprintSize * cellSize -

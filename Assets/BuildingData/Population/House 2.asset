@@ -17,16 +17,16 @@ MonoBehaviour:
   icon: {fileID: 0}
   primaryCategory: 0
   footprintSize: {x: 2, y: 2}
-  placementCost: 250
+  placementCost: 80
   requiresFootpathAdjacency: 1
   autoScaleToFootprint: 0
   levels:
   - level: 1
     visualPrefab: {fileID: 6893710804190749707, guid: 063ca936960904a3c88eb0e17c7b7bd5, type: 3}
     upgradeCost: 0
-    populationOutput: 20
+    populationOutput: 50
     jobsOutput: 0
-    pollutionOutput: 10
-    crimeRateOutput: 1
-    trafficOutput: 1
-    lifestyleOutput: 10
+    pollutionOutput: 30
+    crimeRateOutput: 0
+    trafficOutput: 20
+    lifestyleOutput: 0
