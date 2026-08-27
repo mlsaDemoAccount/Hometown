@@ -6852,23 +6852,23 @@ MonoBehaviour:
   allTabUnselectedIcon: {fileID: 0}
   categoryIcons:
   - category: 0
-    selectedIcon: {fileID: 21300000, guid: dc999e963faab44fd96b10ccf8763fc1, type: 3}
+    selectedIcon: {fileID: 21300000, guid: c318a5bed67304dfea803da4590a9ce4, type: 3}
     unselectedIcon: {fileID: 21300000, guid: dc999e963faab44fd96b10ccf8763fc1, type: 3}
   - category: 1
-    selectedIcon: {fileID: 21300000, guid: dc999e963faab44fd96b10ccf8763fc1, type: 3}
-    unselectedIcon: {fileID: 21300000, guid: dc999e963faab44fd96b10ccf8763fc1, type: 3}
+    selectedIcon: {fileID: 21300000, guid: a9b0b35d76ec0450fa563de85ae45987, type: 3}
+    unselectedIcon: {fileID: 21300000, guid: 3769b5a760c6f4825bfffa502152a487, type: 3}
   - category: 2
-    selectedIcon: {fileID: 21300000, guid: fc346389860ca49d480ba59bcbf72d5c, type: 3}
+    selectedIcon: {fileID: 21300000, guid: f9a37869ece25456ab331e179bdd7ead, type: 3}
     unselectedIcon: {fileID: 21300000, guid: fc346389860ca49d480ba59bcbf72d5c, type: 3}
   - category: 3
-    selectedIcon: {fileID: 21300000, guid: fc346389860ca49d480ba59bcbf72d5c, type: 3}
-    unselectedIcon: {fileID: 21300000, guid: fc346389860ca49d480ba59bcbf72d5c, type: 3}
+    selectedIcon: {fileID: 21300000, guid: c383b7e50d5dc48a3b218bdcc61fab8c, type: 3}
+    unselectedIcon: {fileID: 21300000, guid: 66a9fe92bb0d54cde8b3af7a7eb98791, type: 3}
   - category: 4
-    selectedIcon: {fileID: 21300000, guid: 49318d6af7ae64472832020640b2ecda, type: 3}
+    selectedIcon: {fileID: 21300000, guid: 10e5b603007f2442fada809d921bcee7, type: 3}
     unselectedIcon: {fileID: 21300000, guid: 49318d6af7ae64472832020640b2ecda, type: 3}
   - category: 5
     selectedIcon: {fileID: 21300000, guid: f3630f962ca4541a29ebae7c0d28d80b, type: 3}
-    unselectedIcon: {fileID: 21300000, guid: f3630f962ca4541a29ebae7c0d28d80b, type: 3}
+    unselectedIcon: {fileID: 21300000, guid: 2846e9dd2899a42349c4e30720f7bbaf, type: 3}
   itemListParent: {fileID: 1488438515}
   shopItemButtonPrefab: {fileID: 1640353465135519115, guid: 245412332037e46038ad753d49a652cb, type: 3}
   shopPanel: {fileID: 2013921771}
@@ -152321,6 +152321,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shop
       objectReference: {fileID: 0}
+    - target: {fileID: 7904007700084138584, guid: c7d39a1c479854440b1e136b8a4d0dab, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -152535,6 +152539,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1645248076}
     m_Modifications:
+    - target: {fileID: 5905067886323360071, guid: 8ef25ef3f99b5ba4b871329e81e2976a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 37.69995
+      objectReference: {fileID: 0}
     - target: {fileID: 6334124423185415227, guid: 8ef25ef3f99b5ba4b871329e81e2976a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
