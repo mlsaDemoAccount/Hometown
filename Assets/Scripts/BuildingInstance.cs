@@ -20,12 +20,12 @@ public class BuildingInstance : MonoBehaviour
         return swapped ? new Vector2Int(size.y, size.x) : size;
     }
 
-    public void Initialize(BuildingData buildingData, Vector2Int origin, int id)
+    public void Initialize(BuildingData buildingData, Vector2Int origin, int id, int startingLevelIndex = 0)
     {
         data = buildingData;
         gridOrigin = origin;
         instanceId = id;
-        currentLevelIndex = 0;
+        currentLevelIndex = startingLevelIndex;
         // NOTE: visual is instantiated externally (by BuildingPlacementController) and this
         // component is added to that same object - do NOT spawn another visual here or you'll
         // get a duplicate nested under this one. Upgrade visual-swapping is disabled for now;
@@ -48,6 +48,7 @@ public class BuildingInstance : MonoBehaviour
         // Visual swapping on upgrade is disabled for now (see note in Initialize).
         // ApplyVisualForLevel();
         CityStatsManager.Instance?.RecalculateAll(); // level change affects totals
+        CitySaveManager.Instance?.SaveCity();
         return true;
     }
 

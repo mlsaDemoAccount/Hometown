@@ -299,6 +299,7 @@ public class BuildingPlacementController : MonoBehaviour
         selectedBuildingData = null;
         currentMode = Mode.None;
         controlPanel?.Hide();
+        CitySaveManager.Instance?.SaveCity();
     }
 
     /// Disables the base indicator sprite on a REAL, placed building - it's part of the prefab
@@ -328,6 +329,7 @@ public class BuildingPlacementController : MonoBehaviour
                 EconomyManager.Instance.RefundDemolish(instance.data.placementCost);
                 instances.Remove(id);
                 Destroy(instance.gameObject);
+                CitySaveManager.Instance?.SaveCity();
             }
         }
         // NOTE: roads are pre-built static geometry now (see RoadFootprintScanner) - they can't
@@ -343,6 +345,32 @@ public class BuildingPlacementController : MonoBehaviour
         return instances.TryGetValue(id, out var instance) ? instance : null;
     }
 
+    /// Every currently placed building - used by CitySaveManager to write the save file.
+    public IEnumerable<BuildingInstance> AllPlacedBuildings => instances.Values;
+
+    /// Places a building directly, bypassing the economy/ghost/Done-Cancel flow entirely -
+    /// used ONLY by CitySaveManager when restoring a saved city on load. A normal player
+    /// placement always goes through BeginPlacement -> ConfirmPlacement instead.
+    public void PlaceBuildingDirect(BuildingData data, Vector2Int cell, int rotationSteps, int levelIndex)
+    {
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(data.footprintSize, rotationSteps);
+        Quaternion rotation = Quaternion.Euler(0f, rotationSteps * 90f, 0f);
+
+        GameObject obj = Instantiate(GetVisualPrefab(data, levelIndex),
+            GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
+        obj.transform.SetParent(null, true);
+        ApplyFootprintScale(obj, data);
+        DisableIndicatorOnRealBuilding(obj);
+
+        var instance = obj.AddComponent<BuildingInstance>();
+        int id = nextInstanceId++;
+        instance.Initialize(data, cell, id, levelIndex);
+        instance.rotationSteps = rotationSteps;
+        instances[id] = instance;
+
+        GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, id);
+    }
+
     /// Demolishes a specific building directly (used by the select-first-then-Demolish-button flow).
     /// No mode switching, no "next tap" needed - call this straight from the Demolish button.
     public void DemolishInstance(BuildingInstance instance)
@@ -354,6 +382,7 @@ public class BuildingPlacementController : MonoBehaviour
         instances.Remove(instance.instanceId);
         BuildingSelectionController.Instance?.Deselect();
         Destroy(instance.gameObject);
+        CitySaveManager.Instance?.SaveCity();
     }
 
     private void SetGhostMaterial(bool valid)

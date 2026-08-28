@@ -33,4 +33,12 @@ public class EconomyManager : MonoBehaviour
     {
         AddFunds(Mathf.RoundToInt(originalCost * refundPercent));
     }
+
+    /// Sets funds directly - used by CitySaveManager when loading a saved city, not for normal
+    /// gameplay spending (use TrySpend/AddFunds for that).
+    public void SetFunds(int amount)
+    {
+        currentFunds = amount;
+        OnFundsChanged?.Invoke(currentFunds);
+    }
 }

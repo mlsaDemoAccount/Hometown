@@ -9,8 +9,8 @@ public class ShopUIController : MonoBehaviour
 {
     public static ShopUIController Instance { get; private set; }
 
-    [Header("Data")]
-    public BuildingData[] allBuildings;
+    // NOTE: building list now comes from BuildingDatabase.Instance.allBuildings - no separate
+    // list here anymore, so there's only one place to add a new building asset.
 
     [Header("Category Tabs")]
     public Transform tabParent;           // horizontal layout group, parent for tab buttons
@@ -121,6 +121,21 @@ public class ShopUIController : MonoBehaviour
         PopulateList();
     }
 
+    /// Called by something OTHER than a tab click (e.g. CityNotificationManager's Accept
+    /// button) to switch to a specific category, same effect as the player tapping that tab.
+    public void SelectCategoryExternally(BuildingCategory category)
+    {
+        var tab = tabButtons.Find(t => t.Category == category);
+        if (tab != null)
+            SelectCategory(category, tab);
+        else
+        {
+            // Tabs not generated yet for some reason - still apply the filter so the list is correct.
+            activeFilter = category;
+            PopulateList();
+        }
+    }
+
     private void SetActiveTab(CategoryTabButton activeTab)
     {
         foreach (var tab in tabButtons) tab.SetSelected(tab == activeTab);
@@ -130,6 +145,13 @@ public class ShopUIController : MonoBehaviour
     {
         foreach (Transform child in itemListParent) Destroy(child.gameObject);
 
+        if (BuildingDatabase.Instance == null)
+        {
+            Debug.LogWarning("[ShopUIController] BuildingDatabase not found in scene - shop can't populate.");
+            return;
+        }
+
+        var allBuildings = BuildingDatabase.Instance.allBuildings;
         var toShow = activeFilter == null
             ? allBuildings
             : allBuildings.Where(b => b.primaryCategory == activeFilter.Value).ToArray();

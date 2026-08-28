@@ -17,6 +17,8 @@ public class CategoryTabButton : MonoBehaviour
     public Color unselectedTextColor = new Color(0.2f, 0.2f, 0.2f);
 
     private BuildingCategory? category;
+    public BuildingCategory? Category => category;
+
     private Sprite selectedIconSprite;
     private Sprite unselectedIconSprite;
 
