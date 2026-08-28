@@ -115,14 +115,14 @@ public class MainScreen : MonoBehaviour
 
     public void GoogleLogin()
     {
-        GameUIManager.Instance.MainScreenToggle(false);
-        GameUIManager.Instance.LoginScreenToggle(true);
+        //GameUIManager.Instance.MainScreenToggle(false);
+        //GameUIManager.Instance.LoginScreenToggle(true);
     }
 
     public void ClaudeLogin()
     {
-        GameUIManager.Instance.MainScreenToggle(false);
-        GameUIManager.Instance.LoginScreenToggle(true);
+        //GameUIManager.Instance.MainScreenToggle(false);
+        //GameUIManager.Instance.LoginScreenToggle(true);
     }
 
     public void EmailLogin()
@@ -133,7 +133,7 @@ public class MainScreen : MonoBehaviour
 
     public void GuestLogin()
     {
-        GameUIManager.Instance.MainScreenToggle(false);
-        GameUIManager.Instance.LoginScreenToggle(true);
+        //GameUIManager.Instance.MainScreenToggle(false);
+        //GameUIManager.Instance.LoginScreenToggle(true);
     }
 }
