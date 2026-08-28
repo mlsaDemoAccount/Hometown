@@ -172,7 +172,7 @@ public class MainMenuScreen : MonoBehaviour
         GameUIManager.Instance.MainMenuScreenToggle(false);
 
         // Put your actual scene name here
-        SceneManager.LoadScene("YourSceneName");
+        SceneManager.LoadScene(1);
     }
 
 
