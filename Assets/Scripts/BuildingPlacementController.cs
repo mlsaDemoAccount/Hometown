@@ -280,6 +280,12 @@ public class BuildingPlacementController : MonoBehaviour
             instance.rotationSteps = ghostRotationSteps;
             instances[id] = instance;
             GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, id);
+
+            // Start construction timer if this prefab has one set up and a nonzero duration -
+            // otherwise it's placed instantly, same as before this feature existed.
+            var constructionState = obj.GetComponent<BuildingConstructionState>();
+            if (constructionState != null && selectedBuildingData.constructionDuration > 0f)
+                constructionState.BeginConstruction(selectedBuildingData.constructionDuration);
         }
         else if (currentMode == Mode.Moving)
         {
@@ -351,7 +357,8 @@ public class BuildingPlacementController : MonoBehaviour
     /// Places a building directly, bypassing the economy/ghost/Done-Cancel flow entirely -
     /// used ONLY by CitySaveManager when restoring a saved city on load. A normal player
     /// placement always goes through BeginPlacement -> ConfirmPlacement instead.
-    public void PlaceBuildingDirect(BuildingData data, Vector2Int cell, int rotationSteps, int levelIndex)
+    public void PlaceBuildingDirect(BuildingData data, Vector2Int cell, int rotationSteps, int levelIndex,
+        ConstructionPhase savedPhase = ConstructionPhase.Complete, float savedRemaining = 0f, float savedTotal = 0f, int savedPendingLevelIndex = 0)
     {
         Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(data.footprintSize, rotationSteps);
         Quaternion rotation = Quaternion.Euler(0f, rotationSteps * 90f, 0f);
@@ -369,6 +376,12 @@ public class BuildingPlacementController : MonoBehaviour
         instances[id] = instance;
 
         GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, id);
+
+        // Restore construction/upgrade progress exactly as saved, instead of starting fresh -
+        // a building mid-construction when the game closed should resume, not reset.
+        var constructionState = obj.GetComponent<BuildingConstructionState>();
+        if (constructionState != null)
+            constructionState.RestoreState(savedPhase, savedRemaining, savedTotal, savedPendingLevelIndex);
     }
 
     /// Demolishes a specific building directly (used by the select-first-then-Demolish-button flow).

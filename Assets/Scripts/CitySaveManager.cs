@@ -10,12 +10,21 @@ public class BuildingSaveData
     public int gridY;
     public int rotationSteps;
     public int currentLevelIndex;
+
+    // Construction/upgrade timer state - so a building mid-construction when the game closed
+    // resumes from where it was on load, instead of resetting. JsonUtility serializes enums
+    // fine directly (as their underlying int), no manual conversion needed.
+    public ConstructionPhase constructionPhase = ConstructionPhase.Complete;
+    public float constructionRemaining;
+    public float constructionTotal;
+    public int pendingUpgradeLevelIndex;
 }
 
 [System.Serializable]
 public class CitySaveData
 {
     public int funds;
+    public long savedAtUnixSeconds; // real-world timestamp this save was written - used to compute offline progress on load
     public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
 }
 
@@ -44,24 +53,50 @@ public class CitySaveManager : MonoBehaviour
         LoadCity();
     }
 
+    /// Fires when the app is backgrounded (Android/iOS) or loses focus - this is the reliable
+    /// moment to persist in-progress construction/upgrade timers at their ACTUAL current state,
+    /// rather than only saving at placement/demolish/completion and leaving mid-countdown
+    /// progress stale if the app closes while a timer is still running.
+    void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus) SaveCity();
+    }
+
+    void OnApplicationQuit()
+    {
+        SaveCity();
+    }
+
     [ContextMenu("Save City Now")]
     public void SaveCity()
     {
         var data = new CitySaveData();
         data.funds = EconomyManager.Instance != null ? EconomyManager.Instance.currentFunds : 0;
+        data.savedAtUnixSeconds = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         if (BuildingPlacementController.Instance != null)
         {
             foreach (var instance in BuildingPlacementController.Instance.AllPlacedBuildings)
             {
-                data.buildings.Add(new BuildingSaveData
+                var save = new BuildingSaveData
                 {
                     buildingId = instance.data.buildingId,
                     gridX = instance.gridOrigin.x,
                     gridY = instance.gridOrigin.y,
                     rotationSteps = instance.rotationSteps,
                     currentLevelIndex = instance.currentLevelIndex
-                });
+                };
+
+                var cs = instance.ConstructionState;
+                if (cs != null)
+                {
+                    save.constructionPhase = cs.phase;
+                    save.constructionRemaining = cs.remainingTime;
+                    save.constructionTotal = cs.totalDuration;
+                    save.pendingUpgradeLevelIndex = cs.PendingUpgradeLevelIndex;
+                }
+
+                data.buildings.Add(save);
             }
         }
 
@@ -86,6 +121,13 @@ public class CitySaveManager : MonoBehaviour
         if (EconomyManager.Instance != null)
             EconomyManager.Instance.SetFunds(data.funds);
 
+        // How much real-world time passed while the app was closed - subtracted from every
+        // in-progress construction/upgrade timer below, so buildings genuinely keep building
+        // while offline instead of freezing at whatever they were at on close.
+        long nowUnix = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        long elapsedSeconds = System.Math.Max(0L, nowUnix - data.savedAtUnixSeconds);
+        if (elapsedSeconds > 0) Debug.Log($"[CitySaveManager] {elapsedSeconds}s passed since last save - applying offline construction progress.");
+
         int loaded = 0;
         foreach (var saved in data.buildings)
         {
@@ -99,8 +141,19 @@ public class CitySaveManager : MonoBehaviour
                 continue;
             }
 
+            float adjustedRemaining = saved.constructionRemaining;
+            if (saved.constructionPhase != ConstructionPhase.Complete)
+            {
+                // Clamped to 0 (not negative) - if offline time exceeds what was left, the
+                // building's own Update() will detect remainingTime <= 0 on the very next frame
+                // and complete it automatically, same code path as finishing normally in-session.
+                adjustedRemaining = Mathf.Max(0f, saved.constructionRemaining - elapsedSeconds);
+            }
+
             Vector2Int cell = new Vector2Int(saved.gridX, saved.gridY);
-            BuildingPlacementController.Instance.PlaceBuildingDirect(buildingData, cell, saved.rotationSteps, saved.currentLevelIndex);
+            BuildingPlacementController.Instance.PlaceBuildingDirect(
+                buildingData, cell, saved.rotationSteps, saved.currentLevelIndex,
+                saved.constructionPhase, adjustedRemaining, saved.constructionTotal, saved.pendingUpgradeLevelIndex);
             loaded++;
         }
 

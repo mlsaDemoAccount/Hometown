@@ -18,6 +18,8 @@ public class BuildingUpgradeLevel
     public int level = 1;
     public GameObject visualPrefab;     // swapped in when this level is reached
     public int upgradeCost = 100;       // cost to reach the NEXT level from this one
+    [Tooltip("Seconds this level's upgrade takes to complete once started (upgrading FROM this level TO the next one). 0 = instant.")]
+    public float upgradeDuration = 60f;
     public float populationOutput;
     public float jobsOutput;
     public float pollutionOutput;
@@ -40,6 +42,10 @@ public class BuildingData : ScriptableObject
     public int placementCost = 100;
     [Tooltip("Real buildings usually need this ON. Standalone decoration/signs can turn it OFF.")]
     public bool requiresFootpathAdjacency = true;
+
+    [Header("Construction")]
+    [Tooltip("Seconds a freshly placed building takes to finish construction. 0 = instant (no construction sequence) - safe default for buildings that don't have construction-stage visuals set up yet.")]
+    public float constructionDuration = 0f;
 
     [Header("Placeholder Art")]
     // If true, stretches the visual prefab's X/Z scale to exactly fill footprintSize * cellSize -

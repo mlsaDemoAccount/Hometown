@@ -127796,7 +127796,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5629435114427690830, guid: 0a1ecfd8f4eef184d86d5182f2517671, type: 3}
   m_PrefabInstance: {fileID: 1034821061538586416}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2058773793}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d361956450c748e4bebda54944bd9b1, type: 3}
@@ -156934,23 +156934,6 @@ MonoBehaviour:
   connections:
   - {fileID: 1721821633}
   showDebugGizmo: 0
---- !u!1 &2058773793 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8501615508082229590, guid: 0a1ecfd8f4eef184d86d5182f2517671, type: 3}
-  m_PrefabInstance: {fileID: 1034821061538586416}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2058773796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2058773793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70defb4fa905d45979d75679ae879009, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIBlockerRegistrar
 --- !u!1 &2059286497
 GameObject:
   m_ObjectHideFlags: 0
@@ -162546,7 +162529,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5023275587482905896, guid: a9c420fe5e95a472db240a0fb6fb7dc3, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5612674478854057150, guid: a9c420fe5e95a472db240a0fb6fb7dc3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -162692,10 +162675,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8501615508082229590, guid: 0a1ecfd8f4eef184d86d5182f2517671, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2058773796}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a1ecfd8f4eef184d86d5182f2517671, type: 3}
 --- !u!1001 &1786689419355496865
 PrefabInstance:
