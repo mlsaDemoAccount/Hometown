@@ -170,11 +170,19 @@ public class MainMenuScreen : MonoBehaviour
     public void OnBetterTogetherClick()
     {
         GameUIManager.Instance.MainMenuScreenToggle(false);
+        GameUIManager.Instance.LoadingScreenToggle(true);
 
-        // Put your actual scene name here
-        SceneManager.LoadScene(1);
+        Invoke(nameof(InvitePlayerScreen), 3f);
+    }
+    private void InvitePlayerScreen()
+    {
+        GameUIManager.Instance.InvitePlayerScreenToggle(true);
     }
 
+    private void LoadGameScene()
+    {
+        SceneManager.LoadScene(1);
+    }
 
     public void OnTutorialClick()
     {
