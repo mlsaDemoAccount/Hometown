@@ -1,0 +1,207 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// Periodically suggests the player place a building to help the city. For a LOW-is-bad
+/// category (Jobs, Lifestyle) that's struggling, placing more of that SAME category is the
+/// correct fix, so it's suggested directly. For a HIGH-is-bad category (Population, Pollution,
+/// CrimeRate, Traffic) that's struggling, placing more of ITSELF would make it worse - instead,
+/// this searches your actual BuildingData assets for whichever OTHER category has a building
+/// with a genuinely negative effect on the troubled stat (e.g. a Lifestyle building with
+/// populationOutput = -20), and suggests that category instead. This is data-driven from
+/// whatever values you've actually set, not a hardcoded assumption.
+///
+/// Once the whole city is healthy, follows a growth chain (Population -> Lifestyle -> Jobs ->
+/// Population -> ...) instead of picking randomly.
+///
+/// Accept: opens the shop directly to the suggested category's tab, then waits
+/// `notificationInterval` again. Dismiss: just closes the popup, nothing else changes.
+public class CityNotificationManager : MonoBehaviour
+{
+    public static CityNotificationManager Instance { get; private set; }
+
+    [Tooltip("Shown for Critical-status notifications - a more alarming design. Direct reference, not looked up via Instance (see notes on the other panel field for why).")]
+    public CityNotificationPanel criticalPanel;
+    [Tooltip("Shown for Warning/Healthy-status notifications - a calmer design. Same script as criticalPanel, just a different UI prefab - both share identical fields (message, buttons, timer text/slider).")]
+    public CityNotificationPanel normalPanel;
+
+    [Tooltip("Seconds between notifications. Lower this for testing (e.g. 10-15s), raise it for real play (e.g. 120s = 2 minutes).")]
+    public float notificationInterval = 120f;
+
+    /// Which category to suggest next once the whole city is healthy - keyed by whichever
+    /// growth category was suggested most recently.
+    private static readonly Dictionary<BuildingCategory, BuildingCategory> GrowthChain = new Dictionary<BuildingCategory, BuildingCategory>
+    {
+        { BuildingCategory.Population, BuildingCategory.Lifestyle }, // more lifestyle raises capacity for more population
+        { BuildingCategory.Lifestyle,  BuildingCategory.Jobs },       // a livable city needs jobs to match
+        { BuildingCategory.Jobs,       BuildingCategory.Population }, // more jobs support more residents - closes the loop
+    };
+
+    private float timer;
+    private bool notificationActive = false;
+    private BuildingCategory pendingCategory; // what Accept will actually switch the shop to
+    private BuildingCategory? lastGrowthSuggestion = null; // tracks progress along the growth chain
+    private CityNotificationPanel activePanel; // whichever of critical/normal is currently showing
+
+    private struct Suggestion
+    {
+        public BuildingCategory troubledCategory;   // whose status triggered this (for the message)
+        public BuildingCategory suggestedCategory;   // which shop tab to actually recommend
+        public CityMetricStatus status;
+    }
+
+    void Awake()
+    {
+        if (Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
+    }
+
+    void Update()
+    {
+        if (notificationActive) return; // don't queue/stack a new one while one is already showing
+
+        timer += Time.deltaTime;
+        if (timer >= notificationInterval)
+        {
+            timer = 0f;
+            ShowNextNotification();
+        }
+    }
+
+    private void ShowNextNotification()
+    {
+        if (CityStatsManager.Instance == null)
+        {
+            Debug.LogWarning("[CityNotificationManager] CityStatsManager not found - skipping this notification attempt.");
+            return;
+        }
+
+        Suggestion suggestion = BuildSuggestion();
+        CityNotificationPanel targetPanel = suggestion.status == CityMetricStatus.Critical ? criticalPanel : normalPanel;
+
+        if (targetPanel == null)
+        {
+            string which = suggestion.status == CityMetricStatus.Critical ? "criticalPanel" : "normalPanel";
+            Debug.LogWarning($"[CityNotificationManager] {which} is not assigned in the Inspector - skipping this notification attempt.");
+            return;
+        }
+
+        activePanel = targetPanel;
+        pendingCategory = suggestion.suggestedCategory;
+        notificationActive = true;
+        activePanel.Show(BuildMessage(suggestion));
+    }
+
+    private Suggestion BuildSuggestion()
+    {
+        BuildingCategory? critical = null;
+        BuildingCategory? warning = null;
+
+        foreach (BuildingCategory category in System.Enum.GetValues(typeof(BuildingCategory)))
+        {
+            var status = CityStatsManager.Instance.GetStatus(category);
+            if (status == CityMetricStatus.Critical && critical == null) critical = category;
+            else if (status == CityMetricStatus.Warning && warning == null) warning = category;
+        }
+
+        BuildingCategory? troubled = critical ?? warning;
+        if (troubled.HasValue)
+        {
+            var status = critical.HasValue ? CityMetricStatus.Critical : CityMetricStatus.Warning;
+            BuildingCategory suggested = ResolveSuggestionFor(troubled.Value);
+            return new Suggestion { troubledCategory = troubled.Value, suggestedCategory = suggested, status = status };
+        }
+
+        // Everything healthy - follow the growth chain instead of picking fully at random.
+        BuildingCategory next = (lastGrowthSuggestion.HasValue && GrowthChain.TryGetValue(lastGrowthSuggestion.Value, out var linked))
+            ? linked
+            : BuildingCategory.Population; // sensible default starting point for the chain
+        lastGrowthSuggestion = next;
+
+        return new Suggestion { troubledCategory = next, suggestedCategory = next, status = CityMetricStatus.Healthy };
+    }
+
+    /// LOW-is-bad categories are correctly fixed by placing more of themselves. HIGH-is-bad
+    /// categories need a counteracting category found from real building data instead.
+    private BuildingCategory ResolveSuggestionFor(BuildingCategory troubled)
+    {
+        var config = CityStatsManager.Instance.metricConfigs.Find(c => c.category == troubled);
+        bool highIsBad = config != null && config.highIsBad;
+
+        if (!highIsBad) return troubled; // LOW-is-bad - placing more of itself is the correct fix
+
+        return FindBestCounteractingCategory(troubled) ?? troubled; // fall back to itself if nothing counteracts it
+    }
+
+    /// Scans every known BuildingData for one whose level-1 output on the troubled category is
+    /// negative, and returns whichever building's category has the STRONGEST negative effect.
+    private BuildingCategory? FindBestCounteractingCategory(BuildingCategory troubled)
+    {
+        if (BuildingDatabase.Instance == null || BuildingDatabase.Instance.allBuildings == null) return null;
+
+        BuildingCategory? best = null;
+        float bestValue = 0f; // looking for the most negative value found
+
+        foreach (var building in BuildingDatabase.Instance.allBuildings)
+        {
+            if (building == null || building.primaryCategory == troubled) continue; // don't suggest the troubled category itself
+            if (building.levels == null || building.levels.Length == 0) continue;
+
+            float output = GetOutputForCategory(building.levels[0], troubled);
+            if (output < bestValue)
+            {
+                bestValue = output;
+                best = building.primaryCategory;
+            }
+        }
+
+        return best;
+    }
+
+    private float GetOutputForCategory(BuildingUpgradeLevel level, BuildingCategory category) => category switch
+    {
+        BuildingCategory.Population => level.populationOutput,
+        BuildingCategory.Jobs => level.jobsOutput,
+        BuildingCategory.Pollution => level.pollutionOutput,
+        BuildingCategory.CrimeRate => level.crimeRateOutput,
+        BuildingCategory.Traffic => level.trafficOutput,
+        BuildingCategory.Lifestyle => level.lifestyleOutput,
+        _ => 0f
+    };
+
+    private string BuildMessage(Suggestion s)
+    {
+        if (s.status == CityMetricStatus.Healthy)
+            return $"{s.suggestedCategory} could use some development. Place an item from the {s.suggestedCategory} tab in the shop.";
+
+        string urgency = s.status == CityMetricStatus.Critical ? "is in a critical state" : "needs attention";
+
+        if (s.troubledCategory == s.suggestedCategory)
+            return $"{s.troubledCategory} {urgency}. Place an item from the {s.troubledCategory} tab in the shop.";
+
+        return $"{s.troubledCategory} {urgency}. Try placing something from the {s.suggestedCategory} tab to help bring it down.";
+    }
+
+    /// Called directly by CityNotificationPanel when Accept is tapped.
+    public void OnNotificationAccepted()
+    {
+        activePanel.Hide();
+        notificationActive = false;
+        timer = 0f; // start waiting for the NEXT notification
+
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.ShowHideGameplayPanel(false);
+            UiManager.Instance.ShowHideShopPanel(true);
+        }
+        ShopUIController.Instance?.SelectCategoryExternally(pendingCategory);
+    }
+
+    /// Called directly by CityNotificationPanel when Dismiss is tapped. Nothing else changes -
+    /// just closes the popup and waits for the next interval.
+    public void OnNotificationDismissed()
+    {
+        activePanel.Hide();
+        notificationActive = false;
+        timer = 0f; // start waiting for the NEXT notification
+    }
+}
