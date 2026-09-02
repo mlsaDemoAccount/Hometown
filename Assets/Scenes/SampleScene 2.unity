@@ -4467,6 +4467,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &21721595 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 21721592}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &22191870
 GameObject:
   m_ObjectHideFlags: 0
@@ -26538,6 +26549,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 409
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1137842814}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 614406721}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 158
@@ -26546,6 +26569,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 409
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 21721595}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 614406722}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26556,6 +26591,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 143179774}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &143179776 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 143179774}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &143179777 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 143179774}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &143607376
 GameObject:
   m_ObjectHideFlags: 0
@@ -34634,6 +34691,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 410
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1302322312}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2025878809}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 241
@@ -34642,6 +34711,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 410
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1302322311}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 728204308}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34652,6 +34733,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 194704743}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &194704745 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 194704743}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &194704746 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 194704743}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &194878318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36708,6 +36811,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 430
       objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2025878809}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1567405691}
     - target: {fileID: 8715645053274322848, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 251.35806
@@ -36761,6 +36876,17 @@ Transform:
 --- !u!114 &208348827 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 208348825}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &208348828 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
   m_PrefabInstance: {fileID: 208348825}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -40812,6 +40938,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 398
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 279509311}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 877541677}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 173
@@ -48702,6 +48840,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 407
       objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1516522425}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1571316459}
     - target: {fileID: 1212337030857863994, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_Name
       value: T_Cross (28)
@@ -48714,6 +48864,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 407
       objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1571316458}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1571316458}
     - target: {fileID: 8715645053274322848, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 173.361
@@ -48764,6 +48926,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8715645053274322848, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
   m_PrefabInstance: {fileID: 279509309}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &279509311 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 279509309}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &279509312 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 279509309}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &280294306
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64739,6 +64923,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 432
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1170504610}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1137842815}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 157
@@ -64747,6 +64943,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 432
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1170504609}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1137842814}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -64757,6 +64965,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 388176560}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &388176562 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 388176560}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &388176563 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 388176560}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &388475767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -66945,6 +67175,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 427
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1389115716}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1850375031}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 142
@@ -66953,6 +67195,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 427
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1389115715}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1850375030}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -66963,6 +67217,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 397104598}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &397104600 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 397104598}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &397104601 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 397104598}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &398470407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -98788,6 +99064,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 404
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 614406722}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1992926321}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 154
@@ -98796,6 +99084,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 404
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 614406721}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1992926320}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -98806,6 +99106,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 585214140}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &585214142 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 585214140}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &585214143 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 585214140}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &585785861
 GameObject:
   m_ObjectHideFlags: 0
@@ -103075,6 +103397,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 409
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 143179777}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 585214143}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 154
@@ -103083,6 +103417,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 409
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 143179776}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 585214142}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -103093,6 +103439,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 614406719}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &614406721 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 614406719}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &614406722 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 614406719}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &614729338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -106075,6 +106443,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 400
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1956334903}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1863103259}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 291
@@ -121331,6 +121711,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 410
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 194704745}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 553515616}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 258
@@ -130071,7 +130463,7 @@ PrefabInstance:
       objectReference: {fileID: 1248361620}
     - target: {fileID: 8442900559629444247, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.76
+      value: -0.27
       objectReference: {fileID: 0}
     - target: {fileID: 8442900559629444247, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: m_LocalPosition.y
@@ -134816,6 +135208,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 418
       objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1248361620}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 926044961}
     - target: {fileID: 1212337030857863994, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_Name
       value: T_Cross (32)
@@ -134893,6 +135297,17 @@ Transform:
 --- !u!114 &813022462 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 813022460}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &813022463 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
   m_PrefabInstance: {fileID: 813022460}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -153918,6 +154333,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 426
       objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 813022463}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1389115716}
     - target: {fileID: 8715645053274322848, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 136.36392
@@ -153971,6 +154398,17 @@ Transform:
 --- !u!114 &926044960 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 926044958}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &926044961 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
   m_PrefabInstance: {fileID: 926044958}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -159738,6 +160176,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 436
       objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 411662566}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2025878808}
     - target: {fileID: 1212337030857863994, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_Name
       value: T_Cross (76)
@@ -189602,6 +190052,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 432
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 388176562}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 143179776}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 158
@@ -189610,6 +190072,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 432
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 388176563}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 21721594}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -189620,6 +190094,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1137842812}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1137842814 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1137842812}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1137842815 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1137842812}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &1137969130
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -194461,6 +194957,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 435
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1486647920}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 388176562}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 157
@@ -194469,6 +194977,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 435
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1486647919}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 388176563}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -194479,6 +194999,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1170504607}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1170504609 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1170504607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1170504610 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1170504607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1171528460
 GameObject:
   m_ObjectHideFlags: 0
@@ -214206,15 +214748,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 241.36508
+      value: 241.37
       objectReference: {fileID: 0}
     - target: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.018982753
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 415.01993
+      value: 414.98
       objectReference: {fileID: 0}
     - target: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: m_LocalRotation.w
@@ -214256,6 +214798,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 414
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1511491395}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 194704745}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 241
@@ -214264,6 +214818,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 414
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1511491396}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 194704746}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -214274,6 +214840,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1302322309}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1302322311 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1302322309}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1302322312 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1302322309}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1302562015
 GameObject:
   m_ObjectHideFlags: 0
@@ -229600,6 +230188,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 426
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1932907386}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 397104600}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 142
@@ -229608,6 +230208,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 426
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 926044961}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 397104601}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -229618,6 +230230,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1389115713}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1389115715 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1389115713}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1389115716 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1389115713}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &1389380345
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -244034,6 +244668,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 435
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1170504609}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1850375031}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 146
@@ -244042,6 +244688,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 435
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1850375030}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1170504610}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -244052,6 +244710,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1486647917}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1486647919 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1486647917}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1486647920 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1486647917}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1486920731
 GameObject:
   m_ObjectHideFlags: 0
@@ -247832,6 +248512,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 411
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1992926320}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1842072331}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 166
@@ -247840,6 +248532,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 411
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1992926321}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1842072332}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -247850,6 +248554,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1509224207}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1509224209 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1509224207}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1509224210 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1509224207}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1510689558
 GameObject:
   m_ObjectHideFlags: 0
@@ -248025,6 +248751,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 414
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1567405691}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1302322312}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 240
@@ -248033,6 +248771,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 414
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1567405690}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1302322311}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -248043,6 +248793,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1511491393}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1511491395 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1511491393}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1511491396 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1511491393}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &1512270735
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -248709,6 +249481,17 @@ Transform:
 --- !u!114 &1516522424 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1516522422}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1516522425 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1516522422}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -256542,6 +257325,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 430
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 208348828}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1511491396}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 240
@@ -256550,6 +257345,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 430
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 208348827}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1511491395}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -256563,6 +257370,17 @@ Transform:
 --- !u!114 &1567405690 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1567405688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1567405691 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1567405688}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -256951,6 +257769,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 407
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1842072332}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 279509312}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 171
@@ -256959,6 +257789,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 407
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1842072331}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 279509311}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -256969,6 +257811,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1571316456}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1571316458 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1571316456}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1571316459 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1571316456}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1001 &1571346472
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -261259,6 +262123,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 418
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1932907387}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 813022462}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 126
@@ -301336,6 +302212,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 411
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1509224209}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1571316458}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 171
@@ -301344,6 +302232,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 411
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1509224210}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1571316459}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -301354,6 +302254,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1842072329}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1842072331 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1842072329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1842072332 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1842072329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1842224560
 GameObject:
   m_ObjectHideFlags: 0
@@ -302629,6 +303551,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 427
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 397104600}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1486647919}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 146
@@ -302637,6 +303571,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 427
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 397104601}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1486647920}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -302647,6 +303593,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1850375028}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1850375030 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1850375028}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1850375031 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1850375028}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1850537867
 GameObject:
   m_ObjectHideFlags: 0
@@ -314839,6 +315807,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 426
       objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 874603811}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1389115715}
     - target: {fileID: 8715645053274322848, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 126.365776
@@ -324989,6 +325969,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 404
       objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 585214143}
+    - target: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1509224210}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: cell.x
       value: 166
@@ -324997,6 +325989,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 404
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 585214142}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1509224209}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -325007,6 +326011,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1826999854641339920, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
   m_PrefabInstance: {fileID: 1992926318}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1992926320 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1992926318}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &1992926321 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3333347640925364545, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+  m_PrefabInstance: {fileID: 1992926318}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
 --- !u!1 &1993028785
 GameObject:
   m_ObjectHideFlags: 0
@@ -328031,12 +329057,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: connections.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
       propertyPath: 'connections.Array.data[0]'
       value: 
       objectReference: {fileID: 1798967877}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 80936029}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -330995,6 +332025,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 410
       objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 728204307}
+    - target: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 961322856}
     - target: {fileID: 1212337030857863994, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_Name
       value: T_Cross (70)
@@ -331007,6 +332049,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 410
       objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 194704746}
+    - target: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2025878809}
     - target: {fileID: 8715645053274322848, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 251.362
@@ -331060,6 +332114,17 @@ Transform:
 --- !u!114 &2025878808 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 172987428787155397, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
+  m_PrefabInstance: {fileID: 2025878806}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0aceabdee4074be7b2a784891aadd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadWaypointMarker
+--- !u!114 &2025878809 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5878495808219537641, guid: 5550918dc8bb1ec4f97b87479113d70e, type: 3}
   m_PrefabInstance: {fileID: 2025878806}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -340429,6 +341494,18 @@ PrefabInstance:
       propertyPath: cell.y
       value: 475
       objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: connections.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 426701605}
+    - target: {fileID: 3900134400186178156, guid: 0a6ef56ac4973754bb68f5c85e2c0118, type: 3}
+      propertyPath: 'connections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1925532945}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
