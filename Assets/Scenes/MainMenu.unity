@@ -582,7 +582,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &48952028
 Transform:
   m_ObjectHideFlags: 0
@@ -807,8 +807,8 @@ MonoBehaviour:
   musicSource: {fileID: 48952030}
   sfxSource: {fileID: 48952029}
   mainMusic: {fileID: 8300000, guid: e12eefee98ee5aa4d9be2d4ee9616514, type: 3}
-  lobbyMusic: {fileID: 0}
-  buttonClickSound: {fileID: 0}
+  lobbyMusic: {fileID: 8300000, guid: b72c7f600aab01a4dbc669b7cac810b9, type: 3}
+  buttonClickSound: {fileID: 8300000, guid: 031509320be81424b9b03272c1fcb6c7, type: 3}
   musicVolume: 1
   sfxVolume: 1
 --- !u!1 &90908347
