@@ -4,40 +4,73 @@ using UnityEngine.UI;
 
 public class LoginScreen : MonoBehaviour
 {
+    // =========================================================
+    // LOGO
+    // =========================================================
+
     [Header("Logo")]
     public Image logoImg;
+
+
+    // =========================================================
+    // PANELS
+    // =========================================================
 
     [Header("Panels")]
     public GameObject signPanel;
     public GameObject accountCreatePanel;
     public GameObject ForgotPanel;
 
+
+    // =========================================================
+    // LOGO ANIMATION
+    // =========================================================
+
     [Header("Logo Beat Animation")]
     [SerializeField] private float logoBeatAmount = 1.05f;
     [SerializeField] private float logoBeatDuration = 1.5f;
+
+
+    // =========================================================
+    // PANEL ANIMATION
+    // =========================================================
 
     [Header("Panel Pop Animation")]
     [SerializeField] private float panelPopDuration = 0.6f;
     [SerializeField] private float panelDelay = 0.2f;
 
+
     // =========================================================
-    // SIGN IN FIELDS
+    // SIGN IN
     // =========================================================
 
     [Header("Sign In Fields")]
     public InputField user;
     public InputField password;
 
+
     // =========================================================
-    // CREATE ACCOUNT FIELDS
+    // LOGIN BUTTON
+    // =========================================================
+
+    [Header("Login Button")]
+    public Button loginButton;
+
+    [Header("Wrong Login Animation")]
+    [SerializeField] private float shakeDistance = 15f;
+    [SerializeField] private float shakeDuration = 0.06f;
+
+
+    // =========================================================
+    // CREATE ACCOUNT
     // =========================================================
 
     [Header("Create Account Fields")]
     public InputField firstName;
-    //public InputField lasstName;
     public InputField Email;
     public InputField ACpassword;
     public InputField ConfrimACpassword;
+
 
     // =========================================================
     // FORGOT PASSWORD
@@ -46,12 +79,14 @@ public class LoginScreen : MonoBehaviour
     [Header("Forgot Password")]
     public InputField forgotPassword;
 
+
     // =========================================================
-    // MESSAGES
+    // MESSAGE
     // =========================================================
 
     [Header("Messages")]
     public TMP_Text messageText;
+
 
     private Vector3 logoOriginalScale;
 
@@ -62,23 +97,77 @@ public class LoginScreen : MonoBehaviour
 
     private void Start()
     {
-        // Start with Sign In panel
+        // Start with Sign In Panel
         if (signPanel != null)
+        {
             signPanel.SetActive(true);
+        }
 
         if (accountCreatePanel != null)
+        {
             accountCreatePanel.SetActive(false);
+        }
 
         if (ForgotPanel != null)
+        {
             ForgotPanel.SetActive(false);
+        }
 
         if (messageText != null)
+        {
             messageText.text = "";
+        }
 
+
+        // Logo Animation
         AnimateLogo();
 
+
+        // Sign Panel Animation + Sound
         if (signPanel != null)
+        {
             AnimateSignPanel(signPanel);
+        }
+
+
+        // =====================================================
+        // TYPING SOUND LISTENERS
+        // =====================================================
+
+        if (user != null)
+        {
+            user.onValueChanged.AddListener(PlayTypingSound);
+        }
+
+        if (password != null)
+        {
+            password.onValueChanged.AddListener(PlayTypingSound);
+        }
+
+        if (firstName != null)
+        {
+            firstName.onValueChanged.AddListener(PlayTypingSound);
+        }
+
+        if (Email != null)
+        {
+            Email.onValueChanged.AddListener(PlayTypingSound);
+        }
+
+        if (ACpassword != null)
+        {
+            ACpassword.onValueChanged.AddListener(PlayTypingSound);
+        }
+
+        if (ConfrimACpassword != null)
+        {
+            ConfrimACpassword.onValueChanged.AddListener(PlayTypingSound);
+        }
+
+        if (forgotPassword != null)
+        {
+            forgotPassword.onValueChanged.AddListener(PlayTypingSound);
+        }
     }
 
 
@@ -91,11 +180,14 @@ public class LoginScreen : MonoBehaviour
         if (logoImg == null)
             return;
 
-        RectTransform logo = logoImg.GetComponent<RectTransform>();
+        RectTransform logo =
+            logoImg.GetComponent<RectTransform>();
+
+        if (logo == null)
+            return;
 
         logoOriginalScale = logo.localScale;
 
-        // Cancel previous animation
         LeanTween.cancel(logo.gameObject);
 
         LeanTween.scale(
@@ -109,7 +201,7 @@ public class LoginScreen : MonoBehaviour
 
 
     // =========================================================
-    // PANEL POP ANIMATION
+    // PANEL POP ANIMATION + SOUND
     // =========================================================
 
     private void AnimateSignPanel(GameObject aniPanel)
@@ -117,21 +209,27 @@ public class LoginScreen : MonoBehaviour
         if (aniPanel == null)
             return;
 
-        RectTransform panel = aniPanel.GetComponent<RectTransform>();
+        RectTransform panel =
+            aniPanel.GetComponent<RectTransform>();
 
         if (panel == null)
             return;
 
-        // Cancel previous animation
         LeanTween.cancel(aniPanel);
 
-        // Save original scale
         Vector3 originalScale = panel.localScale;
 
-        // Start small
         panel.localScale = Vector3.zero;
 
-        // Pop animation
+
+        // Play Panel Open Sound
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayPanelOpenSound();
+        }
+
+
+        // Panel Pop Animation
         LeanTween.scale(
             aniPanel,
             originalScale,
@@ -143,113 +241,221 @@ public class LoginScreen : MonoBehaviour
 
 
     // =========================================================
-    // LOGIN BUTTON
+    // LOGIN
     // =========================================================
 
     public void OnLoginClick()
     {
-        string savedEmail = PlayerPrefs.GetString("Email", "");
-        string savedPassword = PlayerPrefs.GetString("Password", "");
+        string savedEmail =
+            PlayerPrefs.GetString("Email", "");
 
-        // Check if account exists
+        string savedPassword =
+            PlayerPrefs.GetString("Password", "");
+
+
+        // No Account
         if (savedEmail == "")
         {
-            ShowMessage("No account found. Please create an account.");
+            ShowMessage(
+                "No account found. Please create an account."
+            );
+
+            PlayWrongSound();
+
+            ShakeLoginButton();
+
             return;
         }
 
-        // Check email and password
-        if (user.text == savedEmail && password.text == savedPassword)
+
+        // Empty Fields
+        if (string.IsNullOrEmpty(user.text) ||
+            string.IsNullOrEmpty(password.text))
+        {
+            ShowMessage(
+                "Please enter email and password."
+            );
+
+            PlayWrongSound();
+
+            ShakeLoginButton();
+
+            return;
+        }
+
+
+        // Correct Login
+        if (user.text == savedEmail &&
+            password.text == savedPassword)
         {
             ShowMessage("Login Successful!");
 
-            // Open Main Menu
-            GameUIManager.Instance.MainMenuScreenToggle(true);
-            GameUIManager.Instance.LoginScreenToggle(false);
+            GameUIManager.Instance
+                .MainMenuScreenToggle(true);
+
+            GameUIManager.Instance
+                .LoginScreenToggle(false);
         }
         else
         {
-            ShowMessage("Invalid email or password.");
+            ShowMessage(
+                "Invalid email or password."
+            );
+
+            PlayWrongSound();
+
+            ShakeLoginButton();
         }
     }
 
 
     // =========================================================
-    // CREATE ACCOUNT BUTTON
+    // LOGIN BUTTON SHAKE
     // =========================================================
 
-    //public void OnCreateAccountClick()
-    //{
-    //    // Check empty fields
-    //    if (firstName.text == "" ||
-    //        //lasstName.text == "" ||
-    //        Email.text == "" ||
-    //        ACpassword.text == "")
-    //    {
-    //        ShowMessage("Please fill all fields.");
-    //        return;
-    //    }
+    private void ShakeLoginButton()
+    {
+        if (loginButton == null)
+            return;
 
-    //    // Check if account already exists
-    //    if (PlayerPrefs.HasKey("Email"))
-    //    {
-    //        ShowMessage("Account already exists.");
-    //        return;
-    //    }
+        RectTransform buttonRect =
+            loginButton.GetComponent<RectTransform>();
 
-    //    // Save account locally
-    //    PlayerPrefs.SetString("FirstName", firstName.text);
-    //    //PlayerPrefs.SetString("LastName", lasstName.text);
-    //    PlayerPrefs.SetString("Email", Email.text);
-    //    PlayerPrefs.SetString("Password", ACpassword.text);
+        if (buttonRect == null)
+            return;
 
-    //    PlayerPrefs.Save();
+        LeanTween.cancel(loginButton.gameObject);
 
-    //    ShowMessage("Account created successfully!");
+        float originalX =
+            buttonRect.localPosition.x;
 
-    //    // Go to Sign In
-    //    accountCreatePanel.SetActive(false);
-    //    signPanel.SetActive(true);
 
-    //    AnimateSignPanel(signPanel);
-    //}
+        LeanTween.moveLocalX(
+            loginButton.gameObject,
+            originalX - shakeDistance,
+            shakeDuration
+        )
+        .setEaseLinear()
+        .setOnComplete(() =>
+        {
+            LeanTween.moveLocalX(
+                loginButton.gameObject,
+                originalX + shakeDistance,
+                shakeDuration
+            )
+            .setEaseLinear()
+            .setOnComplete(() =>
+            {
+                LeanTween.moveLocalX(
+                    loginButton.gameObject,
+                    originalX - shakeDistance,
+                    shakeDuration
+                )
+                .setEaseLinear()
+                .setOnComplete(() =>
+                {
+                    LeanTween.moveLocalX(
+                        loginButton.gameObject,
+                        originalX + shakeDistance,
+                        shakeDuration
+                    )
+                    .setEaseLinear()
+                    .setOnComplete(() =>
+                    {
+                        LeanTween.moveLocalX(
+                            loginButton.gameObject,
+                            originalX,
+                            shakeDuration
+                        )
+                        .setEaseLinear();
+                    });
+                });
+            });
+        });
+    }
+
+
+    // =========================================================
+    // CREATE ACCOUNT
+    // =========================================================
 
     public void OnCreateAccountClick()
     {
-        // Check empty fields
-        if (firstName.text == "" ||
-            Email.text == "" ||
-            ACpassword.text == "" ||
-            ConfrimACpassword.text == "")
+        if (firstName == null ||
+            Email == null ||
+            ACpassword == null ||
+            ConfrimACpassword == null)
+        {
+            return;
+        }
+
+
+        // Empty Fields
+        if (string.IsNullOrEmpty(firstName.text) ||
+            string.IsNullOrEmpty(Email.text) ||
+            string.IsNullOrEmpty(ACpassword.text) ||
+            string.IsNullOrEmpty(ConfrimACpassword.text))
         {
             ShowMessage("Please fill all fields.");
+
+            PlayWrongSound();
+
             return;
         }
 
-        // Check Password and Confirm Password
-        if (ACpassword.text != ConfrimACpassword.text)
+
+        // Password Confirmation
+        if (ACpassword.text !=
+            ConfrimACpassword.text)
         {
-            ShowMessage("Passwords do not match.");
+            ShowMessage(
+                "Passwords do not match."
+            );
+
+            PlayWrongSound();
+
             return;
         }
 
-        // Check if account already exists
+
+        // Account Already Exists
         if (PlayerPrefs.HasKey("Email"))
         {
-            ShowMessage("Account already exists.");
+            ShowMessage(
+                "Account already exists."
+            );
+
+            PlayWrongSound();
+
             return;
         }
 
-        // Save account locally
-        PlayerPrefs.SetString("FirstName", firstName.text);
-        PlayerPrefs.SetString("Email", Email.text);
-        PlayerPrefs.SetString("Password", ACpassword.text);
+
+        // Save Account
+        PlayerPrefs.SetString(
+            "FirstName",
+            firstName.text
+        );
+
+        PlayerPrefs.SetString(
+            "Email",
+            Email.text
+        );
+
+        PlayerPrefs.SetString(
+            "Password",
+            ACpassword.text
+        );
 
         PlayerPrefs.Save();
 
-        ShowMessage("Account created successfully!");
 
-        // Go to Sign In
+        ShowMessage(
+            "Account created successfully!"
+        );
+
+
+        // Open Sign Panel
         accountCreatePanel.SetActive(false);
         signPanel.SetActive(true);
 
@@ -258,7 +464,7 @@ public class LoginScreen : MonoBehaviour
 
 
     // =========================================================
-    // CREATE ACCOUNT PANEL
+    // OPEN CREATE ACCOUNT PANEL
     // =========================================================
 
     public void OnCreateAnAccountPanel()
@@ -266,18 +472,31 @@ public class LoginScreen : MonoBehaviour
         if (accountCreatePanel == null)
             return;
 
+
         accountCreatePanel.SetActive(true);
-        signPanel.SetActive(false);
-        ForgotPanel.SetActive(false);
+
+
+        if (signPanel != null)
+        {
+            signPanel.SetActive(false);
+        }
+
+
+        if (ForgotPanel != null)
+        {
+            ForgotPanel.SetActive(false);
+        }
+
 
         AnimateSignPanel(accountCreatePanel);
+
 
         ShowMessage("");
     }
 
 
     // =========================================================
-    // FORGOT PASSWORD PANEL
+    // OPEN FORGOT PASSWORD PANEL
     // =========================================================
 
     public void OnForgotPosswordClick()
@@ -285,55 +504,122 @@ public class LoginScreen : MonoBehaviour
         if (ForgotPanel == null)
             return;
 
+
         ForgotPanel.SetActive(true);
-        signPanel.SetActive(false);
-        accountCreatePanel.SetActive(false);
+
+
+        if (signPanel != null)
+        {
+            signPanel.SetActive(false);
+        }
+
+
+        if (accountCreatePanel != null)
+        {
+            accountCreatePanel.SetActive(false);
+        }
+
 
         AnimateSignPanel(ForgotPanel);
+
 
         ShowMessage("");
     }
 
 
     // =========================================================
-    // FORGOT PASSWORD BUTTON
+    // FORGOT PASSWORD
     // =========================================================
 
     public void OnForgotPasswordSubmit()
     {
-        string savedEmail = PlayerPrefs.GetString("Email", "");
-        string savedPassword = PlayerPrefs.GetString("Password", "");
+        string savedEmail =
+            PlayerPrefs.GetString(
+                "Email",
+                ""
+            );
 
-        // Check account
+        string savedPassword =
+            PlayerPrefs.GetString(
+                "Password",
+                ""
+            );
+
+
+        // No Account
         if (savedEmail == "")
         {
-            ShowMessage("No account found.");
+            ShowMessage(
+                "No account found."
+            );
+
+            PlayWrongSound();
+
             return;
         }
 
-        // Check email
-        if (forgotPassword.text == savedEmail)
+
+        // Empty Email
+        if (forgotPassword == null ||
+            string.IsNullOrEmpty(
+                forgotPassword.text
+            ))
         {
-            ShowMessage("Your password is: " + savedPassword);
+            ShowMessage(
+                "Please enter your email."
+            );
+
+            PlayWrongSound();
+
+            return;
+        }
+
+
+        // Correct Email
+        if (forgotPassword.text ==
+            savedEmail)
+        {
+            ShowMessage(
+                "Your password is: " +
+                savedPassword
+            );
         }
         else
         {
-            ShowMessage("Email not found.");
+            ShowMessage(
+                "Email not found."
+            );
+
+            PlayWrongSound();
         }
     }
 
 
     // =========================================================
-    // ALREADY HAVE ACCOUNT / SIGN IN
+    // SIGN IN
     // =========================================================
 
     public void OnSignInClick()
     {
-        accountCreatePanel.SetActive(false);
-        ForgotPanel.SetActive(false);
-        signPanel.SetActive(true);
+        if (accountCreatePanel != null)
+        {
+            accountCreatePanel.SetActive(false);
+        }
 
-        AnimateSignPanel(signPanel);
+
+        if (ForgotPanel != null)
+        {
+            ForgotPanel.SetActive(false);
+        }
+
+
+        if (signPanel != null)
+        {
+            signPanel.SetActive(true);
+
+            AnimateSignPanel(signPanel);
+        }
+
 
         ShowMessage("");
     }
@@ -345,37 +631,53 @@ public class LoginScreen : MonoBehaviour
 
     public void OnBackButtonClick()
     {
-        // If Create Account is open
-        if (accountCreatePanel != null && accountCreatePanel.activeSelf)
+        // If Create Account Panel Open
+        if (accountCreatePanel != null &&
+            accountCreatePanel.activeSelf)
         {
             accountCreatePanel.SetActive(false);
 
-            signPanel.SetActive(true);
+            if (signPanel != null)
+            {
+                signPanel.SetActive(true);
 
-            AnimateSignPanel(signPanel);
+                AnimateSignPanel(signPanel);
+            }
 
             ShowMessage("");
 
             return;
         }
 
-        // If Forgot Password is open
-        if (ForgotPanel != null && ForgotPanel.activeSelf)
+
+        // If Forgot Password Panel Open
+        if (ForgotPanel != null &&
+            ForgotPanel.activeSelf)
         {
             ForgotPanel.SetActive(false);
 
-            signPanel.SetActive(true);
+            if (signPanel != null)
+            {
+                signPanel.SetActive(true);
 
-            AnimateSignPanel(signPanel);
+                AnimateSignPanel(signPanel);
+            }
 
             ShowMessage("");
 
             return;
         }
 
-        // Otherwise go back to Main Screen
-        GameUIManager.Instance.MainScreenToggle(true);
-        GameUIManager.Instance.LoginScreenToggle(false);
+
+        // Otherwise Back to Main Screen
+        if (GameUIManager.Instance != null)
+        {
+            GameUIManager.Instance
+                .MainScreenToggle(true);
+
+            GameUIManager.Instance
+                .LoginScreenToggle(false);
+        }
     }
 
 
@@ -388,6 +690,34 @@ public class LoginScreen : MonoBehaviour
         if (messageText != null)
         {
             messageText.text = message;
+        }
+    }
+
+
+    // =========================================================
+    // TYPING SOUND
+    // =========================================================
+
+    private void PlayTypingSound(string value)
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance
+                .PlayTypingSound();
+        }
+    }
+
+
+    // =========================================================
+    // WRONG SOUND
+    // =========================================================
+
+    private void PlayWrongSound()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance
+                .PlayWrongSound();
         }
     }
 }

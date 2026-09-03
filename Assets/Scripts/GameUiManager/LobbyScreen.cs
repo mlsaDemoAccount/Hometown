@@ -27,6 +27,21 @@ public class LobbyScreen : MonoBehaviour
     private Vector3 logoOriginalScale;
     private Vector3[] elementOriginalScales;
 
+    private void OnEnable()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayLobbyMusic();
+        }
+    }
+    private void OnDisable()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayMainMusic();
+        }
+    }
+
     private void Start()
     {
         AnimateLogo();
