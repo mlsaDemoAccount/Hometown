@@ -13,7 +13,7 @@ public class LobbyScreen : MonoBehaviour
 
     [Header("Countdown")]
     [SerializeField] private TMP_Text countdownText;
-    [SerializeField] private string gameSceneName = "GameScene";
+    [SerializeField] private int gameSceneName = 1;
     [SerializeField] private float countdownDuration = 3f;
 
     [Header("Logo Beat Animation")]

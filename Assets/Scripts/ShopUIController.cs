@@ -190,6 +190,20 @@ public class ShopUIController : MonoBehaviour
         BuildingPlacementController.Instance.BeginPlacement(data);
     }
 
+    /// Called by a back/cross button on the shop panel to close it without selecting anything.
+    public void CloseShop()
+    {
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.ShowHideShopPanel(false);
+            UiManager.Instance.ShowHideGameplayPanel(true);
+        }
+        else if (shopPanel != null)
+        {
+            shopPanel.SetActive(false); // fallback if UiManager isn't in the scene
+        }
+    }
+
     private void UpdateFundsLabel(int funds)
     {
         if (fundsLabel != null) fundsLabel.text = $"{funds} WP";

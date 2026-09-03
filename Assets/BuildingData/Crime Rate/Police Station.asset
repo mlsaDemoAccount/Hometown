@@ -19,11 +19,13 @@ MonoBehaviour:
   footprintSize: {x: 7, y: 7}
   placementCost: 150
   requiresFootpathAdjacency: 1
+  constructionDuration: 600
   autoScaleToFootprint: 0
   levels:
   - level: 1
     visualPrefab: {fileID: 6893710804190749707, guid: 61a4fa45cdd8c4b38bee9f2aff014f7c, type: 3}
     upgradeCost: 0
+    upgradeDuration: 60
     populationOutput: 0
     jobsOutput: 20
     pollutionOutput: 0

@@ -226,5 +226,8 @@ public class MainScreen : MonoBehaviour
     public void GuestLogin()
     {
         // Add Guest login functionality here later
+
+        GameUIManager.Instance.MainScreenToggle(false);
+        GameUIManager.Instance.MainMenuScreenToggle(true);
     }
 }
