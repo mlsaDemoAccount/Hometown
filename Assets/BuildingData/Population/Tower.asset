@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 36f7f965d381742a08f80a95a90655c3, type: 3}
-  m_Name: Asian Tower
+  m_Name: Tower
   m_EditorClassIdentifier: Assembly-CSharp::BuildingData
   buildingId: Tower
   displayName: Tower
@@ -19,9 +19,19 @@ MonoBehaviour:
   footprintSize: {x: 2, y: 2}
   placementCost: 200
   requiresFootpathAdjacency: 1
-  constructionDuration: 60
+  constructionDuration: 30
   autoScaleToFootprint: 0
   levels:
+  - level: 1
+    visualPrefab: {fileID: 6893710804190749707, guid: bad7ade82824f401fa9719a6eafb3e75, type: 3}
+    upgradeCost: 40
+    upgradeDuration: 60
+    populationOutput: 200
+    jobsOutput: 0
+    pollutionOutput: 80
+    crimeRateOutput: 0
+    trafficOutput: 50
+    lifestyleOutput: 0
   - level: 1
     visualPrefab: {fileID: 6893710804190749707, guid: bad7ade82824f401fa9719a6eafb3e75, type: 3}
     upgradeCost: 0

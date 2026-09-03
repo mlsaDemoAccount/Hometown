@@ -46,12 +46,24 @@ public class BuildingInstance : MonoBehaviour
 
     public bool TryUpgrade(EconomyManager economy)
     {
-        if (!CanUpgrade) return false;
+        if (IsBusyConstructing)
+        {
+            Debug.LogWarning($"[BuildingInstance] Upgrade blocked: '{data.displayName}' is already busy (phase: {constructionState.phase}, {constructionState.remainingTime:0.0}s remaining).");
+            return false;
+        }
+        if (currentLevelIndex >= data.MaxLevelIndex)
+        {
+            Debug.LogWarning($"[BuildingInstance] Upgrade blocked: '{data.displayName}' is already at max level ({currentLevelIndex}/{data.MaxLevelIndex}).");
+            return false;
+        }
+
         int cost = NextUpgradeCost;
         if (!economy.TrySpend(cost)) return false;
 
         int newLevelIndex = currentLevelIndex + 1;
         float duration = data.GetLevel(currentLevelIndex).upgradeDuration;
+
+        Debug.Log($"[BuildingInstance] Starting upgrade: '{data.displayName}' level {currentLevelIndex} -> {newLevelIndex}, duration {duration}s, constructionState {(constructionState != null ? "present" : "MISSING")}.");
 
         if (constructionState != null && duration > 0f)
         {

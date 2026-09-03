@@ -73,7 +73,11 @@ public class BuildingInspectorPanel : MonoBehaviour
         bool success = current.TryUpgrade(EconomyManager.Instance);
         if (success)
         {
-            ShowFor(current); // refresh labels (new level, new upgrade cost / maxed out)
+            // Clear selection and close the panel while the upgrade timer runs - the player
+            // will re-select the building afterward if they want to see its new state, same
+            // as Move/Demolish already do rather than leaving the panel open and stale.
+            BuildingSelectionController.Instance.Deselect();
+            Hide();
         }
         // if success == false, not enough funds - could flash the cost label red here, etc.
     }
