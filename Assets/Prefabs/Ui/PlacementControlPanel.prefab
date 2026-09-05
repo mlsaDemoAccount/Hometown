@@ -528,6 +528,7 @@ GameObject:
   - component: {fileID: 176025585190836807}
   - component: {fileID: 5913990316182218601}
   - component: {fileID: 7615401108762989989}
+  - component: {fileID: 880000000000000001}
   m_Layer: 5
   m_Name: PlacementControlPanel
   m_TagString: Untagged
@@ -869,3 +870,27 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &880000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5758324376767927578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 607d4574a5c3424ba5c08fc6b467d528, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlacementControlScreen
+  panel: {fileID: 7610792611723771518}
+  doneButton: {fileID: 5992779517771827456}
+  rotateButton: {fileID: 4708596678770764808}
+  cancelButton: {fileID: 1726305278891763338}
+  buttons:
+  - {fileID: 1005232497572238220}
+  - {fileID: 1300631740612847594}
+  - {fileID: 6157690327072526676}
+  slideDistance: 420
+  slideDuration: 0.65
+  buttonPopDuration: 0.45
+  buttonPopDelay: 0.12

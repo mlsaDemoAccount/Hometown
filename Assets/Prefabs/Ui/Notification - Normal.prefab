@@ -470,6 +470,7 @@ GameObject:
   - component: {fileID: 4037600421263115905}
   - component: {fileID: 1506777122293845933}
   - component: {fileID: 4715533989713119372}
+  - component: {fileID: 880000000000000001}
   m_Layer: 5
   m_Name: Notification - Normal
   m_TagString: Untagged
@@ -1215,3 +1216,28 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &880000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4812643832827284388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50dd080cb92643b39a588df15555ae0c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::NormalNotificationScreen
+  panel: {fileID: 7329478642624072924}
+  titleText: {fileID: 8057262792117762028}
+  descriptionText: {fileID: 5662970456040607741}
+  icon: {fileID: 2545244395975003889}
+  timerText: {fileID: 8831960260514307078}
+  timerSlider: {fileID: 327675938069645493}
+  closeButton: {fileID: 7243489406351070898}
+  buttons:
+  - {fileID: 867320773999208726}
+  slideDistance: 420
+  slideDuration: 0.65
+  buttonPopDuration: 0.45
+  buttonPopDelay: 0.12

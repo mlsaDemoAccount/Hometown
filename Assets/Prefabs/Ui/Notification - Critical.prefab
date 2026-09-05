@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4641694123437822651}
   - component: {fileID: 8093294955713134554}
   - component: {fileID: 4981617769107358370}
+  - component: {fileID: 880000000000000001}
   m_Layer: 5
   m_Name: Notification - Critical
   m_TagString: Untagged
@@ -1215,3 +1216,28 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &880000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94867947996933817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983fa69fb40a4a42a799f9cefd419773, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CriticalNotificationScreen
+  panel: {fileID: 122927995800824908}
+  titleText: {fileID: 1040798016050710130}
+  descriptionText: {fileID: 8080832028446941183}
+  icon: {fileID: 4976865142523833044}
+  timerText: {fileID: 610123206616305971}
+  timerSlider: {fileID: 2984806301596788693}
+  closeButton: {fileID: 6386884890138083935}
+  buttons:
+  - {fileID: 7761079977456577469}
+  slideDistance: 420
+  slideDuration: 0.65
+  buttonPopDuration: 0.45
+  buttonPopDelay: 0.12

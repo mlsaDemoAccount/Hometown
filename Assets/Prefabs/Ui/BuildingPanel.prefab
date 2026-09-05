@@ -666,6 +666,7 @@ GameObject:
   - component: {fileID: 8616023590044895095}
   - component: {fileID: 5629435114427690830}
   - component: {fileID: 8016793635148097560}
+  - component: {fileID: 880000000000000001}
   m_Layer: 5
   m_Name: BuildingPanel
   m_TagString: Untagged
@@ -884,3 +885,27 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &880000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8501615508082229590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24c10ad2e1494a3b997772a56b1aedce, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingInspectorScreen
+  panel: {fileID: 3846883673087216082}
+  moveButton: {fileID: 7019467018077082547}
+  demolishButton: {fileID: 7944671623424906920}
+  upgradeButton: {fileID: 8377310920410958111}
+  buttons:
+  - {fileID: 9005813328151219158}
+  - {fileID: 4595628577358368534}
+  - {fileID: 8266614079541997094}
+  slideDistance: 420
+  slideDuration: 0.65
+  buttonPopDuration: 0.45
+  buttonPopDelay: 0.12

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class SoundManager : MonoBehaviour
     [Header("Background Music")]
     [SerializeField] private AudioClip mainMusic;
     [SerializeField] private AudioClip lobbyMusic;
+    [SerializeField] private AudioClip gameplayMusic;
 
 
     // =========================================================
@@ -31,7 +33,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip typingSound;
     [SerializeField] private AudioClip wrongSound;
     [SerializeField] private AudioClip panelOpenSound;
-    [SerializeField] private AudioClip buttonArrivalSound;
+
 
     // =========================================================
     // VOLUME
@@ -52,6 +54,7 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
+        // Destroy duplicate SoundManager
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -60,17 +63,36 @@ public class SoundManager : MonoBehaviour
 
         Instance = this;
 
+        // Keep SoundManager alive from Scene 0 -> Scene 1
         DontDestroyOnLoad(gameObject);
 
         if (musicSource != null)
-        {
             musicSource.volume = musicVolume;
-        }
 
         if (sfxSource != null)
-        {
             sfxSource.volume = sfxVolume;
-        }
+
+        Debug.Log("SOUND MANAGER CREATED");
+    }
+
+
+    // =========================================================
+    // ON ENABLE
+    // =========================================================
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += SceneLoaded;
+    }
+
+
+    // =========================================================
+    // ON DISABLE
+    // =========================================================
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= SceneLoaded;
     }
 
 
@@ -80,7 +102,64 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        PlayMainMusic();
+        int currentScene =
+            SceneManager.GetActiveScene().buildIndex;
+
+        Debug.Log("START SCENE INDEX = " + currentScene);
+
+
+        // Scene 0 = Main Menu
+        if (currentScene == 0)
+        {
+            PlayMainMusic();
+        }
+
+
+        // Scene 1 = Gameplay
+        else if (currentScene == 1)
+        {
+            PlayGameplayMusic();
+        }
+    }
+
+
+    // =========================================================
+    // WHEN NEW SCENE LOADS
+    // =========================================================
+
+    private void SceneLoaded(
+        Scene scene,
+        LoadSceneMode mode
+    )
+    {
+        Debug.Log(
+            "SCENE LOADED! INDEX = " +
+            scene.buildIndex
+        );
+
+
+        // =============================================
+        // SCENE 0 = MAIN MENU
+        // =============================================
+
+        if (scene.buildIndex == 0)
+        {
+            Debug.Log("MAIN MENU DETECTED");
+
+            PlayMainMusic();
+        }
+
+
+        // =============================================
+        // SCENE 1 = GAMEPLAY
+        // =============================================
+
+        else if (scene.buildIndex == 1)
+        {
+            Debug.Log("GAMEPLAY DETECTED");
+
+            PlayGameplayMusic();
+        }
     }
 
 
@@ -90,19 +169,42 @@ public class SoundManager : MonoBehaviour
 
     public void PlayMainMusic()
     {
-        if (musicSource == null || mainMusic == null)
+        if (musicSource == null)
+        {
+            Debug.LogError("MUSIC SOURCE NOT ASSIGNED!");
             return;
+        }
 
+        if (mainMusic == null)
+        {
+            Debug.LogError("MAIN MUSIC NOT ASSIGNED!");
+            return;
+        }
+
+
+        // Already playing
         if (musicSource.clip == mainMusic &&
             musicSource.isPlaying)
         {
             return;
         }
 
+
+        // Stop previous music
+        musicSource.Stop();
+
+
+        // Set main music
         musicSource.clip = mainMusic;
+
         musicSource.loop = true;
+
         musicSource.volume = musicVolume;
+
         musicSource.Play();
+
+
+        Debug.Log("MAIN MUSIC PLAYING");
     }
 
 
@@ -112,8 +214,18 @@ public class SoundManager : MonoBehaviour
 
     public void PlayLobbyMusic()
     {
-        if (musicSource == null || lobbyMusic == null)
+        if (musicSource == null)
+        {
+            Debug.LogError("MUSIC SOURCE NOT ASSIGNED!");
             return;
+        }
+
+        if (lobbyMusic == null)
+        {
+            Debug.LogError("LOBBY MUSIC NOT ASSIGNED!");
+            return;
+        }
+
 
         if (musicSource.clip == lobbyMusic &&
             musicSource.isPlaying)
@@ -121,15 +233,83 @@ public class SoundManager : MonoBehaviour
             return;
         }
 
+
+        musicSource.Stop();
+
         musicSource.clip = lobbyMusic;
+
         musicSource.loop = true;
+
         musicSource.volume = musicVolume;
+
         musicSource.Play();
+
+
+        Debug.Log("LOBBY MUSIC PLAYING");
     }
 
 
     // =========================================================
-    // BUTTON CLICK SOUND
+    // GAMEPLAY MUSIC
+    // =========================================================
+
+    public void PlayGameplayMusic()
+    {
+        Debug.Log("PlayGameplayMusic() CALLED");
+
+
+        if (musicSource == null)
+        {
+            Debug.LogError(
+                "GAMEPLAY FAILED: MUSIC SOURCE IS NULL!"
+            );
+
+            return;
+        }
+
+
+        if (gameplayMusic == null)
+        {
+            Debug.LogError(
+                "GAMEPLAY FAILED: GAMEPLAY MUSIC IS NOT ASSIGNED!"
+            );
+
+            return;
+        }
+
+
+        // STOP MAIN MUSIC
+        musicSource.Stop();
+
+
+        Debug.Log("OLD MUSIC STOPPED");
+
+
+        // Change AudioClip
+        musicSource.clip = gameplayMusic;
+
+
+        // Loop gameplay music
+        musicSource.loop = true;
+
+
+        // Set volume
+        musicSource.volume = musicVolume;
+
+
+        // Start gameplay music
+        musicSource.Play();
+
+
+        Debug.Log(
+            "GAMEPLAY MUSIC PLAYING = " +
+            gameplayMusic.name
+        );
+    }
+
+
+    // =========================================================
+    // BUTTON SOUND
     // =========================================================
 
     public void PlayButtonSound()
@@ -167,7 +347,7 @@ public class SoundManager : MonoBehaviour
 
 
     // =========================================================
-    // WRONG / ERROR SOUND
+    // WRONG SOUND
     // =========================================================
 
     public void PlayWrongSound()
@@ -267,12 +447,12 @@ public class SoundManager : MonoBehaviour
 
 
     // =========================================================
-    // MUTE / UNMUTE
+    // MUTE
     // =========================================================
 
     public void ToggleMute()
     {
-        AudioListener.pause = !AudioListener.pause;
+        AudioListener.pause =
+            !AudioListener.pause;
     }
-
 }
