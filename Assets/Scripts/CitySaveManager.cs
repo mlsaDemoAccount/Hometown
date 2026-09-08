@@ -23,24 +23,33 @@ public class BuildingSaveData
 [System.Serializable]
 public class CitySaveData
 {
+    // Embedded IN the data itself, not just implied by the save file's name - matters once
+    // this moves to a REST API payload later, which needs the ID as real data, not a filename.
+    public string cityId;
     public int funds;
+    public int xp;
     public long savedAtUnixSeconds; // real-world timestamp this save was written - used to compute offline progress on load
     public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
 }
 
-/// Saves/loads the placed city (buildings, funds) to a local JSON file. Uses
+/// Saves/loads ONE city's data (buildings, funds, XP) to a local JSON file, keyed by cityId -
+/// this game supports multiple cities per player, so every save/load is scoped to whichever
+/// city is currently active (currentCityId), not a single global save. Uses
 /// Application.persistentDataPath, which Unity resolves to the correct writable location
 /// automatically on Android, iOS, Windows, and Mac - no platform-specific code needed.
 ///
 /// This is LOCAL-ONLY for now. When REST API sync is added later, the same CitySaveData
-/// structure can be sent/received over HTTP instead of read/written to disk - SaveCity()/
-/// LoadCity() are the only two methods that would need their I/O swapped out; nothing else in
-/// the game needs to change.
+/// structure (cityId included) can be sent/received over HTTP instead of read/written to disk -
+/// SaveCity()/LoadCity() are the only two methods that would need their I/O swapped out;
+/// nothing else in the game needs to change.
 public class CitySaveManager : MonoBehaviour
 {
     public static CitySaveManager Instance { get; private set; }
 
-    private string SavePath => Path.Combine(Application.persistentDataPath, "city_save.json");
+    [Tooltip("Which city's save file to use. Later, a city-select screen will set this before entering Gameplay - for now, defaults to a single city so everything works exactly as before.")]
+    public string currentCityId = "city_1";
+
+    private string SavePath => Path.Combine(Application.persistentDataPath, $"city_{currentCityId}_save.json");
 
     void Awake()
     {
@@ -71,7 +80,9 @@ public class CitySaveManager : MonoBehaviour
     public void SaveCity()
     {
         var data = new CitySaveData();
+        data.cityId = currentCityId;
         data.funds = EconomyManager.Instance != null ? EconomyManager.Instance.currentFunds : 0;
+        data.xp = XPManager.Instance != null ? XPManager.Instance.currentXP : 0;
         data.savedAtUnixSeconds = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         if (BuildingPlacementController.Instance != null)
@@ -102,7 +113,7 @@ public class CitySaveManager : MonoBehaviour
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
-        Debug.Log($"[CitySaveManager] Saved {data.buildings.Count} building(s) to {SavePath}");
+        Debug.Log($"[CitySaveManager] Saved city '{currentCityId}' - {data.buildings.Count} building(s) to {SavePath}");
     }
 
     [ContextMenu("Load City Now")]
@@ -110,7 +121,7 @@ public class CitySaveManager : MonoBehaviour
     {
         if (!File.Exists(SavePath))
         {
-            Debug.Log("[CitySaveManager] No save file found - starting fresh (first-time player).");
+            Debug.Log($"[CitySaveManager] No save file found for city '{currentCityId}' - starting fresh.");
             return;
         }
 
@@ -120,6 +131,9 @@ public class CitySaveManager : MonoBehaviour
 
         if (EconomyManager.Instance != null)
             EconomyManager.Instance.SetFunds(data.funds);
+
+        if (XPManager.Instance != null)
+            XPManager.Instance.RestoreXP(data.xp);
 
         // How much real-world time passed while the app was closed - subtracted from every
         // in-progress construction/upgrade timer below, so buildings genuinely keep building
@@ -157,22 +171,22 @@ public class CitySaveManager : MonoBehaviour
             loaded++;
         }
 
-        Debug.Log($"[CitySaveManager] Loaded {loaded}/{data.buildings.Count} building(s) from {SavePath}");
+        Debug.Log($"[CitySaveManager] Loaded city '{currentCityId}' - {loaded}/{data.buildings.Count} building(s) from {SavePath}");
     }
 
-    /// Wipes the save file entirely - use this to test a fresh/first-time city without
-    /// reinstalling or clearing the whole device's app data.
+    /// Wipes the CURRENT city's save file - use this to test a fresh/first-time city without
+    /// reinstalling or clearing the whole device's app data. Other cities' saves are untouched.
     [ContextMenu("Clear Save (Testing)")]
     public void ClearSave()
     {
         if (File.Exists(SavePath))
         {
             File.Delete(SavePath);
-            Debug.Log("[CitySaveManager] Save file deleted.");
+            Debug.Log($"[CitySaveManager] Save file for city '{currentCityId}' deleted.");
         }
         else
         {
-            Debug.Log("[CitySaveManager] No save file to delete.");
+            Debug.Log($"[CitySaveManager] No save file to delete for city '{currentCityId}'.");
         }
     }
 }

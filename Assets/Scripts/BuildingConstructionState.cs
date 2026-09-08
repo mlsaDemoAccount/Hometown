@@ -34,6 +34,8 @@ public class BuildingConstructionState : MonoBehaviour
     public GameObject upgradeStageVisual;
 
     [Header("Timer Display (optional - both live on a World Space Canvas)")]
+    [Tooltip("The World Space Canvas GameObject itself (parent of timerText/radialTimerImage). Toggled as a whole - fully OFF when idle/complete, including its billboard script not running, not just its child elements being invisible.")]
+    public GameObject timerCanvas;
     [Tooltip("Floating text above the building showing remaining time - leave unassigned if you don't want one.")]
     public TMP_Text timerText;
     [Tooltip("Circular/watch-style progress image - set its Image Type to Filled, Fill Method to Radial 360 in the Inspector. This script drives fillAmount automatically.")]
@@ -47,6 +49,19 @@ public class BuildingConstructionState : MonoBehaviour
     public int PendingUpgradeLevelIndex => pendingUpgradeLevelIndex;
 
     private int pendingUpgradeLevelIndex;
+
+    void Start()
+    {
+        // Guarantees the timer canvas is OFF by default, in code, regardless of how the prefab
+        // was authored - this is what specifically fixes the GHOST preview case: a ghost clone
+        // gets this component too (it's baked into the prefab), but never calls
+        // BeginConstruction()/BeginUpgrade(), so phase stays at its default Complete. For a REAL
+        // building, BuildingPlacementController calls BeginConstruction() synchronously right
+        // after Instantiate() - BEFORE Start() runs - so phase is already UnderConstruction by
+        // the time this check happens, and this correctly does nothing in that case.
+        if (phase == ConstructionPhase.Complete)
+            SetTimerVisualsActive(false);
+    }
 
     void Update()
     {
@@ -159,12 +174,19 @@ public class BuildingConstructionState : MonoBehaviour
 
     private void SetTimerVisualsActive(bool active)
     {
-        if (timerText != null) timerText.gameObject.SetActive(active);
-        if (radialTimerImage != null)
+        if (timerCanvas != null)
         {
-            radialTimerImage.gameObject.SetActive(active);
-            if (active) radialTimerImage.fillAmount = radialDrainsAsTimeElapses ? 1f : 0f; // start full/empty correctly
+            timerCanvas.SetActive(active);
         }
+        else
+        {
+            // Fallback if no single canvas reference is assigned - toggle the individual elements.
+            if (timerText != null) timerText.gameObject.SetActive(active);
+            if (radialTimerImage != null) radialTimerImage.gameObject.SetActive(active);
+        }
+
+        if (active && radialTimerImage != null)
+            radialTimerImage.fillAmount = radialDrainsAsTimeElapses ? 1f : 0f; // start full/empty correctly
     }
 
     private void CompleteCurrentPhase()

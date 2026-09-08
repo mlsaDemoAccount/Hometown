@@ -285,7 +285,16 @@ public class BuildingPlacementController : MonoBehaviour
             // otherwise it's placed instantly, same as before this feature existed.
             var constructionState = obj.GetComponent<BuildingConstructionState>();
             if (constructionState != null && selectedBuildingData.constructionDuration > 0f)
+            {
                 constructionState.BeginConstruction(selectedBuildingData.constructionDuration);
+                // XP awarded later, when construction actually completes (see BuildingInstance.CompleteInitialConstruction) -
+                // not here, so a half-built building doesn't already grant the reward.
+            }
+            else
+            {
+                // No timer - building is instantly complete, award this building's own XP now.
+                XPManager.Instance?.AddXP(selectedBuildingData.placementXP);
+            }
         }
         else if (currentMode == Mode.Moving)
         {

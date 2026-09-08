@@ -20,6 +20,8 @@ public class BuildingUpgradeLevel
     public int upgradeCost = 100;       // cost to reach the NEXT level from this one
     [Tooltip("Seconds this level's upgrade takes to complete once started (upgrading FROM this level TO the next one). 0 = instant.")]
     public float upgradeDuration = 60f;
+    [Tooltip("XP awarded when this level's upgrade completes (upgrading FROM this level TO the next one).")]
+    public int upgradeXP = 15;
     public float populationOutput;
     public float jobsOutput;
     public float pollutionOutput;
@@ -46,6 +48,8 @@ public class BuildingData : ScriptableObject
     [Header("Construction")]
     [Tooltip("Seconds a freshly placed building takes to finish construction. 0 = instant (no construction sequence) - safe default for buildings that don't have construction-stage visuals set up yet.")]
     public float constructionDuration = 0f;
+    [Tooltip("XP awarded when this building finishes construction (placement).")]
+    public int placementXP = 10;
 
     [Header("Placeholder Art")]
     // If true, stretches the visual prefab's X/Z scale to exactly fill footprintSize * cellSize -

@@ -62,6 +62,7 @@ public class BuildingInstance : MonoBehaviour
 
         int newLevelIndex = currentLevelIndex + 1;
         float duration = data.GetLevel(currentLevelIndex).upgradeDuration;
+        int xpReward = data.GetLevel(currentLevelIndex).upgradeXP; // this level's own reward, read BEFORE the level changes
 
         Debug.Log($"[BuildingInstance] Starting upgrade: '{data.displayName}' level {currentLevelIndex} -> {newLevelIndex}, duration {duration}s, constructionState {(constructionState != null ? "present" : "MISSING")}.");
 
@@ -76,6 +77,7 @@ public class BuildingInstance : MonoBehaviour
             // No construction component on this prefab, or 0-duration upgrade - apply instantly.
             currentLevelIndex = newLevelIndex;
             CityStatsManager.Instance?.RecalculateAll();
+            XPManager.Instance?.AddXP(xpReward);
             CitySaveManager.Instance?.SaveCity();
         }
         return true;
@@ -85,14 +87,21 @@ public class BuildingInstance : MonoBehaviour
     public void CompleteInitialConstruction()
     {
         CityStatsManager.Instance?.RecalculateAll(); // this building's stats now count
+        XPManager.Instance?.AddXP(data.placementXP);
         CitySaveManager.Instance?.SaveCity();
     }
 
     /// Called by BuildingConstructionState when an upgrade timer finishes.
     public void CompleteUpgrade(int newLevelIndex)
     {
+        // Read the OLD level's upgradeXP before overwriting currentLevelIndex - this is the
+        // level that was actually being upgraded FROM, same reward that was promised when the
+        // upgrade started (data.GetLevel(currentLevelIndex).upgradeXP in TryUpgrade above).
+        int xpReward = data.GetLevel(currentLevelIndex).upgradeXP;
+
         currentLevelIndex = newLevelIndex;
         CityStatsManager.Instance?.RecalculateAll();
+        XPManager.Instance?.AddXP(xpReward);
         CitySaveManager.Instance?.SaveCity();
     }
 
