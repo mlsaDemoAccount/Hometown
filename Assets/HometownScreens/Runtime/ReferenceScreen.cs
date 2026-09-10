@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using UnityEngine.Events;
 
 namespace Hometown.Screens
@@ -10,14 +11,14 @@ namespace Hometown.Screens
     {
         public ScreenKind kind;
         public AudioClip clickSound;
-        public Text title, subtitle, status, levelText;
-        public InputField description;
+        public TMP_Text title, subtitle, status, levelText;
+        public TMP_InputField description;
         public Slider generalVolume, musicVolume, sfxVolume;
         public Image photoPreview;
         public UnityEvent onAccept = new UnityEvent(), onCollect = new UnityEvent(), onCaptureRequested = new UnityEvent(), onUploadRequested = new UnityEvent(), onHome = new UnityEvent(), onCategories = new UnityEvent();
         public UnityEvent<string> onMemorySaved = new UnityEvent<string>();
         public int level = 5;
-        public Text[] memoryLabels;
+        public TMP_Text[] memoryLabels;
         public ReferenceScreen[] destinations;
         AudioSource audioSource;
         bool collected;
@@ -29,7 +30,12 @@ namespace Hometown.Screens
             if (generalVolume) { generalVolume.SetValueWithoutNotify(PlayerPrefs.GetFloat("Hometown.Master", .8f)); generalVolume.onValueChanged.AddListener(SetMaster); }
             if (musicVolume) { musicVolume.SetValueWithoutNotify(PlayerPrefs.GetFloat("Hometown.Music", .9f)); musicVolume.onValueChanged.AddListener(SetMusic); }
             if (sfxVolume) { sfxVolume.SetValueWithoutNotify(PlayerPrefs.GetFloat("Hometown.Sfx", .9f)); sfxVolume.onValueChanged.AddListener(SetSfx); }
-            if (kind == ScreenKind.AudioSettings) { SetMaster(generalVolume.value); SetMusic(musicVolume.value); SetSfx(sfxVolume.value); }
+            if (kind == ScreenKind.AudioSettings)
+            {
+                if (generalVolume) SetMaster(generalVolume.value);
+                if (musicVolume) SetMusic(musicVolume.value);
+                if (sfxVolume) SetSfx(sfxVolume.value);
+            }
         }
         void OnEnable()
         {
@@ -60,7 +66,14 @@ namespace Hometown.Screens
         public void Collect() { if (collected) return; collected = true; onCollect.Invoke(); Close(); }
         public void Capture() { onCaptureRequested.Invoke(); if (status) status.text = "Photo capture requested."; }
         public void Upload() { onUploadRequested.Invoke(); if (status) status.text = "Photo selection requested."; }
-        public void SetPhoto(Sprite photo) { if (photoPreview) { photoPreview.sprite = photo; photoPreview.color = Color.white; } }
+        public void SetPhoto(Sprite photo)
+        {
+            if (!photoPreview || !photo) return;
+            photoPreview.sprite = photo;
+            photoPreview.type = Image.Type.Simple;
+            photoPreview.preserveAspect = true;
+            photoPreview.color = Color.white;
+        }
         public void SaveMemory()
         {
             string text = description ? description.text.Trim() : "";
@@ -71,7 +84,7 @@ namespace Hometown.Screens
         public void SetMaster(float value) { AudioListener.volume = value; PlayerPrefs.SetFloat("Hometown.Master", value); UpdateValue(generalVolume,value); }
         public void SetMusic(float value) { if (SoundManager.Instance) SoundManager.Instance.SetMusicVolume(value); PlayerPrefs.SetFloat("Hometown.Music",value); UpdateValue(musicVolume,value); }
         public void SetSfx(float value) { if (SoundManager.Instance) SoundManager.Instance.SetSFXVolume(value); PlayerPrefs.SetFloat("Hometown.Sfx",value); UpdateValue(sfxVolume,value); }
-        void UpdateValue(Slider slider, float value) { if (!slider) return; var label = slider.transform.Find("Value"); if (label) label.GetComponent<Text>().text = Mathf.RoundToInt(value*100) + "%"; }
+        void UpdateValue(Slider slider, float value) { if (!slider) return; var label = slider.transform.Find("Value"); if (label) label.GetComponent<TMP_Text>().text = Mathf.RoundToInt(value*100) + "%"; }
         void OnDisable() { if (kind == ScreenKind.AudioSettings) PlayerPrefs.Save(); }
     }
 }

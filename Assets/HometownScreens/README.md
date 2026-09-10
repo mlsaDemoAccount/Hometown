@@ -6,7 +6,13 @@ Open `SixScreensPreview.unity` and press Play. The bottom row switches between a
 
 Drag `Prefabs/SixScreensUI.prefab` into a scene with an EventSystem. Its six child canvases begin inactive. Activate the desired child to show it; call `ReferenceScreen.Close()` for the animated exit. The linked suite has all destination references populated. The individual screen prefabs are also available; assign their Destinations array in enum order if using them separately.
 
-Each prefab uses its supplied 1920 x 1080 reference screen as the exact visible artwork. The artwork scales within the safe area without stretching. Interactive buttons, navigation areas, text input, and audio sliders are mapped over the matching positions. This preserves the precise appearance of the approved designs; changing visible text or individual artwork requires updating the corresponding image in `ReferenceScreens`.
+Each prefab contains editable UI objects rather than a full-screen reference image. The shared TopPanel and RightPanel are copied from `Assets/Scenes/Gameplay.unity` (including its gameplay-prefab overrides and added HUD elements), preserving their sprite assignments, child layouts, Image settings, and TMP text. Screen-specific icons and decorative buttons use Simple Images with Preserve Aspect; resizable panels use the bordered RoundedPanel sprite as Sliced Images. Photos keep their source aspect ratio. Titles, captions, button labels, and the description field use TextMeshPro.
+
+The CanvasScaler follows Gameplay.unity (Scale With Screen Size, 1080 x 1920, width match). A separate safe-area design root fits the 1600 x 900 landscape composition uniformly. The animation root is separate from the fitting root, so opening animations cannot override aspect fitting. These are overlay prefabs: the game scene remains visible behind the dimmer, and the standalone preview uses its scene background. ReferenceScreens contains design references only and is not rendered by these prefabs.
+
+Audio sliders have real tracks, linked fill RectTransforms, and live percentage labels. Memory text, photo previews, and level labels are connected to ReferenceScreen instead of being baked into artwork. The sample memory images use the existing family-photo sprite in UiImages/Elements.
+
+`Tools > Hometown > Validate and Render Six Screen UI` checks sprite modes and button/field bindings, then renders every prefab at 16:9, 4:3, and 21:9 into `Temp/HometownUIReview`. `Tools > Hometown > Rebuild Six Screen UI` recreates the six prefab layouts; it overwrites manual child-layout edits, so use it only when intentionally regenerating the screens. It preserves root/controller identities used by SixScreensUI and the preview scene.
 
 ## Behavior
 

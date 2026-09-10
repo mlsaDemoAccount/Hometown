@@ -39,6 +39,14 @@ public class SoundManager : MonoBehaviour
     // VOLUME
     // =========================================================
 
+    // General Volume multiplies both channels without changing their own settings.
+    [Range(0f, 1f)]
+    [SerializeField] private float generalVolume = 1f;
+
+    public float GeneralVolume => generalVolume;
+    public float MusicVolume => musicVolume;
+    public float SFXVolume => sfxVolume;
+
     [Header("Volume")]
 
     [Range(0f, 1f)]
@@ -66,11 +74,11 @@ public class SoundManager : MonoBehaviour
         // Keep SoundManager alive from Scene 0 -> Scene 1
         DontDestroyOnLoad(gameObject);
 
-        if (musicSource != null)
-            musicSource.volume = musicVolume;
-
-        if (sfxSource != null)
-            sfxSource.volume = sfxVolume;
+        // Restore the player's settings when the game starts.
+        generalVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("Audio.GeneralVolume", generalVolume));
+        musicVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("Audio.MusicVolume", musicVolume));
+        sfxVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("Audio.SFXVolume", sfxVolume));
+        ApplyVolumes();
 
         Debug.Log("SOUND MANAGER CREATED");
     }
@@ -199,7 +207,7 @@ public class SoundManager : MonoBehaviour
 
         musicSource.loop = true;
 
-        musicSource.volume = musicVolume;
+        musicSource.volume = musicVolume * generalVolume;
 
         musicSource.Play();
 
@@ -240,7 +248,7 @@ public class SoundManager : MonoBehaviour
 
         musicSource.loop = true;
 
-        musicSource.volume = musicVolume;
+        musicSource.volume = musicVolume * generalVolume;
 
         musicSource.Play();
 
@@ -294,7 +302,7 @@ public class SoundManager : MonoBehaviour
 
 
         // Set volume
-        musicSource.volume = musicVolume;
+        musicSource.volume = musicVolume * generalVolume;
 
 
         // Start gameplay music
@@ -322,7 +330,7 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             buttonClickSound,
-            sfxVolume
+            1f // Source volume already includes SFX and General Volume.
         );
     }
 
@@ -341,7 +349,7 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             typingSound,
-            sfxVolume
+            1f // Source volume already includes SFX and General Volume.
         );
     }
 
@@ -360,7 +368,7 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             wrongSound,
-            sfxVolume
+            1f // Source volume already includes SFX and General Volume.
         );
     }
 
@@ -379,7 +387,7 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             panelOpenSound,
-            sfxVolume
+            1f // Source volume already includes SFX and General Volume.
         );
     }
 
@@ -398,7 +406,7 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             clip,
-            sfxVolume
+            1f // Source volume already includes SFX and General Volume.
         );
     }
 
@@ -423,26 +431,32 @@ public class SoundManager : MonoBehaviour
     public void SetMusicVolume(float volume)
     {
         musicVolume = Mathf.Clamp01(volume);
-
-        if (musicSource != null)
-        {
-            musicSource.volume = musicVolume;
-        }
+        PlayerPrefs.SetFloat("Audio.MusicVolume", musicVolume);
+        ApplyVolumes();
     }
-
-
-    // =========================================================
-    // SFX VOLUME
-    // =========================================================
 
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
+        PlayerPrefs.SetFloat("Audio.SFXVolume", sfxVolume);
+        ApplyVolumes();
+    }
+
+    public void SetGeneralVolume(float volume)
+    {
+        generalVolume = Mathf.Clamp01(volume);
+        PlayerPrefs.SetFloat("Audio.GeneralVolume", generalVolume);
+        ApplyVolumes();
+    }
+
+    private void ApplyVolumes()
+    {
+        // Example: General 50% and Music 80% gives music output of 40%.
+        if (musicSource != null)
+            musicSource.volume = generalVolume * musicVolume;
 
         if (sfxSource != null)
-        {
-            sfxSource.volume = sfxVolume;
-        }
+            sfxSource.volume = generalVolume * sfxVolume;
     }
 
 
