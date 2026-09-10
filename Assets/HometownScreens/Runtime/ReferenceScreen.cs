@@ -27,18 +27,13 @@ namespace Hometown.Screens
         void Awake()
         {
             audioSource = gameObject.AddComponent<AudioSource>(); audioSource.playOnAwake = false; audioSource.spatialBlend = 0;
-            if (generalVolume) { generalVolume.SetValueWithoutNotify(PlayerPrefs.GetFloat("Hometown.Master", .8f)); generalVolume.onValueChanged.AddListener(SetMaster); }
-            if (musicVolume) { musicVolume.SetValueWithoutNotify(PlayerPrefs.GetFloat("Hometown.Music", .9f)); musicVolume.onValueChanged.AddListener(SetMusic); }
-            if (sfxVolume) { sfxVolume.SetValueWithoutNotify(PlayerPrefs.GetFloat("Hometown.Sfx", .9f)); sfxVolume.onValueChanged.AddListener(SetSfx); }
-            if (kind == ScreenKind.AudioSettings)
-            {
-                if (generalVolume) SetMaster(generalVolume.value);
-                if (musicVolume) SetMusic(musicVolume.value);
-                if (sfxVolume) SetSfx(sfxVolume.value);
-            }
+            if (generalVolume) generalVolume.onValueChanged.AddListener(SetMaster);
+            if (musicVolume) musicVolume.onValueChanged.AddListener(SetMusic);
+            if (sfxVolume) sfxVolume.onValueChanged.AddListener(SetSfx);
         }
         void OnEnable()
         {
+            RefreshVolumes();
             collected = false;
             if (levelText) levelText.text = level.ToString();
             if (kind == ScreenKind.OceanParkMemories && PlayerPrefs.HasKey(MemoryKey) && memoryLabels.Length > 0)
@@ -48,7 +43,6 @@ namespace Hometown.Screens
         public void PlayClick()
         {
             if (SoundManager.Instance) SoundManager.Instance.PlayButtonSound();
-            else if (clickSound) AudioSource.PlayClipAtPoint(clickSound, Camera.main ? Camera.main.transform.position : Vector3.zero, PlayerPrefs.GetFloat("Hometown.Sfx", .9f));
         }
         public void Close() { GetComponent<ScreenMotion>().Close(); }
         public void Go(int index)
@@ -81,9 +75,22 @@ namespace Hometown.Screens
             PlayerPrefs.SetString(MemoryKey, text); PlayerPrefs.Save(); onMemorySaved.Invoke(text); Memories();
         }
         public void NextPage() { diaryIndex = 1-diaryIndex; if (subtitle) subtitle.text = diaryIndex == 0 ? "I go with your mom in 2015\nWe are very happy" : PlayerPrefs.GetString(MemoryKey, "A day together at Ocean Park.\nA memory worth keeping."); }
-        public void SetMaster(float value) { AudioListener.volume = value; PlayerPrefs.SetFloat("Hometown.Master", value); UpdateValue(generalVolume,value); }
-        public void SetMusic(float value) { if (SoundManager.Instance) SoundManager.Instance.SetMusicVolume(value); PlayerPrefs.SetFloat("Hometown.Music",value); UpdateValue(musicVolume,value); }
-        public void SetSfx(float value) { if (SoundManager.Instance) SoundManager.Instance.SetSFXVolume(value); PlayerPrefs.SetFloat("Hometown.Sfx",value); UpdateValue(sfxVolume,value); }
+        // Both versions of the audio screen use the same game's SoundManager.
+        public void SetMaster(float value) { if (SoundManager.Instance) SoundManager.Instance.SetGeneralVolume(value); UpdateValue(generalVolume,value); }
+        public void SetMusic(float value) { if (SoundManager.Instance) SoundManager.Instance.SetMusicVolume(value); UpdateValue(musicVolume,value); }
+        public void SetSfx(float value) { if (SoundManager.Instance) SoundManager.Instance.SetSFXVolume(value); UpdateValue(sfxVolume,value); }
+
+        void RefreshVolumes()
+        {
+            var sound = SoundManager.Instance;
+            if (sound == null) return;
+            if (generalVolume) generalVolume.SetValueWithoutNotify(sound.GeneralVolume);
+            if (musicVolume) musicVolume.SetValueWithoutNotify(sound.MusicVolume);
+            if (sfxVolume) sfxVolume.SetValueWithoutNotify(sound.SFXVolume);
+            UpdateValue(generalVolume, sound.GeneralVolume);
+            UpdateValue(musicVolume, sound.MusicVolume);
+            UpdateValue(sfxVolume, sound.SFXVolume);
+        }
         void UpdateValue(Slider slider, float value) { if (!slider) return; var label = slider.transform.Find("Value"); if (label) label.GetComponent<TMP_Text>().text = Mathf.RoundToInt(value*100) + "%"; }
         void OnDisable() { if (kind == ScreenKind.AudioSettings) PlayerPrefs.Save(); }
     }
