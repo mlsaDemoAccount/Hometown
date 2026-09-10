@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ef929217aabf478980c19d2ae26dfa2, type: 3}
+  m_Name: TrafficJam
+  m_EditorClassIdentifier: Assembly-CSharp::CityEventData
+  eventType: 0
+  displayName: Traffic Jam
+  notificationMessage: It looks like a traffic jam. Go and check it out!
+  visualPrefabVariants:
+  - {fileID: 2845669446265151610, guid: 21f7bc87d01834c36949ffebd2dddc2d, type: 3}
+  resolveParticlePrefab: {fileID: 104829970813648393, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
+  rotationOffsetDegrees: 90
+  resolveDuration: 3
+  minFundsReward: 20
+  maxFundsReward: 50
+  autoExpireDuration: 600

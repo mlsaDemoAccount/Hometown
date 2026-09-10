@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,9 +39,7 @@ public class CityNotificationManager : MonoBehaviour
 
     private float timer;
     private bool notificationActive = false;
-    private BuildingCategory pendingCategory; // what Accept will actually switch the shop to
     private BuildingCategory? lastGrowthSuggestion = null; // tracks progress along the growth chain
-    private CityNotificationPanel activePanel; // whichever of critical/normal is currently showing
 
     private struct Suggestion
     {
@@ -63,16 +62,16 @@ public class CityNotificationManager : MonoBehaviour
         if (timer >= notificationInterval)
         {
             timer = 0f;
-            ShowNextNotification();
+            StartCoroutine(ShowNextNotificationRoutine());
         }
     }
 
-    private void ShowNextNotification()
+    private IEnumerator ShowNextNotificationRoutine()
     {
         if (CityStatsManager.Instance == null)
         {
             Debug.LogWarning("[CityNotificationManager] CityStatsManager not found - skipping this notification attempt.");
-            return;
+            yield break;
         }
 
         Suggestion suggestion = BuildSuggestion();
@@ -82,13 +81,26 @@ public class CityNotificationManager : MonoBehaviour
         {
             string which = suggestion.status == CityMetricStatus.Critical ? "criticalPanel" : "normalPanel";
             Debug.LogWarning($"[CityNotificationManager] {which} is not assigned in the Inspector - skipping this notification attempt.");
-            return;
+            yield break;
         }
 
-        activePanel = targetPanel;
-        pendingCategory = suggestion.suggestedCategory;
         notificationActive = true;
-        activePanel.Show(BuildMessage(suggestion));
+        var handle = targetPanel.Show(BuildMessage(suggestion));
+        yield return new WaitUntil(() => handle.isDone);
+
+        notificationActive = false;
+        timer = 0f; // start waiting for the NEXT notification
+
+        if (handle.accepted)
+        {
+            if (UiManager.Instance != null)
+            {
+                UiManager.Instance.ShowHideGameplayPanel(false);
+                UiManager.Instance.ShowHideShopPanel(true);
+            }
+            ShopUIController.Instance?.SelectCategoryExternally(suggestion.suggestedCategory);
+        }
+        // Dismissed or auto-timeout: nothing else changes.
     }
 
     private Suggestion BuildSuggestion()
@@ -179,29 +191,5 @@ public class CityNotificationManager : MonoBehaviour
             return $"{s.troubledCategory} {urgency}. Place an item from the {s.troubledCategory} tab in the shop.";
 
         return $"{s.troubledCategory} {urgency}. Try placing something from the {s.suggestedCategory} tab to help bring it down.";
-    }
-
-    /// Called directly by CityNotificationPanel when Accept is tapped.
-    public void OnNotificationAccepted()
-    {
-        activePanel.Hide();
-        notificationActive = false;
-        timer = 0f; // start waiting for the NEXT notification
-
-        if (UiManager.Instance != null)
-        {
-            UiManager.Instance.ShowHideGameplayPanel(false);
-            UiManager.Instance.ShowHideShopPanel(true);
-        }
-        ShopUIController.Instance?.SelectCategoryExternally(pendingCategory);
-    }
-
-    /// Called directly by CityNotificationPanel when Dismiss is tapped. Nothing else changes -
-    /// just closes the popup and waits for the next interval.
-    public void OnNotificationDismissed()
-    {
-        activePanel.Hide();
-        notificationActive = false;
-        timer = 0f; // start waiting for the NEXT notification
     }
 }

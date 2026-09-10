@@ -3,17 +3,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// Tracks XP and city level for the CURRENTLY LOADED city (see CitySaveManager.currentCityId -
-/// XP is per-city, matching the multi-city architecture, not a global player-wide stat).
+/// Tracks and displays the player/city's HUD progress stats: XP, level, and funds - all
+/// consolidated in one place since they're all just "numbers shown on the gameplay screen"
+/// (formerly split across this class and a separate GameplayFundsDisplay script). Funds
+/// themselves are still owned by EconomyManager; this just displays them via polling in
+/// Update() - no event/delegate subscription anywhere in this project.
 ///
-/// XP amounts are NOT set here - each building's placement XP lives on its own BuildingData
-/// asset (placementXP), and each upgrade level's XP lives on its own BuildingUpgradeLevel
+/// XP is per-city (see CitySaveManager.currentCityId), not a global player-wide stat. XP
+/// amounts are NOT set here - each building's placement XP lives on its own BuildingData asset
+/// (placementXP), and each upgrade level's XP lives on its own BuildingUpgradeLevel
 /// (upgradeXP), since different buildings/levels should reward different amounts. This class
 /// only tracks the running total and derives the city level from it - call AddXP(amount) with
 /// whatever amount the specific action earned.
-public class XPManager : MonoBehaviour
+public class PlayerProgressManager : MonoBehaviour
 {
-    public static XPManager Instance { get; private set; }
+    public static PlayerProgressManager Instance { get; private set; }
 
     [Tooltip("Direct reference to the level-up popup - NOT a static Instance lookup, since that panel starting inactive in the Hierarchy would mean its Awake()/Start() hasn't run yet the first time it's needed (same class of bug fixed earlier on CityNotificationManager). A direct reference works regardless of that timing.")]
     public LevelUpPopup levelUpPopup;
@@ -24,7 +28,8 @@ public class XPManager : MonoBehaviour
 
     [Header("Display")]
     public TMP_Text xpText;
-    public TMP_Text levelText; // shows a plain number ("3"), not "Lv. 3"
+    public TMP_Text levelText;   // plain number ("3"), not "Lv. 3"
+    public TMP_Text fundsText;   // plain number ("100"), not "100 WP" - shop's own label can format differently
     [Tooltip("Standard Unity Slider - Min/Max Value get set to the current level's XP range each update, and Value tracks currentXP within that range. Shows visual progress toward the next level.")]
     public Slider xpProgressSlider;
 
@@ -40,6 +45,13 @@ public class XPManager : MonoBehaviour
     void Start()
     {
         UpdateDisplay();
+    }
+
+    void Update()
+    {
+        // Funds are polled here (not event-driven) - EconomyManager doesn't fire any
+        // notification, so this just reads currentFunds directly each frame.
+        UpdateFundsDisplay();
     }
 
     /// Call this whenever the player does something that should earn XP. Shows the level-up
@@ -82,9 +94,15 @@ public class XPManager : MonoBehaviour
 
     private void UpdateDisplay()
     {
-        if (xpText != null) xpText.text = $"{currentXP} XP";
+        if (xpText != null) xpText.text = currentXP.ToString();
         if (levelText != null) levelText.text = currentLevel.ToString();
         UpdateXPSlider();
+    }
+
+    private void UpdateFundsDisplay()
+    {
+        if (fundsText != null && EconomyManager.Instance != null)
+            fundsText.text = EconomyManager.Instance.currentFunds.ToString();
     }
 
     /// Sets the slider's range to [XP where the current level started, XP where the next level

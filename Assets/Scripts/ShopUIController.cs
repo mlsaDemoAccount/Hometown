@@ -47,14 +47,16 @@ public class ShopUIController : MonoBehaviour
 
     void Start()
     {
-        if (EconomyManager.Instance != null)
-        {
-            EconomyManager.Instance.OnFundsChanged += UpdateFundsLabel;
-            UpdateFundsLabel(EconomyManager.Instance.currentFunds);
-        }
+        UpdateFundsLabel();
 
         GenerateTabs();
         PopulateList();
+    }
+
+    void Update()
+    {
+        // Polling instead of subscribing to a funds-changed event - no event/delegate.
+        UpdateFundsLabel();
     }
 
     private void GenerateTabs()
@@ -204,8 +206,9 @@ public class ShopUIController : MonoBehaviour
         }
     }
 
-    private void UpdateFundsLabel(int funds)
+    private void UpdateFundsLabel()
     {
-        if (fundsLabel != null) fundsLabel.text = $"{funds} WP";
+        if (fundsLabel != null && EconomyManager.Instance != null)
+            fundsLabel.text = $"{EconomyManager.Instance.currentFunds} WP";
     }
 }

@@ -77,7 +77,7 @@ public class BuildingInstance : MonoBehaviour
             // No construction component on this prefab, or 0-duration upgrade - apply instantly.
             currentLevelIndex = newLevelIndex;
             CityStatsManager.Instance?.RecalculateAll();
-            XPManager.Instance?.AddXP(xpReward);
+            PlayerProgressManager.Instance?.AddXP(xpReward);
             CitySaveManager.Instance?.SaveCity();
         }
         return true;
@@ -87,7 +87,7 @@ public class BuildingInstance : MonoBehaviour
     public void CompleteInitialConstruction()
     {
         CityStatsManager.Instance?.RecalculateAll(); // this building's stats now count
-        XPManager.Instance?.AddXP(data.placementXP);
+        PlayerProgressManager.Instance?.AddXP(data.placementXP);
         CitySaveManager.Instance?.SaveCity();
     }
 
@@ -101,7 +101,7 @@ public class BuildingInstance : MonoBehaviour
 
         currentLevelIndex = newLevelIndex;
         CityStatsManager.Instance?.RecalculateAll();
-        XPManager.Instance?.AddXP(xpReward);
+        PlayerProgressManager.Instance?.AddXP(xpReward);
         CitySaveManager.Instance?.SaveCity();
     }
 

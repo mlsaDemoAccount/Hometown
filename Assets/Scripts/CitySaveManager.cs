@@ -82,7 +82,7 @@ public class CitySaveManager : MonoBehaviour
         var data = new CitySaveData();
         data.cityId = currentCityId;
         data.funds = EconomyManager.Instance != null ? EconomyManager.Instance.currentFunds : 0;
-        data.xp = XPManager.Instance != null ? XPManager.Instance.currentXP : 0;
+        data.xp = PlayerProgressManager.Instance != null ? PlayerProgressManager.Instance.currentXP : 0;
         data.savedAtUnixSeconds = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         if (BuildingPlacementController.Instance != null)
@@ -132,8 +132,8 @@ public class CitySaveManager : MonoBehaviour
         if (EconomyManager.Instance != null)
             EconomyManager.Instance.SetFunds(data.funds);
 
-        if (XPManager.Instance != null)
-            XPManager.Instance.RestoreXP(data.xp);
+        if (PlayerProgressManager.Instance != null)
+            PlayerProgressManager.Instance.RestoreXP(data.xp);
 
         // How much real-world time passed while the app was closed - subtracted from every
         // in-progress construction/upgrade timer below, so buildings genuinely keep building

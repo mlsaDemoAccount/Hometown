@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// "Congratulations, Level X!" popup - shown by XPManager whenever earned XP pushes the city
+/// "Congratulations, Level X!" popup - shown by PlayerProgressManager whenever earned XP pushes the city
 /// into a new level. Fires identically whether that happens live (placing/upgrading right now)
 /// or from a building that finished offline while the app was closed and is catching up the
-/// moment the game reloads - both paths go through XPManager.AddXP() the same way.
+/// moment the game reloads - both paths go through PlayerProgressManager.AddXP() the same way.
 public class LevelUpPopup : MonoBehaviour
 {
     public GameObject panelRoot; // can be this.gameObject

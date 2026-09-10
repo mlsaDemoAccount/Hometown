@@ -2,16 +2,23 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// The notification bar/popup itself - shows a suggestion message with Accept/Dismiss buttons,
-/// plus an auto-dismiss countdown (text + slider). If the player doesn't interact within
-/// autoDismissDuration seconds, it dismisses itself automatically - same effect as tapping
-/// Dismiss, nothing else changes. CityNotificationManager owns WHAT to suggest and WHEN; this
-/// just displays it, counts down, and reports back which action happened.
+/// Result of showing a notification - the caller waits on isDone from its own coroutine, then
+/// reads accepted. No callbacks/delegates - same handle pattern used throughout this project
+/// (ApiRequestHandle, VersionCheckHandle, UpdatePopupChoiceHandle).
+public class NotificationChoiceHandle
+{
+    public bool isDone = false;
+    public bool accepted = false; // true = Accept tapped. false = Dismiss tapped OR auto-timeout.
+}
+
+/// Generic short-lived notification popup - message + Accept/Dismiss buttons + an auto-dismiss
+/// countdown (text + slider). Genuinely reusable: this component does NOT know or care who's
+/// using it - both CityNotificationManager (stat-based suggestions) and CityEventManager (city
+/// event toasts) call Show() and act on the handle they get back, however THEY interpret
+/// accepted/dismissed. No hardcoded reference back to any specific manager.
 ///
-/// NOTE: this script is intentionally used on MULTIPLE separate GameObjects (a critical-styled
-/// panel and a normal-styled panel) - it does NOT use a singleton Instance pattern, since that
-/// would incorrectly treat the second panel as a duplicate and destroy it. CityNotificationManager
-/// holds direct references to both instead.
+/// Also used on MULTIPLE separate GameObjects at once (e.g. a critical-styled panel and a
+/// normal-styled one) - no singleton Instance pattern here, callers hold direct references.
 public class CityNotificationPanel : MonoBehaviour
 {
     public GameObject panelRoot; // can be this.gameObject
@@ -29,6 +36,7 @@ public class CityNotificationPanel : MonoBehaviour
 
     private float remainingTime;
     private bool isCountingDown = false;
+    private NotificationChoiceHandle currentHandle;
 
     void Start()
     {
@@ -52,17 +60,22 @@ public class CityNotificationPanel : MonoBehaviour
         if (remainingTime <= 0f)
         {
             isCountingDown = false;
-            CityNotificationManager.Instance.OnNotificationDismissed(); // auto-timeout = same as tapping Dismiss
+            ResolveChoice(false); // auto-timeout counts as NOT accepted, same as Dismiss
             return;
         }
 
         UpdateTimerDisplay();
     }
 
-    public void Show(string message)
+    /// Shows the popup with the given message. Returns a handle - wait on its isDone (typically
+    /// via yield return new WaitUntil(() => handle.isDone) in your own coroutine) to know when
+    /// and how the player responded.
+    public NotificationChoiceHandle Show(string message)
     {
         if (messageText != null) messageText.text = message;
         panelRoot.SetActive(true);
+
+        currentHandle = new NotificationChoiceHandle();
 
         if (autoDismissDuration > 0f)
         {
@@ -76,11 +89,13 @@ public class CityNotificationPanel : MonoBehaviour
             if (timerText != null) timerText.gameObject.SetActive(false);
             if (timerSlider != null) timerSlider.gameObject.SetActive(false);
         }
+
+        return currentHandle;
     }
 
     public void Hide()
     {
-        isCountingDown = false; // stop the countdown if closed manually before it would've auto-fired
+        isCountingDown = false;
         panelRoot.SetActive(false);
     }
 
@@ -96,13 +111,16 @@ public class CityNotificationPanel : MonoBehaviour
             timerSlider.value = remainingTime / autoDismissDuration; // 1 = just shown, 0 = about to auto-dismiss
     }
 
-    private void OnAcceptClicked()
-    {
-        CityNotificationManager.Instance.OnNotificationAccepted();
-    }
+    private void OnAcceptClicked() => ResolveChoice(true);
+    private void OnDismissClicked() => ResolveChoice(false);
 
-    private void OnDismissClicked()
+    private void ResolveChoice(bool accepted)
     {
-        CityNotificationManager.Instance.OnNotificationDismissed();
+        Hide();
+        if (currentHandle != null)
+        {
+            currentHandle.accepted = accepted;
+            currentHandle.isDone = true;
+        }
     }
 }

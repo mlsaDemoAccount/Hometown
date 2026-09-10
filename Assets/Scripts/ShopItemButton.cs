@@ -33,19 +33,12 @@ public class ShopItemButton : MonoBehaviour
         button.onClick.AddListener(OnClicked);
 
         UpdateAffordability();
-
-        if (EconomyManager.Instance != null)
-            EconomyManager.Instance.OnFundsChanged += OnFundsChanged;
     }
 
-    private void OnDestroy()
+    void Update()
     {
-        if (EconomyManager.Instance != null)
-            EconomyManager.Instance.OnFundsChanged -= OnFundsChanged;
-    }
-
-    private void OnFundsChanged(int newFunds)
-    {
+        // Polling instead of subscribing to a funds-changed event - keeps affordability
+        // current if funds change while this button is visible, without any event/delegate.
         UpdateAffordability();
     }
 

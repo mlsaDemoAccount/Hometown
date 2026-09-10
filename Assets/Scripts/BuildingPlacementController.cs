@@ -293,7 +293,7 @@ public class BuildingPlacementController : MonoBehaviour
             else
             {
                 // No timer - building is instantly complete, award this building's own XP now.
-                XPManager.Instance?.AddXP(selectedBuildingData.placementXP);
+                PlayerProgressManager.Instance?.AddXP(selectedBuildingData.placementXP);
             }
         }
         else if (currentMode == Mode.Moving)
