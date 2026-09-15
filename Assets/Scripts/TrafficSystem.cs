@@ -12,6 +12,8 @@ public class TrafficSpawner : MonoBehaviour
     public GameObject[] vehiclePrefabs;
     public int maxActiveVehicles = 30;
     public float spawnInterval = 2f;
+    [Tooltip("Optional - if assigned, every spawned vehicle is parented under this Transform for scene organization only. Uses worldPositionStays=true, so this has zero effect on position/rotation/behavior - purely cosmetic Hierarchy grouping. Leave unassigned to spawn at scene root as before.")]
+    public Transform trafficParent;
 
     [Header("Lane")]
     [Tooltip("How far a vehicle sits from the road centerline, toward its correct side.")]
@@ -117,6 +119,7 @@ public class TrafficSpawner : MonoBehaviour
 
         var prefab = vehiclePrefabs[Random.Range(0, vehiclePrefabs.Length)];
         var go = Instantiate(prefab, path[0].worldPosition, initialRotation);
+        if (trafficParent != null) go.transform.SetParent(trafficParent, true); // true = keep world position exactly as spawned, purely organizational
         var agent = go.GetComponent<TrafficAgent>();
         if (agent == null) agent = go.AddComponent<TrafficAgent>();
         agent.laneOffset = laneOffset;

@@ -28,6 +28,9 @@ public class CityNotificationManager : MonoBehaviour
     [Tooltip("Seconds between notifications. Lower this for testing (e.g. 10-15s), raise it for real play (e.g. 120s = 2 minutes).")]
     public float notificationInterval = 120f;
 
+    [Tooltip("Persistent list where every currently-troubled category gets an entry with NO countdown - it stays until that stat actually leaves Warning/Critical, independent of the toast's own timing.")]
+    public NotificationCenter notificationCenter;
+
     /// Which category to suggest next once the whole city is healthy - keyed by whichever
     /// growth category was suggested most recently.
     private static readonly Dictionary<BuildingCategory, BuildingCategory> GrowthChain = new Dictionary<BuildingCategory, BuildingCategory>
@@ -40,6 +43,18 @@ public class CityNotificationManager : MonoBehaviour
     private float timer;
     private bool notificationActive = false;
     private BuildingCategory? lastGrowthSuggestion = null; // tracks progress along the growth chain
+
+    /// Every category currently showing a persistent Notification Center entry - lets us tell
+    /// apart "already listed, just refresh its text" from "newly troubled, create an entry" and
+    /// "no longer troubled, remove its entry".
+    private Dictionary<BuildingCategory, NotificationCenterEntry> activeStatEntries = new Dictionary<BuildingCategory, NotificationCenterEntry>();
+
+    /// The last suggestion actually built (by the toast's own timer, via BuildSuggestion()) -
+    /// used to keep a matching Notification Center entry for the healthy-city growth-chain
+    /// case WITHOUT calling BuildSuggestion() again, which would incorrectly advance the chain
+    /// every frame instead of only when the toast fires.
+    private Suggestion? currentSuggestion = null;
+    private NotificationCenterEntry growthChainEntry = null;
 
     private struct Suggestion
     {
@@ -56,6 +71,9 @@ public class CityNotificationManager : MonoBehaviour
 
     void Update()
     {
+        RefreshStatEntries();       // independent of the toast's own timer below - runs continuously
+        RefreshGrowthChainEntry();  // same - just reflects the last-built suggestion, never advances it
+
         if (notificationActive) return; // don't queue/stack a new one while one is already showing
 
         timer += Time.deltaTime;
@@ -63,6 +81,86 @@ public class CityNotificationManager : MonoBehaviour
         {
             timer = 0f;
             StartCoroutine(ShowNextNotificationRoutine());
+        }
+    }
+
+    private bool warnedMissingNotificationCenter = false; // log this once, not every frame
+
+    /// Keeps the Notification Center's stat entries matching reality: creates one the moment a
+    /// category becomes Warning/Critical, keeps its text current if the severity changes, and
+    /// removes it the moment that category returns to Healthy - entirely independent of the
+    /// toast popup's own interval/timing.
+    private void RefreshStatEntries()
+    {
+        if (CityStatsManager.Instance == null) return;
+        if (notificationCenter == null)
+        {
+            if (!warnedMissingNotificationCenter)
+            {
+                Debug.LogWarning("[CityNotificationManager] Notification Center is not assigned in the Inspector - stat warnings will only show as a 5s toast, never as a persistent list entry.");
+                warnedMissingNotificationCenter = true;
+            }
+            return;
+        }
+
+        foreach (BuildingCategory category in System.Enum.GetValues(typeof(BuildingCategory)))
+        {
+            var status = CityStatsManager.Instance.GetStatus(category);
+            bool isTroubled = status == CityMetricStatus.Critical || status == CityMetricStatus.Warning;
+
+            if (isTroubled)
+            {
+                BuildingCategory suggestedCategory = ResolveSuggestionFor(category); // same counteracting-category logic the toast uses
+                var entrySuggestion = new Suggestion { troubledCategory = category, suggestedCategory = suggestedCategory, status = status };
+                string message = BuildMessage(entrySuggestion); // reuse the SAME detailed wording the toast uses, not a separate bare-bones string
+
+                if (activeStatEntries.TryGetValue(category, out var existingEntry))
+                {
+                    existingEntry.UpdateMessage(message); // keep wording current if Warning -> Critical
+                }
+                else
+                {
+                    var entry = notificationCenter.AddGenericEntry(message, suggestedCategory);
+                    if (entry != null) activeStatEntries[category] = entry;
+                }
+            }
+            else if (activeStatEntries.TryGetValue(category, out var entry))
+            {
+                notificationCenter.RemoveGenericEntry(entry);
+                activeStatEntries.Remove(category);
+            }
+        }
+    }
+
+    /// Keeps a single persistent entry reflecting the CURRENT growth-chain suggestion (e.g.
+    /// "place something from Lifestyle next") whenever the whole city is healthy - created the
+    /// first time a suggestion has been built, text updated as the chain advances, removed the
+    /// moment the city is no longer fully healthy (the per-category Warning/Critical entries
+    /// take over from RefreshStatEntries at that point instead).
+    private void RefreshGrowthChainEntry()
+    {
+        if (CityStatsManager.Instance == null || notificationCenter == null) return;
+
+        bool cityFullyHealthy = true;
+        foreach (BuildingCategory category in System.Enum.GetValues(typeof(BuildingCategory)))
+        {
+            if (CityStatsManager.Instance.GetStatus(category) != CityMetricStatus.Healthy) { cityFullyHealthy = false; break; }
+        }
+
+        bool shouldShow = cityFullyHealthy && currentSuggestion.HasValue && currentSuggestion.Value.status == CityMetricStatus.Healthy;
+
+        if (shouldShow)
+        {
+            string message = BuildMessage(currentSuggestion.Value);
+            if (growthChainEntry == null)
+                growthChainEntry = notificationCenter.AddGenericEntry(message, currentSuggestion.Value.suggestedCategory);
+            else
+                growthChainEntry.UpdateMessage(message);
+        }
+        else if (growthChainEntry != null)
+        {
+            notificationCenter.RemoveGenericEntry(growthChainEntry);
+            growthChainEntry = null;
         }
     }
 
@@ -75,6 +173,7 @@ public class CityNotificationManager : MonoBehaviour
         }
 
         Suggestion suggestion = BuildSuggestion();
+        currentSuggestion = suggestion; // remember for RefreshGrowthChainEntry - built ONLY here, per interval
         CityNotificationPanel targetPanel = suggestion.status == CityMetricStatus.Critical ? criticalPanel : normalPanel;
 
         if (targetPanel == null)

@@ -18,6 +18,8 @@ public class BuildingPlacementController : MonoBehaviour
     public Sprite indicatorValidSprite;
     public Sprite indicatorInvalidSprite;
     public PlacementControlPanel controlPanel; // assign in Inspector - the Done/Cancel panel
+    [Tooltip("Optional - if assigned, every REAL placed building (not the ghost preview) is parented under this Transform for scene organization only. Uses worldPositionStays=true, so this has zero effect on position/rotation/scale/behavior - purely cosmetic Hierarchy grouping. Leave unassigned to spawn at scene root as before.")]
+    public Transform buildingsParent;
 
     private bool lastGhostValid = false;
     public bool IsCurrentGhostValid() => lastGhostValid;
@@ -271,7 +273,7 @@ public class BuildingPlacementController : MonoBehaviour
 
             GameObject obj = Instantiate(GetVisualPrefab(selectedBuildingData),
                 GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
-            obj.transform.SetParent(null, true); // force to scene root
+            obj.transform.SetParent(buildingsParent, true); // true = keep world position exactly as placed, purely organizational (null = scene root, same as before if unassigned)
             ApplyFootprintScale(obj, selectedBuildingData);
             DisableIndicatorOnRealBuilding(obj); // indicator sprite is only for the ghost preview
             var instance = obj.AddComponent<BuildingInstance>();
@@ -374,7 +376,7 @@ public class BuildingPlacementController : MonoBehaviour
 
         GameObject obj = Instantiate(GetVisualPrefab(data, levelIndex),
             GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
-        obj.transform.SetParent(null, true);
+        obj.transform.SetParent(buildingsParent, true); // true = keep world position exactly as placed, purely organizational
         ApplyFootprintScale(obj, data);
         DisableIndicatorOnRealBuilding(obj);
 

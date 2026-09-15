@@ -13,6 +13,8 @@ public class PedestrianSpawner : MonoBehaviour
     public GameObject[] pedestrianPrefabs;
     public int maxActivePedestrians = 50;
     public float spawnInterval = 1.5f;
+    [Tooltip("Optional - if assigned, every spawned pedestrian is parented under this Transform for scene organization only. Uses worldPositionStays=true, so this has zero effect on position/rotation/behavior - purely cosmetic Hierarchy grouping. Leave unassigned to spawn at scene root as before.")]
+    public Transform pedestrianParent;
 
     [Header("Speed")]
     [Tooltip("Default speed range if the spawned prefab doesn't have a PedestrianSpeedProfile component.")]
@@ -130,6 +132,7 @@ public class PedestrianSpawner : MonoBehaviour
 
         var prefab = pedestrianPrefabs[Random.Range(0, pedestrianPrefabs.Length)];
         var go = Instantiate(prefab, path[0].worldPosition, Quaternion.identity);
+        if (pedestrianParent != null) go.transform.SetParent(pedestrianParent, true); // true = keep world position exactly as spawned, purely organizational
         var agent = go.GetComponent<PedestrianAgent>() ?? go.AddComponent<PedestrianAgent>();
 
         var speedProfile = go.GetComponent<PedestrianSpeedProfile>();
