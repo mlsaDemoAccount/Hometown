@@ -1,0 +1,320 @@
+fileFormatVersion: 2
+guid: 512e69d1c8ca06140aaaf10325cadcb9
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bodymat
+    second: {fileID: 2100000, guid: 1e17135025ea5e74b9c3c651ecf23c93, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bottommat
+    second: {fileID: 2100000, guid: 18b37091d5e10ed40aeab3340abb5854, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Eyewearmat
+    second: {fileID: 2100000, guid: 5627441b333213044afc6a68612967d0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glovemat
+    second: {fileID: 2100000, guid: c200d0234da892d40b82dc9b8354fcbe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hatmat
+    second: {fileID: 2100000, guid: ad70436d5ce0b1e478f4125bbe4cfc5d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shoesmat
+    second: {fileID: 2100000, guid: 674b6ab5c24033b45a78b9d4faa566f8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Topmat
+    second: {fileID: 2100000, guid: a1630e6b08287764387e010c8ee659dc, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Body_Diffuse
+    second: {fileID: 2800000, guid: b11784c5266b19449b6465d92badf44e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Body_Gloss
+    second: {fileID: 2800000, guid: 07bd5795f7f9c3b4e8b601d62709ffc8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Body_Normal
+    second: {fileID: 2800000, guid: 12a550a993c3d7e43a54021878c7016a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Body_Opacity
+    second: {fileID: 2800000, guid: 718c89bca29fa1345b858e9e3b8ebe98, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Body_Specular
+    second: {fileID: 2800000, guid: c173864c278f8eb47942a3fb39283086, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Bottom_Diffuse
+    second: {fileID: 2800000, guid: 7927e328ba9a8af4aadcf37ef5f99b38, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Bottom_Gloss
+    second: {fileID: 2800000, guid: 1aaf18099ea092849acc6654fdd28928, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Bottom_Normal
+    second: {fileID: 2800000, guid: 2d4bf43968c414740bd4ddbfc3a78dde, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Bottom_Opacity
+    second: {fileID: 2800000, guid: 5cf87d0e3829e9647a148422786d550f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Bottom_Specular
+    second: {fileID: 2800000, guid: 87073c1f40beb4c4faa689df1d506747, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Eyewear_Diffuse
+    second: {fileID: 2800000, guid: fa195283be75696479543e1fa57a5f00, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Eyewear_Gloss
+    second: {fileID: 2800000, guid: aea57e0dfbc43904495bd9539b649579, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Eyewear_Normal
+    second: {fileID: 2800000, guid: fad24e44341cf464eafec253d0975b6e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Eyewear_Opacity
+    second: {fileID: 2800000, guid: e14388e339ac21244bd4c7763a94d787, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Eyewear_Specular
+    second: {fileID: 2800000, guid: eb298d990dcec8b4eb534c9cea983021, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Glove_Diffuse
+    second: {fileID: 2800000, guid: 7d24d0ff32d4c604593fbf19d8a860d5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Glove_Gloss
+    second: {fileID: 2800000, guid: 6b634ab85cf46f24492e115c03e9b419, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Glove_Normal
+    second: {fileID: 2800000, guid: 5a8c6938831e6674eab6ed73b36951fb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Glove_Opacity
+    second: {fileID: 2800000, guid: 34e2cce325aa6e5448362269a247b17d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Glove_Specular
+    second: {fileID: 2800000, guid: 5643baebe7afc764397752baf65d6fd7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Hat_Diffuse
+    second: {fileID: 2800000, guid: 434041d889d6ea341b9c1f7f54fd4ce0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Hat_Gloss
+    second: {fileID: 2800000, guid: 2af12f060aec26142b449ba6781464b5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Hat_Normal
+    second: {fileID: 2800000, guid: 1deaf2ad93b8d104c9776536a131232e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Hat_Opacity
+    second: {fileID: 2800000, guid: 121166c46f94485488cb1bfc33f4ba1d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Hat_Specular
+    second: {fileID: 2800000, guid: 72c6952b894933340ad4f1d01ee35471, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Shoes_Diffuse
+    second: {fileID: 2800000, guid: bebeec813d59d2e4f86b0aa91c46af64, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Shoes_Gloss
+    second: {fileID: 2800000, guid: 2f46bbaf116639643b70f1cc6cb2d19b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Shoes_Normal
+    second: {fileID: 2800000, guid: 21ea92a3aec63624b8306596079147cf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Shoes_Opacity
+    second: {fileID: 2800000, guid: 5233b9ced37cae443aa93f90ee215da2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Shoes_Specular
+    second: {fileID: 2800000, guid: 0afbeb538efb5ca48a8a179bdbe29053, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Top_Diffuse
+    second: {fileID: 2800000, guid: ae13311e92f3c7740bc870d46edc9a4e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Top_Gloss
+    second: {fileID: 2800000, guid: 9c8b077b6c680234fb1f9e39de8032dc, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Top_Normal
+    second: {fileID: 2800000, guid: 45d260672c968d44ab6f81c27e19fc25, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Top_Opacity
+    second: {fileID: 2800000, guid: 3f449382cd1fa384583dd888581d7703, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Firefighter_Top_Specular
+    second: {fileID: 2800000, guid: 90e949bc0db6a3d448c0dee915f46132, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 1
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
