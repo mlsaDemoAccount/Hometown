@@ -32,6 +32,12 @@ public class PedestrianSpawner : MonoBehaviour
     public Transform debugStartPoint;
     public Transform debugEndPoint;
 
+    [Header("Zoom-Based Culling")]
+    [Tooltip("When the camera's zoom value (MobileCameraController.CurrentZoom, same units as its Min/Max Zoom) exceeds this - i.e. zoomed further OUT than this - every active pedestrian is deactivated entirely (stops both rendering AND movement simulation), cutting draw calls and CPU cost at a distance where people aren't meaningfully visible to the player anyway. Zoomed back in below this value re-activates them. Separate value from TrafficSpawner's - pedestrians are smaller and may become invisible at a closer zoom than cars do.")]
+    public float hidePedestriansAboveZoom = 30f;
+
+    private bool pedestriansCurrentlyHidden = false;
+
     private float timer;
     private List<PedestrianAgent> active = new List<PedestrianAgent>();
 
@@ -50,6 +56,26 @@ public class PedestrianSpawner : MonoBehaviour
             TrySpawn();
         }
         active.RemoveAll(p => p == null);
+
+        UpdatePedestrianVisibilityForZoom();
+    }
+
+    /// Hides/shows every active pedestrian based on current camera zoom - same approach as
+    /// TrafficSpawner's vehicle culling. A pedestrian whose whole GameObject is deactivated
+    /// costs nothing (no draw call, no Update()/movement simulation), not just an invisible
+    /// render. Only toggles when actually crossing the threshold, not every frame.
+    private void UpdatePedestrianVisibilityForZoom()
+    {
+        if (MobileCameraController.Instance == null) return;
+
+        bool shouldHide = MobileCameraController.Instance.CurrentZoom > hidePedestriansAboveZoom;
+        if (shouldHide == pedestriansCurrentlyHidden) return;
+
+        pedestriansCurrentlyHidden = shouldHide;
+        foreach (var pedestrian in active)
+        {
+            if (pedestrian != null) pedestrian.gameObject.SetActive(!shouldHide);
+        }
     }
 
     private void TrySpawn()
@@ -147,6 +173,12 @@ public class PedestrianSpawner : MonoBehaviour
         agent.SetPath(path, walkOffset, offsetToRight);
 
         active.Add(agent);
+
+        // If already zoomed out past the threshold, keep this new pedestrian hidden from the
+        // instant it spawns - otherwise it would flash visible for one frame before the next
+        // UpdatePedestrianVisibilityForZoom() check catches it (which only re-checks on
+        // threshold CROSSING, not every frame, so it wouldn't catch this on its own).
+        if (pedestriansCurrentlyHidden) go.SetActive(false);
     }
 
     private RoadNode NearestFootpathNode(Vector3 worldPos)

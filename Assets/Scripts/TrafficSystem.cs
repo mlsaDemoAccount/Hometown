@@ -37,6 +37,12 @@ public class TrafficSpawner : MonoBehaviour
     [Tooltip("Fraction of spawn attempts that use a manual point (when any are assigned) instead of normal random selection. 0.5 = about half.")]
     public float manualSpawnChance = 0.5f;
 
+    [Header("Zoom-Based Culling")]
+    [Tooltip("When the camera's zoom value (MobileCameraController.CurrentZoom, same units as its Min/Max Zoom) exceeds this - i.e. zoomed further OUT than this - every active vehicle is deactivated entirely (stops both rendering AND movement simulation), cutting draw calls and CPU cost at a distance where cars aren't meaningfully visible to the player anyway. Zoomed back in below this value re-activates them. Set to a large value (e.g. way above maxZoom) to disable this feature entirely.")]
+    public float hideVehiclesAboveZoom = 30f;
+
+    private bool vehiclesCurrentlyHidden = false;
+
     private List<TrafficAgent> activeVehicles = new List<TrafficAgent>();
     private float timer;
 
@@ -55,6 +61,26 @@ public class TrafficSpawner : MonoBehaviour
             TrySpawnVehicle();
         }
         activeVehicles.RemoveAll(v => v == null);
+
+        UpdateVehicleVisibilityForZoom();
+    }
+
+    /// Hides/shows every active vehicle based on current camera zoom - a car whose whole
+    /// GameObject is deactivated costs nothing (no draw call, no Update()/movement/raycast
+    /// simulation), not just an invisible render. Only toggles when actually crossing the
+    /// threshold, not every frame, to avoid redundant SetActive calls while zoom sits still.
+    private void UpdateVehicleVisibilityForZoom()
+    {
+        if (MobileCameraController.Instance == null) return;
+
+        bool shouldHide = MobileCameraController.Instance.CurrentZoom > hideVehiclesAboveZoom;
+        if (shouldHide == vehiclesCurrentlyHidden) return;
+
+        vehiclesCurrentlyHidden = shouldHide;
+        foreach (var vehicle in activeVehicles)
+        {
+            if (vehicle != null) vehicle.gameObject.SetActive(!shouldHide);
+        }
     }
 
     private List<List<RoadNode>> connectedComponents; // cached once - road graph doesn't change at runtime
@@ -137,6 +163,12 @@ public class TrafficSpawner : MonoBehaviour
 
         agent.SetPath(path);
         activeVehicles.Add(agent);
+
+        // If already zoomed out past the threshold, keep this new vehicle hidden from the
+        // instant it spawns - otherwise it would flash visible for one frame before the next
+        // UpdateVehicleVisibilityForZoom() check catches it (which only re-checks on threshold
+        // CROSSING, not every frame, so it wouldn't catch this on its own).
+        if (vehiclesCurrentlyHidden) go.SetActive(false);
     }
 
     /// Finds the closest road waypoint (by straight-line distance) to a world position - used

@@ -29,6 +29,10 @@ public class MobileCameraController : MonoBehaviour
     public float zoomSpeed = 0.05f;
     private float targetZoom;
 
+    /// Current zoom value (same units as minZoom/maxZoom) - read by anything that wants to
+    /// react to zoom level, e.g. TrafficSpawner hiding cars past a distance threshold.
+    public float CurrentZoom => targetZoom;
+
     private Vector2 lastPanPosition;
     private bool isPanning = false;
     private bool isFocusing = false; // true while FocusOn's coroutine is actively moving the camera
