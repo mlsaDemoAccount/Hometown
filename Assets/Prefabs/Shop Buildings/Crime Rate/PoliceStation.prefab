@@ -439,6 +439,7 @@ Transform:
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 4951320462640119166}
   - {fileID: 8060140820245890884}
   - {fileID: 9123324405275599699}
   - {fileID: 5855346441512434984}
@@ -683,6 +684,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: police station
       objectReference: {fileID: 0}
+    - target: {fileID: 5907776610184327216, guid: 366e0625fbc9811469ff7467419715d2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6536820009129585290, guid: 366e0625fbc9811469ff7467419715d2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -737,6 +742,104 @@ GameObject:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6536820009129585290, guid: 366e0625fbc9811469ff7467419715d2, type: 3}
   m_PrefabInstance: {fileID: 3849500663368412622}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4187154990417662970
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2913393733004049730}
+    m_Modifications:
+    - target: {fileID: 6598375329087230117, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_Size
+      value: 6.3319874
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598375329087230117, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalReferencePoint.x
+      value: -0.028621197
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598375329087230117, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 1.1483998
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598375329087230117, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalReferencePoint.z
+      value: 1.8482096
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598375329087230117, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7818544706791797714, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_Name
+      value: police station
+      objectReference: {fileID: 0}
+    - target: {fileID: 7818544706791797714, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.14171353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.14171353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.14171353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.004002639
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0040000044
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.004002639
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+--- !u!4 &4951320462640119166 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9128054262512758404, guid: 7d6b7846896abc54d89214cb85006bae, type: 3}
+  m_PrefabInstance: {fileID: 4187154990417662970}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4517190765751696915
 PrefabInstance:
