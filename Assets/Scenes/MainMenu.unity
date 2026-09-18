@@ -368,6 +368,7 @@ MonoBehaviour:
   typingSound: {fileID: 8300000, guid: e02c035edf6ecfb43b0bba59223e8a35, type: 3}
   wrongSound: {fileID: 8300000, guid: 0d186dfa8c8b4474faeb9bd4243c583c, type: 3}
   panelOpenSound: {fileID: 8300000, guid: cb6110eec7af0c64b942817f7c8089b9, type: 3}
+  generalVolume: 1
   musicVolume: 1
   sfxVolume: 1
 --- !u!224 &125451551 stripped
@@ -2175,7 +2176,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05b69486ce4c941eface10ef45f5692a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VersionCheckManager
-  versionEndpoint: /api/version
+  androidVersionEndpoint: /api/version/android
+  iosVersionEndpoint: /api/version/ios
   androidStoreUrl: https://play.google.com/store/apps/details?id=com.HometownGamesApp.Hometown
   iosStoreUrl: https://apps.apple.com/app/idYOUR_APP_ID
 --- !u!1 &7534025234555455795

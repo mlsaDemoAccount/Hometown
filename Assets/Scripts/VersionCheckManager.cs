@@ -28,8 +28,10 @@ public class VersionCheckManager : MonoBehaviour
     public static VersionCheckManager Instance { get; private set; }
 
     [Header("API")]
-    [Tooltip("Endpoint appended to APIManager.baseUrl - e.g. '/api/version'.")]
-    public string versionEndpoint = "/api/version";
+    [Tooltip("Endpoint appended to APIManager.baseUrl for Android - e.g. '/api/version/android'.")]
+    public string androidVersionEndpoint = "/api/version/android";
+    [Tooltip("Endpoint appended to APIManager.baseUrl for iOS - e.g. '/api/version/ios'.")]
+    public string iosVersionEndpoint = "/api/version/ios";
 
     [Header("Store Links")]
     public string androidStoreUrl = "https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME";
@@ -50,7 +52,16 @@ public class VersionCheckManager : MonoBehaviour
 
     private IEnumerator CheckVersionRoutine(VersionCheckHandle handle)
     {
-        var apiHandle = APIManager.Instance.Get(versionEndpoint);
+        string endpoint =
+#if UNITY_ANDROID
+            androidVersionEndpoint;
+#elif UNITY_IOS
+            iosVersionEndpoint;
+#else
+            androidVersionEndpoint; // reasonable default when testing in-editor/desktop
+#endif
+
+        var apiHandle = APIManager.Instance.Get(endpoint);
         yield return new WaitUntil(() => apiHandle.isDone);
 
         var response = apiHandle.response;
