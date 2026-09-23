@@ -8,7 +8,7 @@ using UnityEngine;
 /// same-direction following distance, not right-of-way at crossings.
 public class TrafficAgent : MonoBehaviour
 {
-    public float moveSpeed = 4f;
+    public float moveSpeed = 0.4f;
     public float rotationSpeed = 8f;
     [Tooltip("Lifts the vehicle above the waypoint's height - tune this per prefab if the model's pivot isn't at its base/wheels (most common cause of a car appearing to sink into the road).")]
     public float verticalOffset = 0f;

@@ -21,7 +21,9 @@ MonoBehaviour:
   - {fileID: 2845669446265151610, guid: 4c00abad202d844749dded04b65a9f57, type: 3}
   resolveParticlePrefab: {fileID: 104829970813648393, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
   rotationOffsetDegrees: 90
-  resolveDuration: 3
+  resolveDuration: 50
   minFundsReward: 20
   maxFundsReward: 50
   autoExpireDuration: 600
+  requiresStraightRoadAhead: 0
+  straightCellsRequired: 3

@@ -81,10 +81,11 @@ public class CityEventManager : MonoBehaviour
         }
 
         CityEventData data = eventTypes[Random.Range(0, eventTypes.Count)];
-        RoadNode node = PickNonIntersectionNode();
+        RoadNode node = PickNonIntersectionNode(data);
         if (node == null)
         {
-            Debug.LogWarning("[CityEventManager] Couldn't find a non-intersection road node to spawn at.");
+            string requirement = data.requiresStraightRoadAhead ? $" (needs {data.straightCellsRequired} straight road cells ahead)" : "";
+            Debug.LogWarning($"[CityEventManager] Couldn't find a suitable road node to spawn '{data.displayName}' at{requirement}.");
             return;
         }
 
@@ -95,7 +96,13 @@ public class CityEventManager : MonoBehaviour
     /// ANY connected direction (including a perpendicular branch), which was making rotation
     /// look wrong/unpredictable there. A plain 2-edge (or fewer) node is a straight mid-road
     /// point where both edges run along the same line, giving a reliable road-aligned direction.
-    private RoadNode PickNonIntersectionNode()
+    ///
+    /// If data.requiresStraightRoadAhead is set, candidates are further filtered to only nodes
+    /// with a genuinely clear, straight run of road ahead (see HasStraightRoadAhead) - this is
+    /// what lets a vehicle-departure event (garbage truck, etc.) safely drive forward without
+    /// leaving the road or hitting a turn, and naturally excludes turning/intersection areas
+    /// from ever being chosen for such an event.
+    private RoadNode PickNonIntersectionNode(CityEventData data)
     {
         var candidates = RoadManager.Instance.RoadNodes.FindAll(n => !n.IsIntersection);
         if (candidates.Count == 0)
@@ -103,7 +110,76 @@ public class CityEventManager : MonoBehaviour
             Debug.LogWarning("[CityEventManager] No non-intersection road nodes found - falling back to any road node (rotation may be less reliable here).");
             candidates = RoadManager.Instance.RoadNodes;
         }
+
+        if (data.requiresStraightRoadAhead)
+        {
+            var straightCandidates = candidates.FindAll(n => HasStraightRoadAhead(n, data.straightCellsRequired));
+            if (straightCandidates.Count == 0)
+            {
+                Debug.LogWarning($"[CityEventManager] No road node found with {data.straightCellsRequired} straight cells ahead for '{data.displayName}' - skipping this spawn attempt (will retry next timer).");
+                return null;
+            }
+            candidates = straightCandidates;
+        }
+
         return candidates.Count > 0 ? candidates[Random.Range(0, candidates.Count)] : null;
+    }
+
+    /// Checks whether the road GENUINELY continues straight for at least `cellsRequired` grid
+    /// cells worth of distance, by walking the WAYPOINT GRAPH itself - not by checking raw grid
+    /// cell type. Raw cell-type checking has a real flaw: at a T-intersection or turn, a
+    /// DIFFERENT crossing road segment can occupy the same cardinal-direction grid cells,
+    /// making that check pass even though the road actually being followed turns there - this
+    /// was the actual cause of events occasionally appearing near turns despite "passing" the
+    /// old check. Walking the graph and requiring no intersection along the way, with each hop
+    /// genuinely continuing in the same direction (not just any connected edge), avoids that
+    /// false positive entirely.
+    private bool HasStraightRoadAhead(RoadNode startNode, int cellsRequired)
+    {
+        if (GridManager.Instance == null || startNode.edges == null || startNode.edges.Count == 0) return false;
+
+        float requiredWorldDistance = cellsRequired * GridManager.Instance.cellSize;
+
+        Vector3 originalDir = startNode.edges[0].to.worldPosition - startNode.worldPosition;
+        originalDir.y = 0f;
+        if (originalDir.sqrMagnitude < 0.0001f) return false;
+        originalDir.Normalize();
+
+        RoadNode current = startNode;
+        float coveredDistance = 0f;
+        int safetyCounter = 0; // guards against any theoretical infinite loop on a malformed graph
+
+        while (coveredDistance < requiredWorldDistance && safetyCounter < 50)
+        {
+            safetyCounter++;
+
+            if (current.edges == null || current.edges.Count == 0) return false; // dead end before covering enough distance
+
+            // Find whichever edge from THIS node continues most closely in the ORIGINAL
+            // direction - not just edges[0] again, since after the first hop there's no
+            // guarantee "keep going the same way" is still index 0 in the new node's own list.
+            RoadEdge bestEdge = null;
+            float bestDot = -2f;
+            foreach (var edge in current.edges)
+            {
+                Vector3 edgeDir = edge.to.worldPosition - current.worldPosition;
+                edgeDir.y = 0f;
+                if (edgeDir.sqrMagnitude < 0.0001f) continue;
+
+                float dot = Vector3.Dot(edgeDir.normalized, originalDir);
+                if (dot > bestDot) { bestDot = dot; bestEdge = edge; }
+            }
+
+            if (bestEdge == null || bestDot < 0.9f) return false; // nothing continues straight enough here - a turn/branch exists
+
+            RoadNode next = bestEdge.to;
+            if (next.IsIntersection) return false; // an intersection interrupts the straight run before covering enough distance
+
+            coveredDistance += Vector3.Distance(current.worldPosition, next.worldPosition);
+            current = next;
+        }
+
+        return coveredDistance >= requiredWorldDistance;
     }
 
     /// Orients the spawn to match the actual direction the road runs at this node, using its

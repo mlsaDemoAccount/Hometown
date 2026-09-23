@@ -28,4 +28,10 @@ public class CityEventData : ScriptableObject
     [Header("Lifetime")]
     [Tooltip("Seconds before this event auto-expires if the player never resolves it - removed silently with no reward and no penalty.")]
     public float autoExpireDuration = 600f; // 10 minutes
+
+    [Header("Vehicle Departure (optional - for garbage/police/ambulance style events)")]
+    [Tooltip("If true, this event can ONLY spawn at a road position with at least straightCellsRequired consecutive straight road grid cells ahead of it - guarantees a vehicle-departure event (like a garbage truck driving off) has a safe straight stretch to drive along without leaving the road or needing to turn. Also naturally excludes turning/intersection grid areas, since those don't have a straight run of Road cells ahead.")]
+    public bool requiresStraightRoadAhead = false;
+    [Tooltip("How many consecutive straight grid cells must be available ahead, if requiresStraightRoadAhead is true.")]
+    public int straightCellsRequired = 3;
 }
