@@ -90354,9 +90354,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityEventManager
   eventTypes:
+  - {fileID: 11400000, guid: 9faa1dd13331a4b118665d89984aeb79, type: 2}
   - {fileID: 11400000, guid: 1cd36ac8e923f47e0a5cd7bad78b1d05, type: 2}
-  minSpawnGap: 10
-  maxSpawnGap: 10
+  - {fileID: 11400000, guid: 27380aae02010464aae3fe829feadc44, type: 2}
+  minSpawnGap: 30
+  maxSpawnGap: 60
   maxConcurrentEvents: 6
   toastPanel: {fileID: 2216427736770018405}
   cameraFocusDuration: 1.5
