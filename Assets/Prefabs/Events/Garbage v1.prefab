@@ -590,9 +590,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1035747628295317508, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309648687853281929, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5558924970338139437, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5721151895496215333, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
       propertyPath: m_Name
       value: Clening_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5908609093102911474, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8979444395072434718, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
       propertyPath: m_Enabled
@@ -647,6 +663,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 1818362252409497896}
   blinkSpeed: 1
+  matIndex: 0
 --- !u!23 &817795356736775298 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8815989543841902015, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
@@ -671,6 +688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 1492889603304375002}
   blinkSpeed: 1
+  matIndex: 0
 --- !u!1 &1178140983484597591 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7014448468411190378, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
@@ -690,6 +708,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 817795356736775298}
   blinkSpeed: 1
+  matIndex: 0
 --- !u!23 &1492889603304375002 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 7329050269069052903, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
@@ -724,6 +743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 3698583294246557711}
   blinkSpeed: 1
+  matIndex: 0
 --- !u!4 &2956776224919947273 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6343706017417642292, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
@@ -753,6 +773,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 2648703893154915176}
   blinkSpeed: 1
+  matIndex: 0
 --- !u!4 &4850926944233879532 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3625467063879679697, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
@@ -802,6 +823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 5087132285883572226}
   blinkSpeed: 1
+  matIndex: 0
 --- !u!23 &7294001635421336976 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1457113058062859437, guid: bc52d6d0a18b32444a8c622b367a4aed, type: 3}
@@ -841,3 +863,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TruckIndicator
   indicatorRenderer: {fileID: 7294001635421336976}
   blinkSpeed: 1
+  matIndex: 0

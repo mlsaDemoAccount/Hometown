@@ -6,12 +6,17 @@ public class TruckIndicator : MonoBehaviour
     public float blinkSpeed = 0.5f;
 
     private Material mat;
+    public int matIndex = 0;
     private bool state;
 
     void Start()
     {
-        mat = indicatorRenderer.material;
-        mat.EnableKeyword("_EMISSION");
+        if(indicatorRenderer.sharedMaterials.Length > 1)
+            mat = indicatorRenderer.sharedMaterials[matIndex];
+        else
+            mat = indicatorRenderer.material;
+        // mat = indicatorRenderer.material[matIndex];
+        // mat.EnableKeyword("_EMISSION");
 
         InvokeRepeating(nameof(Blink), 0f, blinkSpeed);
     }
@@ -22,11 +27,15 @@ public class TruckIndicator : MonoBehaviour
 
         if (state)
         {
-            mat.SetColor("_EmissionColor", Color.yellow * 10f);
+        mat.EnableKeyword("_EMISSION");
+
+            // mat.SetColor("_EmissionColor", Color.yellow * 10f);
         }
         else
         {
-            mat.SetColor("_EmissionColor", Color.black);
+        mat.DisableKeyword("_EMISSION");
+
+            // mat.SetColor("_EmissionColor", Color.white);
         }
     }
 }
