@@ -5,7 +5,7 @@ using UnityEngine;
 /// prefab, alongside the existing generic CityEventInstance component. Does NOT modify
 /// CityEventInstance/CityEventData/CityEventManager at all - purely additive, so traffic jams
 /// and every other event type are completely unaffected by anything in this file, and this
-/// same isolation pattern can be copied for Ambulance/Police/Fumigation with entirely different
+/// same isolation pattern can be copied for Ambulance/Police/Firefighter with entirely different
 /// behavior later without any of them interfering with each other.
 ///
 /// IDLE LOOP (before Fix is tapped): worker1 patrols back and forth between

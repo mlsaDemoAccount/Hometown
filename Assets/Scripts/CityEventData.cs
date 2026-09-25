@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum CityEventType { TrafficJam, Garbage, Ambulance, Police, Fumigation }
+public enum CityEventType { TrafficJam, Garbage, Ambulance, Police, Firefighter }
 
 [CreateAssetMenu(fileName = "NewCityEvent", menuName = "CityBuilder/City Event Data")]
 public class CityEventData : ScriptableObject
