@@ -223,16 +223,44 @@ public class CityEventManager : MonoBehaviour
 
         activeEvents.Add(instance);
 
-        if (toastPanel != null)
-            StartCoroutine(ShowToastRoutine(data.notificationMessage, position));
+        if (toastPanel == null)
+            Debug.LogWarning($"[CityEventManager] toastPanel is not assigned in the Inspector - '{data.displayName}' spawned but its toast will never show (only the Notification Center list entry will appear).");
+        else if (ToastNotificationCoordinator.Instance == null)
+            Debug.LogWarning("[CityEventManager] ToastNotificationCoordinator not found in scene - event toasts will never show (only the Notification Center list entries will appear). Add a ToastNotificationCoordinator component to your scene.");
+        else
+            StartCoroutine(QueueEventToastRoutine(instance, data.notificationMessage, position));
 
         notificationCenter?.AddEntry(instance);
+    }
+
+    /// Waits until the shared toast slot is free, then shows this event's toast. A one-shot
+    /// attempt at spawn time doesn't work: the stat-toast system polls the slot every frame, so
+    /// it almost always wins and the event's single attempt got dropped. Queuing here means the
+    /// toast shows as soon as whatever is currently on screen finishes. If the event is already
+    /// resolved/expired while waiting, the toast is skipped - nothing left to announce.
+    private IEnumerator QueueEventToastRoutine(CityEventInstance instance, string message, Vector3 eventPosition)
+    {
+        while (!ToastNotificationCoordinator.Instance.TryBeginPriorityToast())
+        {
+            if (instance == null) yield break; // event already gone (Unity null check) - don't announce it
+            yield return null;
+        }
+
+        if (instance == null)
+        {
+            ToastNotificationCoordinator.Instance.EndToast(); // got the slot but nothing to show - release it immediately
+            yield break;
+        }
+
+        yield return ShowToastRoutine(message, eventPosition);
     }
 
     private IEnumerator ShowToastRoutine(string message, Vector3 eventPosition)
     {
         var handle = toastPanel.Show(message);
         yield return new WaitUntil(() => handle.isDone);
+
+        ToastNotificationCoordinator.Instance?.EndToast();
 
         if (handle.accepted && MobileCameraController.Instance != null)
             MobileCameraController.Instance.FocusOn(eventPosition, cameraFocusDuration, cameraFocusZoom);

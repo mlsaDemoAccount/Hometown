@@ -33,6 +33,26 @@ public class MobileCameraController : MonoBehaviour
     /// react to zoom level, e.g. TrafficSpawner hiding cars past a distance threshold.
     public float CurrentZoom => targetZoom;
 
+    /// Sets zoom immediately, no animation - used to force a specific starting state (e.g. a
+    /// scene-start intro sequence that needs to begin at max zoom regardless of whatever the
+    /// scene/prefab was left at).
+    public void SetZoomImmediate(float zoomValue)
+    {
+        targetZoom = Mathf.Clamp(zoomValue, minZoom, maxZoom);
+        if (cam != null) ApplyZoom();
+    }
+
+    /// Sets X/Z position immediately, no animation - used to force a specific starting position
+    /// (e.g. a scene-start intro sequence). Y is left untouched here since zoom
+    /// (SetZoomImmediate/ApplyZoom) controls height separately.
+    public void SetPositionImmediate(Vector3 worldPosition)
+    {
+        Vector3 pos = transform.position;
+        pos.x = worldPosition.x;
+        pos.z = worldPosition.z;
+        transform.position = pos;
+    }
+
     private Vector2 lastPanPosition;
     private bool isPanning = false;
     private bool isFocusing = false; // true while FocusOn's coroutine is actively moving the camera

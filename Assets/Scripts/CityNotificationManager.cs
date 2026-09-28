@@ -14,8 +14,13 @@ using UnityEngine;
 /// Once the whole city is healthy, follows a growth chain (Population -> Lifestyle -> Jobs ->
 /// Population -> ...) instead of picking randomly.
 ///
-/// Accept: opens the shop directly to the suggested category's tab, then waits
-/// `notificationInterval` again. Dismiss: just closes the popup, nothing else changes.
+/// Accept: opens the shop directly to the suggested category's tab, then waits for the SHARED
+/// notification interval again (see ToastNotificationCoordinator). Dismiss: just closes the
+/// popup, nothing else changes.
+///
+/// Toast timing/display is coordinated through ToastNotificationCoordinator, shared with
+/// CityEventManager's event toasts - this is what guarantees only one toast is ever visible at
+/// once, and both systems follow the same overall pacing instead of two independent timers.
 public class CityNotificationManager : MonoBehaviour
 {
     public static CityNotificationManager Instance { get; private set; }
@@ -24,9 +29,6 @@ public class CityNotificationManager : MonoBehaviour
     public CityNotificationPanel criticalPanel;
     [Tooltip("Shown for Warning/Healthy-status notifications - a calmer design. Same script as criticalPanel, just a different UI prefab - both share identical fields (message, buttons, timer text/slider).")]
     public CityNotificationPanel normalPanel;
-
-    [Tooltip("Seconds between notifications. Lower this for testing (e.g. 10-15s), raise it for real play (e.g. 120s = 2 minutes).")]
-    public float notificationInterval = 120f;
 
     [Tooltip("Persistent list where every currently-troubled category gets an entry with NO countdown - it stays until that stat actually leaves Warning/Critical, independent of the toast's own timing.")]
     public NotificationCenter notificationCenter;
@@ -40,8 +42,6 @@ public class CityNotificationManager : MonoBehaviour
         { BuildingCategory.Jobs,       BuildingCategory.Population }, // more jobs support more residents - closes the loop
     };
 
-    private float timer;
-    private bool notificationActive = false;
     private BuildingCategory? lastGrowthSuggestion = null; // tracks progress along the growth chain
 
     /// Every category currently showing a persistent Notification Center entry - lets us tell
@@ -69,19 +69,29 @@ public class CityNotificationManager : MonoBehaviour
         Instance = this;
     }
 
+    private bool warnedMissingCoordinator = false; // log this once, not every frame
+
     void Update()
     {
-        RefreshStatEntries();       // independent of the toast's own timer below - runs continuously
+        RefreshStatEntries();       // independent of the toast timing below - runs continuously
         RefreshGrowthChainEntry();  // same - just reflects the last-built suggestion, never advances it
 
-        if (notificationActive) return; // don't queue/stack a new one while one is already showing
-
-        timer += Time.deltaTime;
-        if (timer >= notificationInterval)
+        // Uses the SHARED ToastNotificationCoordinator instead of its own independent timer -
+        // this is what makes stat toasts and event toasts (CityEventManager) follow the SAME
+        // interval and never show simultaneously. TryBeginToast() only returns true when
+        // nothing else is currently showing AND the shared interval has elapsed.
+        if (ToastNotificationCoordinator.Instance == null)
         {
-            timer = 0f;
-            StartCoroutine(ShowNextNotificationRoutine());
+            if (!warnedMissingCoordinator)
+            {
+                Debug.LogWarning("[CityNotificationManager] ToastNotificationCoordinator not found in scene - stat toasts will never show (only Notification Center list entries will appear). Add a ToastNotificationCoordinator component to your scene.");
+                warnedMissingCoordinator = true;
+            }
+            return;
         }
+
+        if (ToastNotificationCoordinator.Instance.TryBeginToast())
+            StartCoroutine(ShowNextNotificationRoutine());
     }
 
     private bool warnedMissingNotificationCenter = false; // log this once, not every frame
@@ -169,6 +179,7 @@ public class CityNotificationManager : MonoBehaviour
         if (CityStatsManager.Instance == null)
         {
             Debug.LogWarning("[CityNotificationManager] CityStatsManager not found - skipping this notification attempt.");
+            ToastNotificationCoordinator.Instance?.EndToast();
             yield break;
         }
 
@@ -180,15 +191,14 @@ public class CityNotificationManager : MonoBehaviour
         {
             string which = suggestion.status == CityMetricStatus.Critical ? "criticalPanel" : "normalPanel";
             Debug.LogWarning($"[CityNotificationManager] {which} is not assigned in the Inspector - skipping this notification attempt.");
+            ToastNotificationCoordinator.Instance?.EndToast();
             yield break;
         }
 
-        notificationActive = true;
         var handle = targetPanel.Show(BuildMessage(suggestion));
         yield return new WaitUntil(() => handle.isDone);
 
-        notificationActive = false;
-        timer = 0f; // start waiting for the NEXT notification
+        ToastNotificationCoordinator.Instance?.EndToast();
 
         if (handle.accepted)
         {
