@@ -16,6 +16,7 @@ public class ShopItemButton : MonoBehaviour
     public Color unaffordableCostColor = Color.red;
 
     private BuildingData data;
+    public BuildingData Data => data; // read-only - lets GameplayTutorialManager find a specific building's button
     private Color affordableCostColor;
 
     public void Setup(BuildingData buildingData)
