@@ -82,9 +82,12 @@ public class SplashScreen : MonoBehaviour
     private IEnumerator SplashFlow()
     {
         var versionHandle = VersionCheckManager.Instance.CheckVersion();
+
+        // Saved login? Check it in parallel too, so a returning player skips the login screens.
+        AuthHandle sessionHandle = AuthManager.Instance != null ? AuthManager.Instance.RestoreSession() : null;
         float elapsed = 0f;
 
-        while (elapsed < minimumSplashTime || !versionHandle.isDone)
+        while (elapsed < minimumSplashTime || !versionHandle.isDone || (sessionHandle != null && !sessionHandle.isDone))
         {
             elapsed += Time.deltaTime;
             yield return null;
@@ -97,7 +100,14 @@ public class SplashScreen : MonoBehaviour
             // Only reaches here once the player taps Later - Update Now keeps them on the popup.
         }
 
-        GameUIManager.Instance.MainScreenToggle(true);
+        if (sessionHandle != null && sessionHandle.success)
+        {
+            GameUIManager.Instance.MainMenuScreenToggle(true); // already logged in
+        }
+        else
+        {
+            GameUIManager.Instance.MainScreenToggle(true);
+        }
         GameUIManager.Instance.SplashScreenToggle(false);
     }
 }

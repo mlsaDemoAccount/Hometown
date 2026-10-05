@@ -14,6 +14,15 @@ public class UserDetails : MonoBehaviour
     public string authToken = "";
     public bool isLoggedIn = false;
 
+    [Header("Profile (filled from the API after login)")]
+    public string email = "";
+    public string firstName = "";
+    public string lastName = "";
+    public string role = "";
+    public int playerImageIndex = 0;
+    public int playerXp = 0;
+    public double funds = 0;
+
     // Extend this with whatever profile fields you actually need later - display name,
     // avatar/level, currency, settings, etc. - all in one known place other scripts can read.
 
@@ -33,6 +42,19 @@ public class UserDetails : MonoBehaviour
         isLoggedIn = true;
     }
 
+    /// Called by AuthManager with the user returned from login/profile.
+    public void SetFromUser(UserDto user, string token)
+    {
+        SetSession(user.id, user.userName, token);
+        email = user.email;
+        firstName = user.firstName;
+        lastName = user.lastName;
+        role = user.role;
+        playerImageIndex = user.playerImageIndex;
+        playerXp = user.playerXp;
+        funds = user.funds;
+    }
+
     /// Called on logout.
     public void ClearSession()
     {
@@ -40,5 +62,9 @@ public class UserDetails : MonoBehaviour
         username = "";
         authToken = "";
         isLoggedIn = false;
+        email = firstName = lastName = role = "";
+        playerImageIndex = 0;
+        playerXp = 0;
+        funds = 0;
     }
 }

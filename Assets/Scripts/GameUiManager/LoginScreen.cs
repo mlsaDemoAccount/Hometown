@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -81,6 +82,21 @@ public class LoginScreen : MonoBehaviour
 
 
     // =========================================================
+    // VERIFY ACCOUNT / RESET PASSWORD (API flow)
+    // =========================================================
+
+    [Header("Verify Account (OTP after registering)")]
+    public GameObject otpPanel;
+    public InputField otpField;
+
+    [Header("Reset Password (OTP + new password)")]
+    public GameObject resetPanel;
+    public InputField resetOtpField;
+    public InputField resetNewPassword;
+    public InputField resetConfirmPassword;
+
+
+    // =========================================================
     // MESSAGE
     // =========================================================
 
@@ -89,6 +105,11 @@ public class LoginScreen : MonoBehaviour
 
 
     private Vector3 logoOriginalScale;
+
+    // True while an API call is in flight - ignores extra taps so nothing is sent twice.
+    private bool isBusy = false;
+    private string pendingEmail = "";
+    private string pendingPassword = "";
 
 
     // =========================================================
@@ -113,10 +134,19 @@ public class LoginScreen : MonoBehaviour
             ForgotPanel.SetActive(false);
         }
 
+        if (otpPanel != null) otpPanel.SetActive(false);
+        if (resetPanel != null) resetPanel.SetActive(false);
+
         if (messageText != null)
         {
             messageText.text = "";
         }
+
+        // The old local-only "account" (email + PLAINTEXT password in PlayerPrefs) is gone -
+        // accounts live on the server now, so wipe any leftover copy.
+        PlayerPrefs.DeleteKey("Email");
+        PlayerPrefs.DeleteKey("Password");
+        PlayerPrefs.DeleteKey("FirstName");
 
 
         // Logo Animation
@@ -246,66 +276,43 @@ public class LoginScreen : MonoBehaviour
 
     public void OnLoginClick()
     {
-        string savedEmail =
-            PlayerPrefs.GetString("Email", "");
+        if (isBusy) return;
 
-        string savedPassword =
-            PlayerPrefs.GetString("Password", "");
-
-
-        // No Account
-        if (savedEmail == "")
-        {
-            ShowMessage(
-                "No account found. Please create an account."
-            );
-
-            PlayWrongSound();
-
-            ShakeLoginButton();
-
-            return;
-        }
-
-
-        // Empty Fields
         if (string.IsNullOrEmpty(user.text) ||
             string.IsNullOrEmpty(password.text))
         {
-            ShowMessage(
-                "Please enter email and password."
-            );
-
+            ShowMessage("Please enter email and password.");
             PlayWrongSound();
-
             ShakeLoginButton();
-
             return;
         }
 
+        StartCoroutine(LoginFlow(user.text.Trim(), password.text, true));
+    }
 
-        // Correct Login
-        if (user.text == savedEmail &&
-            password.text == savedPassword)
+    /// Shared by the Sign In button and the auto-login right after account verification.
+    /// showShakeOnFail = false when the Sign In button wasn't what started this, so there's nothing to shake.
+    private IEnumerator LoginFlow(string email, string pass, bool showShakeOnFail)
+    {
+        isBusy = true;
+        ShowMessage("Signing in...");
+
+        var handle = AuthManager.Instance.Login(email, pass);
+        while (!handle.isDone) yield return null;
+
+        isBusy = false;
+
+        if (handle.success)
         {
-            ShowMessage("Login Successful!");
-
-            GameUIManager.Instance
-                .MainMenuScreenToggle(true);
-
-            GameUIManager.Instance
-                .LoginScreenToggle(false);
+            ShowMessage("");
+            GameUIManager.Instance.MainMenuScreenToggle(true);
+            GameUIManager.Instance.LoginScreenToggle(false);
+            yield break;
         }
-        else
-        {
-            ShowMessage(
-                "Invalid email or password."
-            );
 
-            PlayWrongSound();
-
-            ShakeLoginButton();
-        }
+        ShowMessage(handle.message);
+        PlayWrongSound();
+        if (showShakeOnFail) ShakeLoginButton();
     }
 
 
@@ -381,6 +388,8 @@ public class LoginScreen : MonoBehaviour
 
     public void OnCreateAccountClick()
     {
+        if (isBusy) return;
+
         if (firstName == null ||
             Email == null ||
             ACpassword == null ||
@@ -389,77 +398,107 @@ public class LoginScreen : MonoBehaviour
             return;
         }
 
-
-        // Empty Fields
-        if (string.IsNullOrEmpty(firstName.text) ||
-            string.IsNullOrEmpty(Email.text) ||
+        if (string.IsNullOrWhiteSpace(firstName.text) ||
+            string.IsNullOrWhiteSpace(Email.text) ||
             string.IsNullOrEmpty(ACpassword.text) ||
             string.IsNullOrEmpty(ConfrimACpassword.text))
         {
             ShowMessage("Please fill all fields.");
-
             PlayWrongSound();
-
             return;
         }
 
-
-        // Password Confirmation
-        if (ACpassword.text !=
-            ConfrimACpassword.text)
+        if (!IsValidEmail(Email.text.Trim()))
         {
-            ShowMessage(
-                "Passwords do not match."
-            );
-
+            ShowMessage("Please enter a valid email address.");
             PlayWrongSound();
-
             return;
         }
 
-
-        // Account Already Exists
-        if (PlayerPrefs.HasKey("Email"))
+        if (ACpassword.text != ConfrimACpassword.text)
         {
-            ShowMessage(
-                "Account already exists."
-            );
-
+            ShowMessage("Passwords do not match.");
             PlayWrongSound();
-
             return;
         }
 
+        StartCoroutine(RegisterFlow(firstName.text.Trim(), Email.text.Trim(), ACpassword.text));
+    }
 
-        // Save Account
-        PlayerPrefs.SetString(
-            "FirstName",
-            firstName.text
-        );
+    private IEnumerator RegisterFlow(string name, string email, string pass)
+    {
+        isBusy = true;
+        ShowMessage("Creating account...");
 
-        PlayerPrefs.SetString(
-            "Email",
-            Email.text
-        );
+        var handle = AuthManager.Instance.Register(name, email, pass);
+        while (!handle.isDone) yield return null;
 
-        PlayerPrefs.SetString(
-            "Password",
-            ACpassword.text
-        );
+        isBusy = false;
 
-        PlayerPrefs.Save();
+        if (!handle.success)
+        {
+            ShowMessage(handle.message);
+            PlayWrongSound();
+            yield break;
+        }
+
+        // Kept only in memory so we can sign the player in automatically once the code is verified.
+        pendingEmail = email;
+        pendingPassword = pass;
+
+        ShowPanelOnly(otpPanel);
+        if (otpField != null) otpField.text = "";
+        ShowMessage("We sent a verification code to " + email + ".");
+    }
 
 
-        ShowMessage(
-            "Account created successfully!"
-        );
+    // =========================================================
+    // VERIFY ACCOUNT (OTP after registering)
+    // =========================================================
 
+    public void OnVerifyAccountClick()
+    {
+        if (isBusy) return;
 
-        // Open Sign Panel
-        accountCreatePanel.SetActive(false);
-        signPanel.SetActive(true);
+        if (otpField == null || string.IsNullOrWhiteSpace(otpField.text))
+        {
+            ShowMessage("Please enter the verification code.");
+            PlayWrongSound();
+            return;
+        }
 
-        AnimateSignPanel(signPanel);
+        StartCoroutine(VerifyAccountFlow(otpField.text.Trim()));
+    }
+
+    private IEnumerator VerifyAccountFlow(string otp)
+    {
+        isBusy = true;
+        ShowMessage("Verifying...");
+
+        var handle = AuthManager.Instance.VerifyAccount(pendingEmail, otp);
+        while (!handle.isDone) yield return null;
+
+        isBusy = false;
+
+        if (!handle.success)
+        {
+            ShowMessage(handle.message);
+            PlayWrongSound();
+            yield break;
+        }
+
+        // Verified - sign in with the details they just registered with.
+        string email = pendingEmail;
+        string pass = pendingPassword;
+        pendingPassword = "";
+
+        yield return LoginFlow(email, pass, false);
+
+        // Only reached if the automatic sign-in failed (on success the Login screen has already
+        // been closed, which ends this coroutine) - fall back to Sign In with their email filled in.
+        ShowPanelOnly(signPanel);
+        if (user != null) user.text = email;
+        ShowMessage("Account verified. Please sign in.");
     }
 
 
@@ -471,6 +510,8 @@ public class LoginScreen : MonoBehaviour
     {
         if (accountCreatePanel == null)
             return;
+
+        HideApiPanels();
 
 
         accountCreatePanel.SetActive(true);
@@ -504,6 +545,8 @@ public class LoginScreen : MonoBehaviour
         if (ForgotPanel == null)
             return;
 
+        HideApiPanels();
+
 
         ForgotPanel.SetActive(true);
 
@@ -533,65 +576,102 @@ public class LoginScreen : MonoBehaviour
 
     public void OnForgotPasswordSubmit()
     {
-        string savedEmail =
-            PlayerPrefs.GetString(
-                "Email",
-                ""
-            );
+        if (isBusy) return;
 
-        string savedPassword =
-            PlayerPrefs.GetString(
-                "Password",
-                ""
-            );
-
-
-        // No Account
-        if (savedEmail == "")
-        {
-            ShowMessage(
-                "No account found."
-            );
-
-            PlayWrongSound();
-
-            return;
-        }
-
-
-        // Empty Email
         if (forgotPassword == null ||
-            string.IsNullOrEmpty(
-                forgotPassword.text
-            ))
+            string.IsNullOrWhiteSpace(forgotPassword.text))
         {
-            ShowMessage(
-                "Please enter your email."
-            );
-
+            ShowMessage("Please enter your email.");
             PlayWrongSound();
-
             return;
         }
 
-
-        // Correct Email
-        if (forgotPassword.text ==
-            savedEmail)
+        if (!IsValidEmail(forgotPassword.text.Trim()))
         {
-            ShowMessage(
-                "Your password is: " +
-                savedPassword
-            );
-        }
-        else
-        {
-            ShowMessage(
-                "Email not found."
-            );
-
+            ShowMessage("Please enter a valid email address.");
             PlayWrongSound();
+            return;
         }
+
+        StartCoroutine(ForgotPasswordFlow(forgotPassword.text.Trim()));
+    }
+
+    private IEnumerator ForgotPasswordFlow(string email)
+    {
+        isBusy = true;
+        ShowMessage("Sending code...");
+
+        var handle = AuthManager.Instance.ForgotPassword(email);
+        while (!handle.isDone) yield return null;
+
+        isBusy = false;
+
+        if (!handle.success)
+        {
+            ShowMessage(handle.message);
+            PlayWrongSound();
+            yield break;
+        }
+
+        pendingEmail = email;
+        ShowPanelOnly(resetPanel);
+        if (resetOtpField != null) resetOtpField.text = "";
+        if (resetNewPassword != null) resetNewPassword.text = "";
+        if (resetConfirmPassword != null) resetConfirmPassword.text = "";
+        ShowMessage("If an account exists for " + email + ", we sent a code to it.");
+    }
+
+
+    // =========================================================
+    // RESET PASSWORD (OTP + new password)
+    // =========================================================
+
+    public void OnResetPasswordClick()
+    {
+        if (isBusy) return;
+
+        if (resetOtpField == null || resetNewPassword == null || resetConfirmPassword == null) return;
+
+        if (string.IsNullOrWhiteSpace(resetOtpField.text) ||
+            string.IsNullOrEmpty(resetNewPassword.text) ||
+            string.IsNullOrEmpty(resetConfirmPassword.text))
+        {
+            ShowMessage("Please fill all fields.");
+            PlayWrongSound();
+            return;
+        }
+
+        if (resetNewPassword.text != resetConfirmPassword.text)
+        {
+            ShowMessage("Passwords do not match.");
+            PlayWrongSound();
+            return;
+        }
+
+        StartCoroutine(ResetPasswordFlow(resetOtpField.text.Trim(), resetNewPassword.text));
+    }
+
+    private IEnumerator ResetPasswordFlow(string otp, string newPass)
+    {
+        isBusy = true;
+        ShowMessage("Updating password...");
+
+        var handle = AuthManager.Instance.ResetPassword(pendingEmail, otp, newPass);
+        while (!handle.isDone) yield return null;
+
+        isBusy = false;
+
+        if (!handle.success)
+        {
+            ShowMessage(handle.message);
+            PlayWrongSound();
+            yield break;
+        }
+
+        ShowPanelOnly(signPanel);
+        if (user != null) user.text = pendingEmail;
+        if (password != null) password.text = "";
+        ShowMessage("Password updated. Please sign in.");
     }
 
 
@@ -601,6 +681,8 @@ public class LoginScreen : MonoBehaviour
 
     public void OnSignInClick()
     {
+        HideApiPanels();
+
         if (accountCreatePanel != null)
         {
             accountCreatePanel.SetActive(false);
@@ -631,6 +713,17 @@ public class LoginScreen : MonoBehaviour
 
     public void OnBackButtonClick()
     {
+        if (isBusy) return;
+
+        // OTP / reset panels go back to Sign In
+        if ((otpPanel != null && otpPanel.activeSelf) ||
+            (resetPanel != null && resetPanel.activeSelf))
+        {
+            ShowPanelOnly(signPanel);
+            ShowMessage("");
+            return;
+        }
+
         // If Create Account Panel Open
         if (accountCreatePanel != null &&
             accountCreatePanel.activeSelf)
@@ -684,6 +777,31 @@ public class LoginScreen : MonoBehaviour
     // =========================================================
     // MESSAGE
     // =========================================================
+
+    private void HideApiPanels()
+    {
+        if (otpPanel != null) otpPanel.SetActive(false);
+        if (resetPanel != null) resetPanel.SetActive(false);
+    }
+
+    /// Shows exactly one of the five panels (sign in / create / forgot / otp / reset) and pops it in.
+    private void ShowPanelOnly(GameObject panel)
+    {
+        if (signPanel != null) signPanel.SetActive(false);
+        if (accountCreatePanel != null) accountCreatePanel.SetActive(false);
+        if (ForgotPanel != null) ForgotPanel.SetActive(false);
+        HideApiPanels();
+
+        if (panel == null) return;
+        panel.SetActive(true);
+        AnimateSignPanel(panel);
+    }
+
+    private static bool IsValidEmail(string email)
+    {
+        int at = email.IndexOf('@');
+        return at > 0 && email.IndexOf('.', at) > at + 1 && !email.EndsWith(".") && !email.Contains(" ");
+    }
 
     private void ShowMessage(string message)
     {

@@ -1,0 +1,236 @@
+using System.Collections;
+using UnityEngine;
+
+/// Result of an auth call. The caller waits on isDone from its own coroutine
+/// (while (!handle.isDone) yield return null;) - same no-callback pattern as ApiRequestHandle.
+public class AuthHandle
+{
+    public bool isDone = false;
+    public bool success = false;
+    public long statusCode = 0;
+    public string message;    // server's reason on failure, or a friendly network error
+    public string rawJson;    // raw success body, for endpoints with an undocumented/optional body
+}
+
+/// Auth SERVICE (register / verify account / login / forgot + reset password / session restore /
+/// logout). Owns no UI - LoginScreen drives it. Built on APIManager; persists across scenes.
+public class AuthManager : MonoBehaviour
+{
+    public static AuthManager Instance { get; private set; }
+
+    private const string TokenPrefKey = "auth_access_token";
+
+    public UserDto CurrentUser { get; private set; }
+    public bool IsLoggedIn => CurrentUser != null;
+
+    void Awake()
+    {
+        if (Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    // ---------- Public API ----------
+
+    /// Creates the account. The server then sends an OTP to the email - the player must call
+    /// VerifyAccount with it. Does NOT log the player in.
+    public AuthHandle Register(string firstName, string email, string password)
+    {
+        var body = JsonUtility.ToJson(new RegisterRequest { firstName = firstName, email = email, password = password });
+        return Run("/api/auth/register", body);
+    }
+
+    public AuthHandle VerifyAccount(string email, string otp)
+    {
+        var body = JsonUtility.ToJson(new VerifyOtpRequest { email = email, otp = otp });
+        return Run("/api/auth/verify-account", body);
+    }
+
+    /// Logs in; on success stores the token + user (APIManager, UserDetails, PlayerPrefs).
+    public AuthHandle Login(string email, string password)
+    {
+        var handle = new AuthHandle();
+        StartCoroutine(LoginRoutine(email, password, handle));
+        return handle;
+    }
+
+    public AuthHandle ForgotPassword(string email)
+    {
+        var body = JsonUtility.ToJson(new ForgotPasswordRequest { email = email });
+        return Run("/api/auth/forgot-password", body);
+    }
+
+    /// Forgot-password step 2+3 in one call: verifies the emailed OTP, then sets the new password.
+    public AuthHandle ResetPassword(string email, string otp, string newPassword)
+    {
+        var handle = new AuthHandle();
+        StartCoroutine(ResetPasswordRoutine(email, otp, newPassword, handle));
+        return handle;
+    }
+
+    /// Change password while logged in.
+    public AuthHandle SetPassword(string currentPassword, string newPassword)
+    {
+        var body = JsonUtility.ToJson(new SetPasswordRequest { currentPassword = currentPassword, newPassword = newPassword });
+        return Run("/api/auth/set-password", body);
+    }
+
+    /// Auto-login on app start: uses the saved token to fetch the profile. Success = skip the
+    /// login screen. A rejected token (401) is cleared; a network failure keeps it for next time.
+    public AuthHandle RestoreSession()
+    {
+        var handle = new AuthHandle();
+        StartCoroutine(RestoreSessionRoutine(handle));
+        return handle;
+    }
+
+    public void Logout()
+    {
+        CurrentUser = null;
+        PlayerPrefs.DeleteKey(TokenPrefKey);
+        PlayerPrefs.Save();
+        if (APIManager.Instance != null) APIManager.Instance.authToken = "";
+        UserDetails.Instance?.ClearSession();
+    }
+
+    // ---------- Routines ----------
+
+    private IEnumerator LoginRoutine(string email, string password, AuthHandle handle)
+    {
+        var body = JsonUtility.ToJson(new LoginRequest { email = email, password = password });
+        var api = APIManager.Instance.Post("/api/auth/login", body);
+        while (!api.isDone) yield return null;
+
+        Fill(handle, api.response);
+        if (handle.success)
+        {
+            var auth = SafeParse<AuthResponse>(api.response.rawJson);
+            if (auth == null || string.IsNullOrEmpty(auth.accessToken) || auth.user == null)
+            {
+                handle.success = false;
+                handle.message = "Unexpected response from the server.";
+            }
+            else
+            {
+                StartSession(auth.user, auth.accessToken);
+            }
+        }
+        handle.isDone = true;
+    }
+
+    private IEnumerator ResetPasswordRoutine(string email, string otp, string newPassword, AuthHandle handle)
+    {
+        var otpBody = JsonUtility.ToJson(new VerifyOtpRequest { email = email, otp = otp });
+        var verify = APIManager.Instance.Post("/api/auth/verify-otp", otpBody);
+        while (!verify.isDone) yield return null;
+
+        Fill(handle, verify.response);
+        if (!handle.success) { handle.isDone = true; yield break; }
+
+        // verify-otp's success body is undocumented. If it returns a token use it, otherwise the
+        // OTP itself is what reset-password expects as "token".
+        string token = otp;
+        var parsed = SafeParse<VerifyOtpResponse>(verify.response.rawJson);
+        if (parsed != null)
+        {
+            if (!string.IsNullOrEmpty(parsed.token)) token = parsed.token;
+            else if (!string.IsNullOrEmpty(parsed.resetToken)) token = parsed.resetToken;
+        }
+
+        var resetBody = JsonUtility.ToJson(new ResetPasswordRequest { email = email, token = token, newPassword = newPassword });
+        var reset = APIManager.Instance.Post("/api/auth/reset-password", resetBody);
+        while (!reset.isDone) yield return null;
+
+        Fill(handle, reset.response);
+        handle.isDone = true;
+    }
+
+    private IEnumerator RestoreSessionRoutine(AuthHandle handle)
+    {
+        string token = PlayerPrefs.GetString(TokenPrefKey, "");
+        if (string.IsNullOrEmpty(token))
+        {
+            handle.message = "No saved session.";
+            handle.isDone = true;
+            yield break;
+        }
+
+        APIManager.Instance.authToken = token;
+        var api = APIManager.Instance.Get("/api/auth/profile");
+        while (!api.isDone) yield return null;
+
+        Fill(handle, api.response);
+        if (handle.success)
+        {
+            var user = SafeParse<UserDto>(api.response.rawJson);
+            if (user != null && !string.IsNullOrEmpty(user.id)) StartSession(user, token);
+            else handle.success = false;
+        }
+        else
+        {
+            APIManager.Instance.authToken = "";
+            if (api.response.statusCode == 401) // token expired/revoked - forget it
+            {
+                PlayerPrefs.DeleteKey(TokenPrefKey);
+                PlayerPrefs.Save();
+            }
+        }
+        handle.isDone = true;
+    }
+
+    // ---------- Helpers ----------
+
+    private AuthHandle Run(string endpoint, string body)
+    {
+        var handle = new AuthHandle();
+        StartCoroutine(PostRoutine(endpoint, body, handle));
+        return handle;
+    }
+
+    private IEnumerator PostRoutine(string endpoint, string body, AuthHandle handle)
+    {
+        var api = APIManager.Instance.Post(endpoint, body);
+        while (!api.isDone) yield return null;
+        Fill(handle, api.response);
+        handle.isDone = true;
+    }
+
+    private void StartSession(UserDto user, string token)
+    {
+        CurrentUser = user;
+        APIManager.Instance.authToken = token;
+        PlayerPrefs.SetString(TokenPrefKey, token);
+        PlayerPrefs.Save();
+        UserDetails.Instance?.SetFromUser(user, token);
+    }
+
+    private static void Fill(AuthHandle handle, APIManager.ApiResponse response)
+    {
+        handle.success = response.success;
+        handle.statusCode = response.statusCode;
+        handle.rawJson = response.rawJson;
+        handle.message = response.success ? null : ErrorMessage(response);
+    }
+
+    private static string ErrorMessage(APIManager.ApiResponse response)
+    {
+        if (response.statusCode == 0)
+            return "Can't reach the server. Check your internet connection.";
+
+        var body = SafeParse<ApiErrorBody>(response.rawJson);
+        if (body != null)
+        {
+            if (!string.IsNullOrEmpty(body.message)) return body.message;
+            if (!string.IsNullOrEmpty(body.detail)) return body.detail;
+            if (!string.IsNullOrEmpty(body.title)) return body.title;
+        }
+        return $"Something went wrong ({response.statusCode}). Please try again.";
+    }
+
+    private static T SafeParse<T>(string json) where T : class
+    {
+        if (string.IsNullOrEmpty(json)) return null;
+        try { return JsonUtility.FromJson<T>(json); }
+        catch (System.Exception) { return null; }
+    }
+}

@@ -64,9 +64,17 @@ public class APIManager : MonoBehaviour
         return handle;
     }
 
+    /// Generic PUT - e.g. profile update.
+    public ApiRequestHandle Put(string endpoint, string jsonBody)
+    {
+        var handle = new ApiRequestHandle();
+        StartCoroutine(PostRoutine(endpoint, jsonBody, handle, "PUT"));
+        return handle;
+    }
+
     private IEnumerator GetRoutine(string endpoint, ApiRequestHandle handle)
     {
-        using (var request = UnityWebRequest.Get(baseUrl + endpoint))
+        using (var request = UnityWebRequest.Get(Url(endpoint)))
         {
             ApplyHeaders(request);
             yield return request.SendWebRequest();
@@ -75,9 +83,9 @@ public class APIManager : MonoBehaviour
         }
     }
 
-    private IEnumerator PostRoutine(string endpoint, string jsonBody, ApiRequestHandle handle)
+    private IEnumerator PostRoutine(string endpoint, string jsonBody, ApiRequestHandle handle, string method = "POST")
     {
-        using (var request = new UnityWebRequest(baseUrl + endpoint, "POST"))
+        using (var request = new UnityWebRequest(Url(endpoint), method))
         {
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody ?? "{}");
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -89,6 +97,9 @@ public class APIManager : MonoBehaviour
             handle.isDone = true;
         }
     }
+
+    // Tolerates a trailing slash in baseUrl (the scene value has one) - avoids "//api/..." 404s.
+    private string Url(string endpoint) => baseUrl.TrimEnd('/') + "/" + endpoint.TrimStart('/');
 
     private void ApplyHeaders(UnityWebRequest request)
     {
@@ -103,7 +114,9 @@ public class APIManager : MonoBehaviour
         {
             success = success,
             statusCode = request.responseCode,
-            rawJson = success ? request.downloadHandler.text : null,
+            // Kept on failure too - the server puts its human-readable reason in the error body
+            // (e.g. {"message":"Invalid credentials."}), which the UI needs to show.
+            rawJson = request.downloadHandler != null ? request.downloadHandler.text : null,
             error = success ? null : request.error
         };
     }
