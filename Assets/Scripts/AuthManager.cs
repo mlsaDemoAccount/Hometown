@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// Result of an auth call. The caller waits on isDone from its own coroutine
@@ -27,6 +29,7 @@ public class AuthManager : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        transform.SetParent(null); // DontDestroyOnLoad only works on root objects; these sit under "Managers"
         DontDestroyOnLoad(gameObject);
     }
 
@@ -84,8 +87,126 @@ public class AuthManager : MonoBehaviour
         return handle;
     }
 
+    // ---------- Profile (GET / partial PUT) ----------
+
+    // Fields changed locally but not yet confirmed by the server: field name -> JSON literal.
+    // Only these are sent, so e.g. spending funds never touches playerXp on the server.
+    private readonly Dictionary<string, string> dirtyProfile = new Dictionary<string, string>();
+    private bool flushScheduled;
+    private bool flushing;
+    private const float FlushDelay = 1f; // coalesces bursts of changes into one PUT
+
+    public bool HasPendingProfileChanges => dirtyProfile.Count > 0;
+
+    /// Fetches the latest profile into UserDetails. Skipped (success=false) while local changes
+    /// are still waiting to be pushed, so a stale server copy never overwrites them.
+    public AuthHandle RefreshProfile()
+    {
+        var handle = new AuthHandle();
+        StartCoroutine(RefreshProfileRoutine(handle));
+        return handle;
+    }
+
+    /// Queue a single changed value for the server. Valid fields: funds, playerXp,
+    /// playerImageIndex (numbers) and firstName, lastName, userName (text).
+    public void QueueProfileUpdate(string field, int value) => QueueProfileLiteral(field, value.ToString());
+
+    public void QueueProfileUpdate(string field, string value) =>
+        QueueProfileLiteral(field, "\"" + (value ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"");
+
+    private void QueueProfileLiteral(string field, string literal)
+    {
+        if (!IsLoggedIn) return; // not signed in (e.g. Gameplay opened directly in the editor)
+        dirtyProfile[field] = literal;
+        if (!flushScheduled && !flushing) StartCoroutine(DelayedFlush());
+    }
+
+    private IEnumerator DelayedFlush()
+    {
+        flushScheduled = true;
+        yield return new WaitForSecondsRealtime(FlushDelay);
+        flushScheduled = false;
+        yield return FlushProfile();
+    }
+
+    private IEnumerator FlushProfile()
+    {
+        if (flushing || dirtyProfile.Count == 0 || !IsLoggedIn) yield break;
+        flushing = true;
+
+        var sent = new Dictionary<string, string>(dirtyProfile);
+        var sb = new StringBuilder("{");
+        bool first = true;
+        foreach (var kv in sent)
+        {
+            if (!first) sb.Append(',');
+            sb.Append('"').Append(kv.Key).Append("\":").Append(kv.Value);
+            first = false;
+        }
+        sb.Append('}');
+
+        var api = APIManager.Instance.Put("/api/auth/profile", sb.ToString());
+        while (!api.isDone) yield return null;
+
+        bool ok = api.response.success;
+        if (ok)
+        {
+            // Clear only what was sent AND hasn't changed again while the request was in flight.
+            foreach (var kv in sent)
+                if (dirtyProfile.TryGetValue(kv.Key, out var current) && current == kv.Value)
+                    dirtyProfile.Remove(kv.Key);
+
+            if (dirtyProfile.Count == 0)
+            {
+                var user = SafeParse<UserDto>(api.response.rawJson);
+                if (user != null && !string.IsNullOrEmpty(user.id)) CurrentUser = user;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[AuthManager] Profile update failed ({api.response.statusCode}): {ErrorMessage(api.response)}. Will retry on the next change.");
+        }
+
+        flushing = false;
+        if (ok && dirtyProfile.Count > 0) StartCoroutine(DelayedFlush());
+    }
+
+    private IEnumerator RefreshProfileRoutine(AuthHandle handle)
+    {
+        if (!IsLoggedIn) { handle.message = "Not logged in."; handle.isDone = true; yield break; }
+
+        var api = APIManager.Instance.Get("/api/auth/profile");
+        while (!api.isDone) yield return null;
+
+        Fill(handle, api.response);
+        if (handle.success)
+        {
+            var user = SafeParse<UserDto>(api.response.rawJson);
+            if (user == null || string.IsNullOrEmpty(user.id)) handle.success = false;
+            else if (dirtyProfile.Count > 0) handle.success = false; // local changes pending - keep them
+            else
+            {
+                CurrentUser = user;
+                UserDetails.Instance?.SetFromUser(user, APIManager.Instance.authToken);
+            }
+        }
+        handle.isDone = true;
+    }
+
+    // Best effort: push anything still queued when the app is backgrounded or closed.
+    void OnApplicationPause(bool paused)
+    {
+        if (paused && dirtyProfile.Count > 0) StartCoroutine(FlushProfile());
+    }
+
+    void OnApplicationQuit()
+    {
+        if (dirtyProfile.Count > 0) StartCoroutine(FlushProfile());
+    }
+
     public void Logout()
     {
+        dirtyProfile.Clear();
         CurrentUser = null;
         PlayerPrefs.DeleteKey(TokenPrefKey);
         PlayerPrefs.Save();

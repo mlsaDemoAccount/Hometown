@@ -44,6 +44,7 @@ public class APIManager : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        transform.SetParent(null); // DontDestroyOnLoad only works on root objects; these sit under "Managers"
         DontDestroyOnLoad(gameObject);
     }
 

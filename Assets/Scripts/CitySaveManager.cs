@@ -60,6 +60,23 @@ public class CitySaveManager : MonoBehaviour
     void Start()
     {
         LoadCity();
+        StartCoroutine(SyncProfileFromServer());
+    }
+
+    /// Server profile is the source of truth for funds and XP when logged in: fetched after the
+    /// local load so it wins. Offline / not logged in / pending local changes -> local values stay.
+    private System.Collections.IEnumerator SyncProfileFromServer()
+    {
+        if (AuthManager.Instance == null || !AuthManager.Instance.IsLoggedIn) yield break;
+
+        var handle = AuthManager.Instance.RefreshProfile();
+        while (!handle.isDone) yield return null;
+        if (!handle.success || UserDetails.Instance == null) yield break;
+
+        if (EconomyManager.Instance != null)
+            EconomyManager.Instance.SetFunds(UserDetails.Instance.FundsInt);
+        if (PlayerProgressManager.Instance != null)
+            PlayerProgressManager.Instance.RestoreXP(UserDetails.Instance.playerXp);
     }
 
     /// Fires when the app is backgrounded (Android/iOS) or loses focus - this is the reliable

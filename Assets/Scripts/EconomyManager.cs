@@ -20,12 +20,20 @@ public class EconomyManager : MonoBehaviour
     {
         if (amount < 0 || currentFunds < amount) return false;
         currentFunds -= amount;
+        SyncFundsToServer();
         return true;
     }
 
     public void AddFunds(int amount)
     {
         currentFunds += amount;
+        SyncFundsToServer();
+    }
+
+    // Queues ONLY the funds value for the profile PUT (debounced inside AuthManager).
+    private void SyncFundsToServer()
+    {
+        AuthManager.Instance?.QueueProfileUpdate("funds", currentFunds);
     }
 
     /// Refund a percentage on demolish, e.g. 50%.
@@ -34,8 +42,8 @@ public class EconomyManager : MonoBehaviour
         AddFunds(Mathf.RoundToInt(originalCost * refundPercent));
     }
 
-    /// Sets funds directly - used by CitySaveManager when loading a saved city, not for normal
-    /// gameplay spending (use TrySpend/AddFunds for that).
+    /// Sets funds directly - used when loading a saved city / the server profile, not for normal
+    /// gameplay spending (use TrySpend/AddFunds for that). Does NOT push to the server.
     public void SetFunds(int amount)
     {
         currentFunds = amount;

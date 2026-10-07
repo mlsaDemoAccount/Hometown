@@ -66,6 +66,7 @@ public class PlayerProgressManager : MonoBehaviour
         RecalculateLevel();
         UpdateDisplay();
         CitySaveManager.Instance?.SaveCity();
+        AuthManager.Instance?.QueueProfileUpdate("playerXp", currentXP); // only XP is sent
 
         if (currentLevel > previousLevel)
             levelUpPopup?.Show(currentLevel);

@@ -30,8 +30,12 @@ public class UserDetails : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        transform.SetParent(null); // DontDestroyOnLoad only works on root objects; these sit under "Managers"
         DontDestroyOnLoad(gameObject);
     }
+
+    /// Server stores funds as a double; the game uses whole numbers.
+    public int FundsInt => (int)System.Math.Round(funds);
 
     /// Called by the login/signup flow once auth is built.
     public void SetSession(string id, string name, string token)
