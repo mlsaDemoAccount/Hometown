@@ -217,6 +217,10 @@ public class AuthManager : MonoBehaviour
         if (response.statusCode == 0)
             return "Can't reach the server. Check your internet connection.";
 
+        // ASP.NET validation failures: the real reasons live in "errors", the title is generic.
+        string validation = ExtractValidationErrors(response.rawJson);
+        if (!string.IsNullOrEmpty(validation)) return validation;
+
         var body = SafeParse<ApiErrorBody>(response.rawJson);
         if (body != null)
         {
@@ -225,6 +229,50 @@ public class AuthManager : MonoBehaviour
             if (!string.IsNullOrEmpty(body.title)) return body.title;
         }
         return $"Something went wrong ({response.statusCode}). Please try again.";
+    }
+
+    /// Collects every message string from {"errors":{"Field":["msg", ...], ...}}, one per line.
+    /// JsonUtility can't read dictionaries with dynamic keys, so this scans the JSON by hand:
+    /// inside the "errors" object, strings followed by ':' are field names, the rest are messages.
+    private static string ExtractValidationErrors(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return null;
+        int start = json.IndexOf("\"errors\"", System.StringComparison.Ordinal);
+        if (start < 0) return null;
+        int i = json.IndexOf('{', start);
+        if (i < 0) return null;
+
+        var result = new System.Collections.Generic.List<string>();
+        int depth = 0;
+        for (; i < json.Length; i++)
+        {
+            char c = json[i];
+            if (c == '{') depth++;
+            else if (c == '}') { if (--depth == 0) break; }
+            else if (c == '"')
+            {
+                var sb = new System.Text.StringBuilder();
+                for (i++; i < json.Length && json[i] != '"'; i++)
+                {
+                    if (json[i] == '\\' && i + 1 < json.Length)
+                    {
+                        i++;
+                        char e = json[i];
+                        if (e == 'n') sb.Append(' ');
+                        else if (e == 'u' && i + 4 < json.Length
+                                 && int.TryParse(json.Substring(i + 1, 4), System.Globalization.NumberStyles.HexNumber, null, out int code))
+                        { sb.Append((char)code); i += 4; }
+                        else sb.Append(e);
+                    }
+                    else sb.Append(json[i]);
+                }
+                int next = i + 1;
+                while (next < json.Length && char.IsWhiteSpace(json[next])) next++;
+                bool isKey = next < json.Length && json[next] == ':';
+                if (!isKey && sb.Length > 0) result.Add(sb.ToString());
+            }
+        }
+        return result.Count > 0 ? string.Join("\n", result) : null;
     }
 
     private static T SafeParse<T>(string json) where T : class
