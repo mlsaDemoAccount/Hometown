@@ -92,7 +92,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.65
+  m_fontSize: 22
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1532,7 +1532,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.2
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1669,7 +1669,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10.55
+  m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12.35
+  m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2303,7 +2303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8336293111386916685
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2375,16 +2375,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d24ace93cc44b8d971c7530d1bf648c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DemolishConfirmationScreen
-  rightPanel: {fileID: 6709705766656194086}
-  rightPanelButtons:
-  - {fileID: 1990885367100800638}
-  - {fileID: 4002071164537353617}
-  - {fileID: 391382037572429407}
-  - {fileID: 1675008603561617604}
-  rightSlideDistance: 700
-  rightSlideDuration: 0.7
-  rightButtonDuration: 0.4
-  rightButtonDelay: 0.12
   confirmationPanel: {fileID: 2185797518873890076}
   choiceButtons:
   - {fileID: 4063297220513731629}
@@ -2486,7 +2476,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.05
+  m_fontSize: 22
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2831,7 +2821,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12.2
+  m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1

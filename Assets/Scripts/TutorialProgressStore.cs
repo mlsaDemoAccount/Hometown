@@ -6,7 +6,8 @@ using UnityEngine;
 /// and everything else keeps calling the same two methods and never needs to change.
 public static class TutorialProgressStore
 {
-    private const string GameplayTutorialKey = "tutorial_gameplay_completed";
+    // Per player (user id, or "guest"), so a new account/guest sees the tutorial again.
+    private static string GameplayTutorialKey => "tutorial_gameplay_completed_" + UserDetails.SaveScope;
 
     public static bool IsGameplayTutorialCompleted()
     {
@@ -23,6 +24,13 @@ public static class TutorialProgressStore
     public static void ResetGameplayTutorial()
     {
         PlayerPrefs.DeleteKey(GameplayTutorialKey);
+        PlayerPrefs.Save();
+    }
+
+    /// Starts a guest session with the tutorial unseen, like a new player.
+    public static void ResetGuestTutorial()
+    {
+        PlayerPrefs.DeleteKey("tutorial_gameplay_completed_guest");
         PlayerPrefs.Save();
     }
 }

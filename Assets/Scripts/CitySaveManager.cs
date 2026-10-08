@@ -49,7 +49,15 @@ public class CitySaveManager : MonoBehaviour
     [Tooltip("Which city's save file to use. Later, a city-select screen will set this before entering Gameplay - for now, defaults to a single city so everything works exactly as before.")]
     public string currentCityId = "city_1";
 
-    private string SavePath => Path.Combine(Application.persistentDataPath, $"city_{currentCityId}_save.json");
+    private string SavePath => Path.Combine(Application.persistentDataPath, $"city_{UserDetails.SaveScope}_{currentCityId}_save.json");
+
+    /// Deletes a scope's save file for a city without needing an instance - used when a guest
+    /// session starts so it begins fresh like a brand-new player.
+    public static void DeleteSaveFor(string scope, string cityId = "city_1")
+    {
+        string path = Path.Combine(Application.persistentDataPath, $"city_{scope}_{cityId}_save.json");
+        if (File.Exists(path)) File.Delete(path);
+    }
 
     void Awake()
     {

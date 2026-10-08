@@ -225,7 +225,11 @@ public class MainScreen : MonoBehaviour
 
     public void GuestLogin()
     {
-        // Add Guest login functionality here later
+        // Guest = a brand-new player: no server account, no leftovers from anyone who used this
+        // device before. Clear any session state, then wipe the guest's local progress.
+        AuthManager.Instance?.Logout();
+        CitySaveManager.DeleteSaveFor("guest");
+        TutorialProgressStore.ResetGuestTutorial();
 
         GameUIManager.Instance.MainScreenToggle(false);
         GameUIManager.Instance.MainMenuScreenToggle(true);

@@ -34,6 +34,11 @@ public class UserDetails : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    /// Key that scopes ALL on-device progress (city save file, tutorial flag) to one player, so a
+    /// guest or a different account never picks up the previous player's local data.
+    public static string SaveScope =>
+        Instance != null && Instance.isLoggedIn && !string.IsNullOrEmpty(Instance.userId) ? Instance.userId : "guest";
+
     /// Server stores funds as a double; the game uses whole numbers.
     public int FundsInt => (int)System.Math.Round(funds);
 
