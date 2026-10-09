@@ -328219,6 +328219,14 @@ PrefabInstance:
       propertyPath: m_HorizontalScrollbar
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5023957520593278607, guid: 199a10a6e78eb744b98e36d59e70f368, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.24291992
+      objectReference: {fileID: 0}
+    - target: {fileID: 5023957520593278607, guid: 199a10a6e78eb744b98e36d59e70f368, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -6.1762695
+      objectReference: {fileID: 0}
     - target: {fileID: 8276758056114848322, guid: 199a10a6e78eb744b98e36d59e70f368, type: 3}
       propertyPath: m_Name
       value: MemoriesScreen
@@ -328233,6 +328241,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4042169273191595345, guid: 199a10a6e78eb744b98e36d59e70f368, type: 3}
   m_PrefabInstance: {fileID: 1063074062}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1063074064 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5105362325801322486, guid: 199a10a6e78eb744b98e36d59e70f368, type: 3}
+  m_PrefabInstance: {fileID: 1063074062}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aa5c45b66ee499f8e4be3b30ff51399, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OceanParkMemoriesScreen
 --- !u!1 &1063327333
 GameObject:
   m_ObjectHideFlags: 0
@@ -438293,6 +438312,7 @@ GameObject:
   - component: {fileID: 1441159985}
   - component: {fileID: 1441159984}
   - component: {fileID: 1441159983}
+  - component: {fileID: 1441159987}
   m_Layer: 0
   m_Name: Disneyland Canvas
   m_TagString: Untagged
@@ -438397,6 +438417,21 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1441159987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441159981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eafad80b6922410492fdd1b8cf28dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LandmarkMarker
+  landmarkId: 
+  displayName: 
+  button: {fileID: 0}
 --- !u!1 &1443735530
 GameObject:
   m_ObjectHideFlags: 0
@@ -590515,6 +590550,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1645248076}
     m_Modifications:
+    - target: {fileID: 239501256327817764, guid: c4ba670bfb4c27547b33fb65dd61d7e6, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1063074064}
     - target: {fileID: 1688315205247310792, guid: c4ba670bfb4c27547b33fb65dd61d7e6, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -590598,6 +590637,10 @@ PrefabInstance:
     - target: {fileID: 5092637661636169840, guid: c4ba670bfb4c27547b33fb65dd61d7e6, type: 3}
       propertyPath: m_Name
       value: NewMemoryScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 5092637661636169840, guid: c4ba670bfb4c27547b33fb65dd61d7e6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -656520,6 +656563,7 @@ GameObject:
   - component: {fileID: 5308099069323604653}
   - component: {fileID: 7438180570854512070}
   - component: {fileID: 8932884575346302093}
+  - component: {fileID: 8932884575346302094}
   m_Layer: 0
   m_Name: Budha Canvas
   m_TagString: Untagged
@@ -662320,6 +662364,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b065496d47764fb2a91a32b0df447d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldSpaceUIBillboard
+--- !u!114 &8932884575346302094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1655540871207391660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eafad80b6922410492fdd1b8cf28dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LandmarkMarker
+  landmarkId: 
+  displayName: 
+  button: {fileID: 0}
 --- !u!33 &9081785964925906581
 MeshFilter:
   m_ObjectHideFlags: 0

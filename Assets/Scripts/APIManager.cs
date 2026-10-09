@@ -73,6 +73,34 @@ public class APIManager : MonoBehaviour
         return handle;
     }
 
+    /// Generic multipart/form-data POST - for endpoints that take a file (e.g. memory photos).
+    /// Content-Type is left to Unity so it adds the multipart boundary itself.
+    public ApiRequestHandle PostMultipart(string endpoint, System.Collections.Generic.List<IMultipartFormSection> sections)
+    {
+        var handle = new ApiRequestHandle();
+        StartCoroutine(PostMultipartRoutine(endpoint, sections, handle));
+        return handle;
+    }
+
+    private IEnumerator PostMultipartRoutine(string endpoint, System.Collections.Generic.List<IMultipartFormSection> sections, ApiRequestHandle handle)
+    {
+        using (var request = UnityWebRequest.Post(Url(endpoint), sections))
+        {
+            ApplyHeaders(request);
+            yield return request.SendWebRequest();
+            handle.response = BuildResponse(request);
+            handle.isDone = true;
+        }
+    }
+
+    /// Full URL for a server path or an already-absolute URL (e.g. an imageUrl from the API).
+    public string ResolveUrl(string pathOrUrl)
+    {
+        if (string.IsNullOrEmpty(pathOrUrl)) return "";
+        if (pathOrUrl.StartsWith("http://") || pathOrUrl.StartsWith("https://")) return pathOrUrl;
+        return Url(pathOrUrl);
+    }
+
     private IEnumerator GetRoutine(string endpoint, ApiRequestHandle handle)
     {
         using (var request = UnityWebRequest.Get(Url(endpoint)))

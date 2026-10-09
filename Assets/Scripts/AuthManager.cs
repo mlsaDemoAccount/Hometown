@@ -333,7 +333,8 @@ public class AuthManager : MonoBehaviour
         handle.message = response.success ? null : ErrorMessage(response);
     }
 
-    private static string ErrorMessage(APIManager.ApiResponse response)
+    /// Player-friendly text for a failed response (validation reasons, server message, network).
+    public static string ErrorMessage(APIManager.ApiResponse response)
     {
         if (response.statusCode == 0)
             return "Can't reach the server. Check your internet connection.";
