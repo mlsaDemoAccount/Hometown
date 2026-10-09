@@ -136,6 +136,7 @@ public class MemoryManager : MonoBehaviour
             yield break;
         }
 
+        Debug.Log("[MemoryManager] GET memories " + landmarkId + " -> " + api.response.rawJson);
         MemoryEntryList list = null;
         try { list = JsonUtility.FromJson<MemoryEntryList>("{\"items\":" + api.response.rawJson + "}"); }
         catch (System.Exception) { }
@@ -175,6 +176,7 @@ public class MemoryManager : MonoBehaviour
             yield break;
         }
 
+        Debug.Log("[MemoryManager] POST memory (title sent: '" + title + "') -> " + api.response.rawJson);
         MemoryEntry entry = null;
         try { entry = JsonUtility.FromJson<MemoryEntry>(api.response.rawJson); }
         catch (System.Exception) { }
