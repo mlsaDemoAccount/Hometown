@@ -198,7 +198,7 @@ public class MainMenuScreen : MonoBehaviour
 
     public void OnSettingsClick()
     {
-
+        GameUIManager.Instance.SettingScreenToggle(true);
     }
 
 
