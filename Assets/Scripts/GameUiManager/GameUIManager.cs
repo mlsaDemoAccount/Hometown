@@ -13,6 +13,7 @@ public class GameUIManager : MonoBehaviour
      [SerializeField] private InvitePlayerScreen invitePlayerScreen;
      [SerializeField] private LobbyScreen lobbyScreen;
      [SerializeField] private LoadingScreen loadingScreen;
+     [SerializeField] private GameObject settingScreen;
 
     private void Awake()
     {
@@ -61,6 +62,11 @@ public class GameUIManager : MonoBehaviour
     {
         lobbyScreen.gameObject.SetActive(value);
     }
+
+    public void SettingScreenToggle(bool value)
+    {
+        settingScreen.gameObject.SetActive(value);
+    }
     public void Init()
     {
         splashScreen.gameObject.SetActive(true);
@@ -70,6 +76,7 @@ public class GameUIManager : MonoBehaviour
         invitePlayerScreen.gameObject.SetActive(false);
         lobbyScreen.gameObject.SetActive(false);
         loadingScreen.gameObject.SetActive(false);
+        settingScreen.gameObject.SetActive(false);
 
     }
   

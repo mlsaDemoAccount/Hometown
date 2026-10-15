@@ -158,13 +158,28 @@ public class MemoryManager : MonoBehaviour
 
     private IEnumerator AddRoutine(string landmarkId, string title, string description, byte[] jpg, MemoryAddHandle handle)
     {
-        var sections = new List<IMultipartFormSection>
+        // Unity throws on a form section with an empty body, so optional text is only added when
+        // it has something in it (the server treats a missing Description as none).
+        List<IMultipartFormSection> sections;
+        try
         {
-            new MultipartFormDataSection("LandmarkId", landmarkId),
-            new MultipartFormDataSection("Title", title ?? ""),
-            new MultipartFormDataSection("Description", description ?? ""),
-            new MultipartFormFileSection("ImageFile", jpg, "memory.jpg", "image/jpeg")
-        };
+            sections = new List<IMultipartFormSection>
+            {
+                new MultipartFormDataSection("LandmarkId", landmarkId),
+                new MultipartFormDataSection("Title", title ?? ""),
+                new MultipartFormFileSection("ImageFile", jpg, "memory.jpg", "image/jpeg")
+            };
+            if (!string.IsNullOrEmpty(description))
+                sections.Add(new MultipartFormDataSection("Description", description));
+        }
+        catch (System.Exception e)
+        {
+            // Never leave the caller waiting forever on a handle that will not finish.
+            Debug.LogError("[MemoryManager] Could not build the upload: " + e.Message);
+            handle.message = "Couldn't prepare the memory for upload. Please try again.";
+            handle.isDone = true;
+            yield break;
+        }
 
         var api = APIManager.Instance.PostMultipart("/api/memories", sections);
         while (!api.isDone) yield return null;
