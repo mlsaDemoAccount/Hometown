@@ -528,6 +528,7 @@ public class CityLauncher : MonoBehaviour
                     SnapshotVersion = snapshot.result.version;
                     reply.snapshotData = snapshot.result.data;
                     reply.snapshotVersion = snapshot.result.version;
+                    reply.funds = snapshot.result.funds; reply.xp = snapshot.result.xp; reply.level = snapshot.result.level;
                 }
                 reply.ok = true;
                 reply.city = city.result;
@@ -570,7 +571,10 @@ public class CityLauncher : MonoBehaviour
     private void UploadNow()
     {
         if (!Active || string.IsNullOrEmpty(pendingJson) || uploading != null) return;
-        uploading = CityApi.Backend.PutSnapshot(CityId, SnapshotVersion, pendingJson);
+        // Funds / XP / level belong to the city: sent next to the snapshot so the server can list them.
+        var save = JsonUtility.FromJson<CitySaveData>(pendingJson);
+        int level = PlayerProgressManager.Instance != null ? PlayerProgressManager.Instance.currentLevel : 1;
+        uploading = CityApi.Backend.PutSnapshot(CityId, SnapshotVersion, save != null ? save.funds : 0, save != null ? save.xp : 0, level, pendingJson);
         dirty = false;
         nextUpload = Time.unscaledTime + UploadSeconds;
     }

@@ -17,7 +17,7 @@ public class MockCityBackend : ICityBackend, IPeerCityBackend
     private const string InviteAlphabet = "0123456789"; // digits only - easy to type
 
     [Serializable] private class UserRow { public string userId, firstName, lastSeenUtc; public int playerImageIndex; public int gender = -1; }
-    [Serializable] private class SnapshotRow { public int version; public string savedAtUtc, data; }
+    [Serializable] private class SnapshotRow { public int version, funds, xp, level = 1; public string savedAtUtc, data; }
     [Serializable] private class CityRow
     {
         public string cityId, name, lastPlayedUtc, hostUserId, photonRoom;
@@ -111,6 +111,9 @@ public class MockCityBackend : ICityBackend, IPeerCityBackend
         {
             cityId = c.cityId,
             name = c.name,
+            funds = c.snapshot != null ? c.snapshot.funds : 0,
+            xp = c.snapshot != null ? c.snapshot.xp : 0,
+            level = c.snapshot != null ? Mathf.Max(1, c.snapshot.level) : 1,
             version = c.snapshot != null ? c.snapshot.version : 0,
             lastPlayedUtc = c.lastPlayedUtc ?? "",
             participants = people.ToArray(),
@@ -237,22 +240,27 @@ public class MockCityBackend : ICityBackend, IPeerCityBackend
         if (c.snapshot == null) return CityCall<SnapshotDto>.Success(null);
         return CityCall<SnapshotDto>.Success(new SnapshotDto
         {
-            version = c.snapshot.version, savedAtUtc = c.snapshot.savedAtUtc, data = c.snapshot.data
+            version = c.snapshot.version, savedAtUtc = c.snapshot.savedAtUtc, data = c.snapshot.data,
+            funds = c.snapshot.funds, xp = c.snapshot.xp, level = c.snapshot.level
         });
     }
 
-    public CityCall<SaveSnapshotResult> PutSnapshot(string cityId, int baseVersion, string data)
+    public CityCall<SaveSnapshotResult> PutSnapshot(string cityId, int baseVersion, int funds, int xp, int level, string data)
     {
         var db = Load();
         var c = Mine(db, cityId, out string error);
         if (c == null) return CityCall<SaveSnapshotResult>.Fail(error);
         if (data != null && data.Length > 1024 * 1024) return CityCall<SaveSnapshotResult>.Fail("City is too large.");
 
+        if (funds < 0 || xp < 0 || level < 1) return CityCall<SaveSnapshotResult>.Fail("Invalid city stats.");
+
         int current = c.snapshot != null ? c.snapshot.version : 0;
         if (baseVersion != current)
             return CityCall<SaveSnapshotResult>.Success(new SaveSnapshotResult { conflict = true, version = current });
 
-        c.snapshot = new SnapshotRow { version = current + 1, savedAtUtc = Now(), data = data };
+        // XP only ever goes up (same rule as the real server).
+        if (c.snapshot != null && xp < c.snapshot.xp) { xp = c.snapshot.xp; level = Mathf.Max(level, c.snapshot.level); }
+        c.snapshot = new SnapshotRow { version = current + 1, savedAtUtc = Now(), data = data, funds = funds, xp = xp, level = level };
         c.lastPlayedUtc = Now();
         Save(db);
         return CityCall<SaveSnapshotResult>.Success(new SaveSnapshotResult { conflict = false, version = c.snapshot.version });
@@ -467,7 +475,7 @@ public class MockCityBackend : ICityBackend, IPeerCityBackend
         c.participantIds = ids;
         c.lastPlayedUtc = Now();
         if (!string.IsNullOrEmpty(reply.snapshotData) && (c.snapshot == null || reply.snapshotVersion > c.snapshot.version))
-            c.snapshot = new SnapshotRow { version = reply.snapshotVersion, savedAtUtc = Now(), data = reply.snapshotData };
+            c.snapshot = new SnapshotRow { version = reply.snapshotVersion, savedAtUtc = Now(), data = reply.snapshotData, funds = reply.funds, xp = reply.xp, level = reply.level };
         if (c.snapshot == null) c.snapshot = older;
         Save(db);
         return CityCall<CityDto>.Success(ToDto(db, c));

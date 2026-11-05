@@ -19,6 +19,9 @@ public class CityDto
 {
     public string cityId;
     public string name;
+    public int funds;               // shared city funds (the city owns them, not a player)
+    public int xp;                  // shared city XP
+    public int level = 1;           // city level, worked out by the game from xp
     public int version;             // +1 on every accepted snapshot upload
     public string lastPlayedUtc;    // ISO 8601, empty if never played
     public ParticipantDto[] participants = new ParticipantDto[0]; // 1 or 2
@@ -44,6 +47,7 @@ public class SnapshotDto
 {
     public int version;
     public string savedAtUtc;
+    public int funds, xp, level = 1; // city stats stored next to the snapshot
     public string data; // the game's own JSON (CitySaveData), opaque to the server
 }
 
@@ -94,6 +98,7 @@ public class JoinReply
     public string error;
     public CityDto city;
     public int snapshotVersion;
+    public int funds, xp, level = 1; // stats of that snapshot
     public string snapshotData; // empty = brand-new city
 }
 

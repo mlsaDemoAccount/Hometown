@@ -15,7 +15,7 @@ public interface ICityBackend
 
     /// result == null when the city has no snapshot yet (brand-new city).
     CityCall<SnapshotDto> GetSnapshot(string cityId);
-    CityCall<SaveSnapshotResult> PutSnapshot(string cityId, int baseVersion, string data);
+    CityCall<SaveSnapshotResult> PutSnapshot(string cityId, int baseVersion, int funds, int xp, int level, string data);
 
     CityCall<InviteDto> CreateInvite(string cityId);
     CityCall<AcceptInviteResult> AcceptInvite(string inviteCode);
