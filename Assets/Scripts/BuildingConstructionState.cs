@@ -70,6 +70,8 @@ public class BuildingConstructionState : MonoBehaviour
         remainingTime -= Time.deltaTime;
         if (remainingTime <= 0f)
         {
+            // Co-op: the host decides when a build finishes; the guest waits at zero for its message.
+            if (Coop.IsGuest) { remainingTime = 0f; UpdateTimerDisplay(); return; }
             CompleteCurrentPhase();
             return;
         }
@@ -215,5 +217,13 @@ public class BuildingConstructionState : MonoBehaviour
             instance.CompleteUpgrade(pendingUpgradeLevelIndex);
         else
             instance.CompleteInitialConstruction();
+
+        if (Coop.IsHost) CityNetworkSync.Instance.BroadcastConstructionDone(instance.instanceId);
+    }
+
+    /// Co-op guest: the host says this build / upgrade is finished.
+    public void FinishFromHost()
+    {
+        if (phase != ConstructionPhase.Complete) CompleteCurrentPhase();
     }
 }

@@ -80,7 +80,22 @@ public class BuildingInstance : MonoBehaviour
             PlayerProgressManager.Instance?.AddXP(xpReward);
             CitySaveManager.Instance?.SaveCity();
         }
+        if (Coop.IsHost) CityNetworkSync.Instance.BroadcastUpgradeStarted(instanceId);
         return true;
+    }
+
+    /// Co-op guest: the host paid for and started an upgrade - show the same thing here (no funds, no XP).
+    public void StartUpgradeFromHost()
+    {
+        if (currentLevelIndex >= data.MaxLevelIndex) return;
+        int newLevelIndex = currentLevelIndex + 1;
+        float duration = data.GetLevel(currentLevelIndex).upgradeDuration;
+        if (constructionState != null && duration > 0f) constructionState.BeginUpgrade(duration, newLevelIndex);
+        else
+        {
+            currentLevelIndex = newLevelIndex;
+            CityStatsManager.Instance?.RecalculateAll();
+        }
     }
 
     /// Called by BuildingConstructionState when a fresh construction timer finishes.

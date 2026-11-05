@@ -43,6 +43,8 @@ public class BuildingPlacementController : MonoBehaviour
 
     private BuildingData selectedBuildingData; // from shop
     private GameObject ghostObject;
+    private const float MoveIdleSeconds = 30f; // co-op: an untouched move preview gives up its lock after this long
+    private float lastMoveActivity;
     private Vector2Int lastGhostCell;
     private int ghostRotationSteps = 0; // 0-3, each step = 90 degrees clockwise
 
@@ -67,9 +69,17 @@ public class BuildingPlacementController : MonoBehaviour
     void Update()
     {
         if (currentMode == Mode.None) return;
+        if (Coop.EditLocked) { CancelCurrentAction(); return; } // the other player is away: nothing can change
+        if (currentMode == Mode.Moving && Coop.Active && Time.unscaledTime - lastMoveActivity > MoveIdleSeconds)
+        {
+            CancelCurrentAction(); // frees the building for the other player
+            CityNetworkSync.Instance.ShowNotice("Move cancelled - no activity.");
+            return;
+        }
         if (UIPointerUtil.IsPointerOverUI()) return; // don't let a UI click also register as a world tap
 
         if (!TryGetPointerScreenPosition(out Vector2 screenPos)) return; // no touch/click this frame
+        lastMoveActivity = Time.unscaledTime;
 
         if (currentMode == Mode.Placing || currentMode == Mode.Moving)
             HandlePlacingOrMoving(screenPos);
@@ -81,6 +91,7 @@ public class BuildingPlacementController : MonoBehaviour
 
     public void BeginPlacement(BuildingData data)
     {
+        if (Coop.EditLocked) return;
         CancelCurrentAction();
         selectedBuildingData = data;
         currentMode = Mode.Placing;
@@ -108,8 +119,11 @@ public class BuildingPlacementController : MonoBehaviour
 
     public void BeginMove(BuildingInstance instance)
     {
+        if (Coop.EditLocked) return;
+        if (IsLockedByOther(instance.instanceId)) { CityNetworkSync.Instance.ShowNotice("Your friend is moving this building right now."); return; }
         CancelCurrentAction();
         movingInstance = instance;
+        lastMoveActivity = Time.unscaledTime;
         selectedBuildingData = instance.data;
         currentMode = Mode.Moving;
         ghostRotationSteps = instance.rotationSteps; // start the ghost matching its current orientation
@@ -129,10 +143,28 @@ public class BuildingPlacementController : MonoBehaviour
 
         instance.gameObject.SetActive(false);
         controlPanel?.Show();
+
+        // Co-op: tell the host (and so the friend) that this building is in use.
+        if (Coop.IsHost) CityNetworkSync.Instance.BroadcastLock(instance.instanceId, true);
+        else if (Coop.IsGuest) CityNetworkSync.Instance.RequestLock(instance.instanceId);
+    }
+
+    /// Co-op: the other player is moving this building, so it can't be moved, upgraded or demolished now.
+    public bool IsLockedByOther(int id) => Coop.Active && CityNetworkSync.Instance.IsLockedByOther(id);
+
+    /// The building this phone is moving right now, or -1.
+    public int MovingId => movingInstance != null ? movingInstance.instanceId : -1;
+
+    /// Co-op: our move ended (Done / cancel) - let the other player use the building again.
+    private void ReleaseMoveLock(int id)
+    {
+        if (Coop.IsHost) CityNetworkSync.Instance.BroadcastLock(id, false);
+        else if (Coop.IsGuest) CityNetworkSync.Instance.RequestReleaseLock(id);
     }
 
     public void EnterDemolishMode()
     {
+        if (Coop.EditLocked) return;
         CancelCurrentAction();
         currentMode = Mode.Demolishing;
     }
@@ -147,7 +179,9 @@ public class BuildingPlacementController : MonoBehaviour
             GridManager.Instance.SetFootprint(movingInstance.gridOrigin, effectiveSize,
                 GridManager.CellType.Building, movingInstance.instanceId);
             movingInstance.gameObject.SetActive(true);
+            int releasedId = movingInstance.instanceId;
             movingInstance = null;
+            ReleaseMoveLock(releasedId);
         }
         if (ghostObject != null) { ClearGhostMaterialState(); Destroy(ghostObject); }
         selectedBuildingData = null;
@@ -237,6 +271,8 @@ public class BuildingPlacementController : MonoBehaviour
     /// but only if that cell is currently valid (button should be disabled otherwise).
     public void ConfirmCurrentGhostPlacement()
     {
+        if (Coop.EditLocked) return;
+        RefreshGhostValidity(); // the grid may have changed since the last drag (co-op)
         if (!lastGhostValid) return;
         ConfirmPlacement(lastGhostCell);
     }
@@ -262,53 +298,46 @@ public class BuildingPlacementController : MonoBehaviour
     {
         if (currentMode == Mode.Placing)
         {
-            if (!EconomyManager.Instance.TrySpend(selectedBuildingData.placementCost))
+            if (EconomyManager.Instance.currentFunds < selectedBuildingData.placementCost)
             {
                 Debug.LogWarning($"[BuildingPlacementController] Can't place '{selectedBuildingData.displayName}' - costs {selectedBuildingData.placementCost}, but only {EconomyManager.Instance.currentFunds} available. Ghost stays active; Done will keep failing until funds are sufficient.");
                 return; // not enough funds - stay in placing mode
             }
 
-            Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(selectedBuildingData.footprintSize, ghostRotationSteps);
-            Quaternion rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
-
-            GameObject obj = Instantiate(GetVisualPrefab(selectedBuildingData),
-                GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
-            obj.transform.SetParent(buildingsParent, true); // true = keep world position exactly as placed, purely organizational (null = scene root, same as before if unassigned)
-            ApplyFootprintScale(obj, selectedBuildingData);
-            DisableIndicatorOnRealBuilding(obj); // indicator sprite is only for the ghost preview
-            var instance = obj.AddComponent<BuildingInstance>();
-            int id = nextInstanceId++;
-            instance.Initialize(selectedBuildingData, cell, id);
-            instance.rotationSteps = ghostRotationSteps;
-            instances[id] = instance;
-            GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, id);
-
-            // Start construction timer if this prefab has one set up and a nonzero duration -
-            // otherwise it's placed instantly, same as before this feature existed.
-            var constructionState = obj.GetComponent<BuildingConstructionState>();
-            if (constructionState != null && selectedBuildingData.constructionDuration > 0f)
+            if (Coop.IsGuest)
             {
-                constructionState.BeginConstruction(selectedBuildingData.constructionDuration);
-                // XP awarded later, when construction actually completes (see BuildingInstance.CompleteInitialConstruction) -
-                // not here, so a half-built building doesn't already grant the reward.
+                // Co-op guest: only ASK. The host checks the spot and the funds, builds it, and
+                // tells both phones - the building appears here when the host confirms.
+                CityNetworkSync.Instance.RequestPlace(selectedBuildingData.buildingId, cell, ghostRotationSteps);
             }
             else
             {
-                // No timer - building is instantly complete, award this building's own XP now.
-                PlayerProgressManager.Instance?.AddXP(selectedBuildingData.placementXP);
+                EconomyManager.Instance.TrySpend(selectedBuildingData.placementCost);
+                var placed = CreateBuilding(selectedBuildingData, cell, ghostRotationSteps, -1, true);
+                if (Coop.IsHost) CityNetworkSync.Instance.BroadcastPlaced(placed);
             }
         }
         else if (currentMode == Mode.Moving)
         {
-            Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(movingInstance.data.footprintSize, ghostRotationSteps);
-            movingInstance.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize);
-            movingInstance.transform.rotation = Quaternion.Euler(0f, ghostRotationSteps * 90f, 0f);
-            movingInstance.gridOrigin = cell;
-            movingInstance.rotationSteps = ghostRotationSteps;
-            movingInstance.gameObject.SetActive(true);
-            DisableIndicatorOnRealBuilding(movingInstance.gameObject); // defensive - should already be disabled from original placement
-            GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, movingInstance.instanceId);
-            movingInstance = null;
+            if (Coop.IsGuest)
+            {
+                // Co-op guest: put the building back and ASK; the host moves it on both phones.
+                int id = movingInstance.instanceId;
+                CancelMoveInPlace();
+                CityNetworkSync.Instance.RequestMove(id, cell, ghostRotationSteps);
+                ReleaseMoveLock(id); // sent after the move request, so the host handles them in this order
+            }
+            else
+            {
+                var moved = movingInstance;
+                movingInstance = null;
+                ApplyMove(moved, cell, ghostRotationSteps);
+                if (Coop.IsHost)
+                {
+                    CityNetworkSync.Instance.BroadcastMoved(moved.instanceId, cell, ghostRotationSteps);
+                    ReleaseMoveLock(moved.instanceId);
+                }
+            }
         }
 
         ClearGhostMaterialState();
@@ -317,6 +346,28 @@ public class BuildingPlacementController : MonoBehaviour
         currentMode = Mode.None;
         controlPanel?.Hide();
         CitySaveManager.Instance?.SaveCity();
+    }
+
+    /// Puts a building at a new spot and re-marks the grid (its old footprint must already be free).
+    private void ApplyMove(BuildingInstance instance, Vector2Int cell, int rotationSteps)
+    {
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, rotationSteps);
+        instance.transform.position = GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize);
+        instance.transform.rotation = Quaternion.Euler(0f, rotationSteps * 90f, 0f);
+        instance.gridOrigin = cell;
+        instance.rotationSteps = rotationSteps;
+        instance.gameObject.SetActive(true);
+        DisableIndicatorOnRealBuilding(instance.gameObject); // defensive - should already be disabled from original placement
+        GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, instance.instanceId);
+    }
+
+    /// Undoes the "lift" of BeginMove without leaving move mode's other state behind (co-op guest).
+    private void CancelMoveInPlace()
+    {
+        Vector2Int size = BuildingInstance.GetRotatedFootprint(movingInstance.data.footprintSize, movingInstance.rotationSteps);
+        GridManager.Instance.SetFootprint(movingInstance.gridOrigin, size, GridManager.CellType.Building, movingInstance.instanceId);
+        movingInstance.gameObject.SetActive(true);
+        movingInstance = null;
     }
 
     /// Disables the base indicator sprite on a REAL, placed building - it's part of the prefab
@@ -340,17 +391,210 @@ public class BuildingPlacementController : MonoBehaviour
         {
             int id = GridManager.Instance.GetOccupant(cell);
             if (instances.TryGetValue(id, out var instance))
-            {
-                Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
-                GridManager.Instance.ClearFootprint(instance.gridOrigin, effectiveSize);
-                EconomyManager.Instance.RefundDemolish(instance.data.placementCost);
-                instances.Remove(id);
-                Destroy(instance.gameObject);
-                CitySaveManager.Instance?.SaveCity();
-            }
+                DemolishInstance(instance);
         }
         // NOTE: roads are pre-built static geometry now (see RoadFootprintScanner) - they can't
         // be demolished by the player, so there's no "else if road" branch here anymore.
+    }
+
+    // ---------- Building creation / removal (shared by solo, co-op host and co-op guest) ----------
+
+    /// Builds a new building from a purchase: spawns it, marks the grid, starts the construction
+    /// timer. Funds are NOT handled here. awardXp is false on the co-op guest (the host owns XP).
+    private BuildingInstance CreateBuilding(BuildingData data, Vector2Int cell, int rotationSteps, int forcedId, bool awardXp)
+    {
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(data.footprintSize, rotationSteps);
+        Quaternion rotation = Quaternion.Euler(0f, rotationSteps * 90f, 0f);
+
+        GameObject obj = Instantiate(GetVisualPrefab(data),
+            GridManager.Instance.FootprintCenterToWorld(cell, effectiveSize), rotation);
+        obj.transform.SetParent(buildingsParent, true); // true = keep world position exactly as placed, purely organizational (null = scene root, same as before if unassigned)
+        ApplyFootprintScale(obj, data);
+        DisableIndicatorOnRealBuilding(obj); // indicator sprite is only for the ghost preview
+        var instance = obj.AddComponent<BuildingInstance>();
+        int id = TakeId(forcedId);
+        instance.Initialize(data, cell, id);
+        instance.rotationSteps = rotationSteps;
+        instances[id] = instance;
+        GridManager.Instance.SetFootprint(cell, effectiveSize, GridManager.CellType.Building, id);
+
+        // Start construction timer if this prefab has one set up and a nonzero duration -
+        // otherwise it's placed instantly, same as before this feature existed.
+        var constructionState = obj.GetComponent<BuildingConstructionState>();
+        if (constructionState != null && data.constructionDuration > 0f)
+        {
+            constructionState.BeginConstruction(data.constructionDuration);
+            // XP awarded later, when construction actually completes (see BuildingInstance.CompleteInitialConstruction) -
+            // not here, so a half-built building doesn't already grant the reward.
+        }
+        else if (awardXp)
+        {
+            // No timer - building is instantly complete, award this building's own XP now.
+            PlayerProgressManager.Instance?.AddXP(data.placementXP);
+        }
+        RefreshGhostValidity(); // a building may have just landed under the other player's preview
+        return instance;
+    }
+
+    /// Re-checks the spot under the current preview, e.g. after the other player built there.
+    private void RefreshGhostValidity()
+    {
+        if (ghostObject == null || selectedBuildingData == null) return;
+        Vector2Int size = BuildingInstance.GetRotatedFootprint(selectedBuildingData.footprintSize, ghostRotationSteps);
+        lastGhostValid = GridManager.Instance.CanPlaceFootprint(lastGhostCell, size) && PassesRoadCheck(lastGhostCell, size);
+        SetGhostMaterial(lastGhostValid);
+    }
+
+    private int TakeId(int forcedId)
+    {
+        if (forcedId < 0) return nextInstanceId++;
+        if (forcedId >= nextInstanceId) nextInstanceId = forcedId + 1;
+        return forcedId;
+    }
+
+    /// Removes a building: frees its cells and destroys it. refund = false on the co-op guest.
+    private void RemoveBuilding(BuildingInstance instance, bool refund)
+    {
+        if (instance == movingInstance) { movingInstance = null; CancelCurrentAction(); } // the other player removed what we were moving
+        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
+        GridManager.Instance.ClearFootprint(instance.gridOrigin, effectiveSize);
+        if (refund) EconomyManager.Instance.RefundDemolish(instance.data.placementCost);
+        instances.Remove(instance.instanceId);
+        CityNetworkSync.Instance?.ForgetLock(instance.instanceId);
+        if (BuildingSelectionController.Instance != null && BuildingSelectionController.Instance.Selected == instance)
+            BuildingSelectionController.Instance.Deselect();
+        Destroy(instance.gameObject);
+        CitySaveManager.Instance?.SaveCity();
+    }
+
+    // ---------- Co-op entry points (called by CityNetworkSync only) ----------
+
+    /// Host: a guest asked to place a building. Checks everything, then builds it.
+    /// Returns the new building, or null with the reason in 'error'.
+    public BuildingInstance HostPlace(string buildingId, Vector2Int cell, int rotationSteps, out string error)
+    {
+        error = null;
+        var data = BuildingDatabase.Instance != null ? BuildingDatabase.Instance.GetById(buildingId) : null;
+        if (data == null) { error = "Unknown building."; return null; }
+
+        Vector2Int size = BuildingInstance.GetRotatedFootprint(data.footprintSize, rotationSteps);
+        if (!GridManager.Instance.CanPlaceFootprint(cell, size) || !PassesRoadCheck(data, cell, size))
+        {
+            error = "That spot isn't available any more.";
+            return null;
+        }
+        if (!EconomyManager.Instance.TrySpend(data.placementCost))
+        {
+            error = "Not enough funds.";
+            return null;
+        }
+        return CreateBuilding(data, cell, rotationSteps, -1, true);
+    }
+
+    /// Guest: the host built this - show it. Skipped if it is already here (see CityNetworkSync).
+    public void RemotePlaced(string buildingId, Vector2Int cell, int rotationSteps, int id)
+    {
+        if (instances.ContainsKey(id)) return;
+        var data = BuildingDatabase.Instance != null ? BuildingDatabase.Instance.GetById(buildingId) : null;
+        if (data == null) { Debug.LogWarning("[BuildingPlacementController] Host placed unknown building '" + buildingId + "'."); return; }
+        CreateBuilding(data, cell, rotationSteps, id, false);
+    }
+
+    /// Host: a guest asked to demolish.
+    public bool HostDemolish(int id)
+    {
+        if (!instances.TryGetValue(id, out var instance)) return false;
+        RemoveBuilding(instance, true);
+        return true;
+    }
+
+    /// Guest: the host demolished this - remove it (no refund here; funds come from the host).
+    public void RemoteDemolished(int id)
+    {
+        if (instances.TryGetValue(id, out var instance)) RemoveBuilding(instance, false);
+    }
+
+    /// Host: a guest asked to move a building. Checks the new spot, then moves it.
+    public bool HostMove(int id, Vector2Int cell, int rotationSteps, out string error)
+    {
+        error = null;
+        if (!instances.TryGetValue(id, out var instance)) { error = "That building is gone."; return false; }
+
+        bool hostIsMovingIt = instance == movingInstance; // its cells are already free in that case
+        Vector2Int oldSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
+        Vector2Int newSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, rotationSteps);
+        GridManager.Instance.ClearFootprint(instance.gridOrigin, oldSize); // its own cells don't block it
+        if (!GridManager.Instance.CanPlaceFootprint(cell, newSize) || !PassesRoadCheck(instance.data, cell, newSize))
+        {
+            if (!hostIsMovingIt) GridManager.Instance.SetFootprint(instance.gridOrigin, oldSize, GridManager.CellType.Building, id);
+            error = "That spot isn't available any more.";
+            return false;
+        }
+        if (hostIsMovingIt)
+        {
+            // The friend finished first: their move wins and our unfinished move is dropped.
+            CancelCurrentAction();
+            GridManager.Instance.ClearFootprint(instance.gridOrigin, oldSize);
+            CityNetworkSync.Instance.ShowNotice("Your friend moved that building first.");
+        }
+        ApplyMove(instance, cell, rotationSteps);
+        CitySaveManager.Instance?.SaveCity();
+        RefreshGhostValidity();
+        return true;
+    }
+
+    /// Guest: the host moved this building.
+    public void RemoteMoved(int id, Vector2Int cell, int rotationSteps)
+    {
+        if (!instances.TryGetValue(id, out var instance)) return;
+        if (instance == movingInstance)
+        {
+            // The host's move finished first and wins: drop our unfinished move.
+            CancelCurrentAction();
+            CityNetworkSync.Instance.ShowNotice("Your friend moved that building first.");
+        }
+        Vector2Int oldSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
+        GridManager.Instance.ClearFootprint(instance.gridOrigin, oldSize);
+        ApplyMove(instance, cell, rotationSteps);
+        RefreshGhostValidity();
+    }
+
+    /// Host: a guest asked to upgrade a building. Spends the funds and starts the upgrade.
+    public bool HostUpgrade(int id, out string error)
+    {
+        error = null;
+        if (!instances.TryGetValue(id, out var instance) || !instance.CanUpgrade) { error = "That building can't be upgraded now."; return false; }
+        if (id == MovingId || IsLockedByOther(id)) { error = "That building is being moved."; return false; }
+        if (!instance.TryUpgrade(EconomyManager.Instance)) { error = "Not enough funds."; return false; }
+        return true;
+    }
+
+    /// Guest: the host started an upgrade (funds were already taken there).
+    public void RemoteUpgradeStarted(int id)
+    {
+        if (instances.TryGetValue(id, out var instance)) instance.StartUpgradeFromHost();
+    }
+
+    /// Guest: the host finished this building's construction / upgrade.
+    public void RemoteConstructionDone(int id)
+    {
+        if (instances.TryGetValue(id, out var instance) && instance.ConstructionState != null) instance.ConstructionState.FinishFromHost();
+    }
+
+    /// Removes every building - used before loading the host's city onto the guest.
+    public void ClearAllBuildings()
+    {
+        CancelCurrentAction();
+        BuildingSelectionController.Instance?.Deselect();
+        foreach (var instance in new List<BuildingInstance>(instances.Values))
+        {
+            if (instance == null) continue;
+            Vector2Int size = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
+            GridManager.Instance.ClearFootprint(instance.gridOrigin, size);
+            Destroy(instance.gameObject);
+        }
+        instances.Clear();
+        nextInstanceId = 0;
     }
 
     // ---------- Helpers ----------
@@ -369,7 +613,7 @@ public class BuildingPlacementController : MonoBehaviour
     /// used ONLY by CitySaveManager when restoring a saved city on load. A normal player
     /// placement always goes through BeginPlacement -> ConfirmPlacement instead.
     public void PlaceBuildingDirect(BuildingData data, Vector2Int cell, int rotationSteps, int levelIndex,
-        ConstructionPhase savedPhase = ConstructionPhase.Complete, float savedRemaining = 0f, float savedTotal = 0f, int savedPendingLevelIndex = 0)
+        ConstructionPhase savedPhase = ConstructionPhase.Complete, float savedRemaining = 0f, float savedTotal = 0f, int savedPendingLevelIndex = 0, int forcedId = -1)
     {
         Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(data.footprintSize, rotationSteps);
         Quaternion rotation = Quaternion.Euler(0f, rotationSteps * 90f, 0f);
@@ -381,7 +625,7 @@ public class BuildingPlacementController : MonoBehaviour
         DisableIndicatorOnRealBuilding(obj);
 
         var instance = obj.AddComponent<BuildingInstance>();
-        int id = nextInstanceId++;
+        int id = TakeId(forcedId);
         instance.Initialize(data, cell, id, levelIndex);
         instance.rotationSteps = rotationSteps;
         instances[id] = instance;
@@ -399,14 +643,19 @@ public class BuildingPlacementController : MonoBehaviour
     /// No mode switching, no "next tap" needed - call this straight from the Demolish button.
     public void DemolishInstance(BuildingInstance instance)
     {
-        if (instance == null) return;
-        Vector2Int effectiveSize = BuildingInstance.GetRotatedFootprint(instance.data.footprintSize, instance.rotationSteps);
-        GridManager.Instance.ClearFootprint(instance.gridOrigin, effectiveSize);
-        EconomyManager.Instance.RefundDemolish(instance.data.placementCost);
-        instances.Remove(instance.instanceId);
-        BuildingSelectionController.Instance?.Deselect();
-        Destroy(instance.gameObject);
-        CitySaveManager.Instance?.SaveCity();
+        if (instance == null || Coop.EditLocked) return;
+        if (IsLockedByOther(instance.instanceId)) { CityNetworkSync.Instance.ShowNotice("Your friend is moving this building right now."); return; }
+        if (Coop.IsGuest)
+        {
+            // Co-op guest: ask the host; the building disappears when the host confirms.
+            BuildingSelectionController.Instance?.Deselect();
+            CityNetworkSync.Instance.RequestDemolish(instance.instanceId);
+            return;
+        }
+
+        int id = instance.instanceId;
+        RemoveBuilding(instance, true);
+        if (Coop.IsHost) CityNetworkSync.Instance.BroadcastDemolished(id);
     }
 
     private void SetGhostMaterial(bool valid)
@@ -458,9 +707,12 @@ public class BuildingPlacementController : MonoBehaviour
     /// footpath check passes. Checks footpath, not road - buildings connect to the sidewalk,
     /// not the vehicle lane, since the two run parallel to each other. Takes the EFFECTIVE
     /// (possibly rotated) footprint size, not the raw one, so rotation is checked correctly.
-    private bool PassesRoadCheck(Vector2Int cell, Vector2Int effectiveFootprintSize)
+    private bool PassesRoadCheck(Vector2Int cell, Vector2Int effectiveFootprintSize) =>
+        PassesRoadCheck(selectedBuildingData, cell, effectiveFootprintSize);
+
+    private bool PassesRoadCheck(BuildingData data, Vector2Int cell, Vector2Int effectiveFootprintSize)
     {
-        if (!selectedBuildingData.requiresFootpathAdjacency) return true;
+        if (!data.requiresFootpathAdjacency) return true;
         if (RoadManager.Instance == null) return true; // road/footpath not implemented yet - don't block placement
         return RoadManager.Instance.IsAdjacentToFootpath(cell, effectiveFootprintSize);
     }

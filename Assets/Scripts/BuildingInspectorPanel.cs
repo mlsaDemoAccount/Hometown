@@ -40,10 +40,25 @@ public class BuildingInspectorPanel : MonoBehaviour
 
         if (buildingNameLabel != null) buildingNameLabel.text = instance.data.displayName;
 
-        bool canUpgrade = instance.CanUpgrade;
+        Refresh();
+    }
+
+    // The other player may pick the building up while this panel is open.
+    void Update()
+    {
+        if (current != null) Refresh();
+    }
+
+    private void Refresh()
+    {
+        bool busy = Coop.EditLocked || BuildingPlacementController.Instance.IsLockedByOther(current.instanceId);
+        moveButton.interactable = !busy;
+        demolishButton.interactable = !busy;
+
+        bool canUpgrade = current.CanUpgrade && !busy;
         upgradeButton.interactable = canUpgrade;
         if (upgradeCostLabel != null)
-            upgradeCostLabel.text = canUpgrade ? $"Upgrade - {instance.NextUpgradeCost} WP" : "Max Level";
+            upgradeCostLabel.text = current.CanUpgrade ? $"Upgrade - {current.NextUpgradeCost} WP" : "Max Level";
     }
 
     public void Hide()
@@ -69,7 +84,16 @@ public class BuildingInspectorPanel : MonoBehaviour
 
     private void OnUpgradeClicked()
     {
-        if (current == null) return;
+        if (current == null || Coop.EditLocked) return;
+        if (Coop.IsGuest)
+        {
+            // Co-op guest: only ASK. The host takes the funds and starts the upgrade on both phones.
+            if (!current.CanUpgrade || EconomyManager.Instance.currentFunds < current.NextUpgradeCost) return;
+            CityNetworkSync.Instance.RequestUpgrade(current.instanceId);
+            BuildingSelectionController.Instance.Deselect();
+            Hide();
+            return;
+        }
         bool success = current.TryUpgrade(EconomyManager.Instance);
         if (success)
         {

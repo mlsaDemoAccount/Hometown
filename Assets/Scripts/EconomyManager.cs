@@ -33,6 +33,7 @@ public class EconomyManager : MonoBehaviour
     // Queues ONLY the funds value for the profile PUT (debounced inside AuthManager).
     private void SyncFundsToServer()
     {
+        if (Coop.Active || CityLauncher.IsCityMode) return; // co-op funds belong to the shared city, not the player's own profile
         AuthManager.Instance?.QueueProfileUpdate("funds", currentFunds);
     }
 

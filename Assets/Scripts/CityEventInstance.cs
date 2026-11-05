@@ -54,8 +54,9 @@ public class CityEventInstance : MonoBehaviour
         if (Data.resolveParticlePrefab != null)
             Instantiate(Data.resolveParticlePrefab, transform.position, Quaternion.identity);
 
-        int reward = Random.Range(Data.minFundsReward, Data.maxFundsReward + 1);
-        EconomyManager.Instance?.AddFunds(reward);
+        // The city's funds belong to the host: a guest only reports which event was fixed.
+        if (Coop.IsGuest) CityNetworkSync.Instance.RequestEventReward(Data.displayName);
+        else EconomyManager.Instance?.AddFunds(Random.Range(Data.minFundsReward, Data.maxFundsReward + 1));
 
         CityEventManager.Instance?.RemoveEvent(this);
         Destroy(gameObject, Data.resolveDuration);

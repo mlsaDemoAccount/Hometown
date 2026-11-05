@@ -192,7 +192,8 @@ public class MainMenuScreen : MonoBehaviour
 
     public void OnProfileClick()
     {
-
+        // the main menu stays open behind the profile screen
+        GameUIManager.Instance.ProfileScreenToggle(true);
     }
 
 

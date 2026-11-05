@@ -61,12 +61,14 @@ public class PlayerProgressManager : MonoBehaviour
     /// exact same way.
     public void AddXP(int amount)
     {
+        if (Coop.IsGuest) return; // the co-op host owns XP; the guest just displays it
         currentXP += amount;
         int previousLevel = currentLevel;
         RecalculateLevel();
         UpdateDisplay();
         CitySaveManager.Instance?.SaveCity();
-        AuthManager.Instance?.QueueProfileUpdate("playerXp", currentXP); // only XP is sent
+        if (!Coop.Active && !CityLauncher.IsCityMode) // co-op XP belongs to the shared city, not the player's own profile
+            AuthManager.Instance?.QueueProfileUpdate("playerXp", currentXP); // only XP is sent
 
         if (currentLevel > previousLevel)
             levelUpPopup?.Show(currentLevel);

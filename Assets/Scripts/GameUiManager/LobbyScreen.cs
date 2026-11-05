@@ -11,6 +11,13 @@ public class LobbyScreen : MonoBehaviour
     public Image logo;
     public Image[] elements;
 
+    [Header("Players (right = you, left = your friend)")]
+    [SerializeField] private TMP_Text myNameText;
+    [SerializeField] private TMP_Text friendNameText;
+    [Tooltip("The big character on the right. Its sprite follows the gender chosen on the Profile screen.")]
+    [SerializeField] private Image myCharacter;
+    [SerializeField] private Image friendCharacter;
+
     [Header("Countdown")]
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private int gameSceneName = 1;
@@ -27,8 +34,12 @@ public class LobbyScreen : MonoBehaviour
     private Vector3 logoOriginalScale;
     private Vector3[] elementOriginalScales;
 
+    private float nextPlayersRefresh;
+
     private void OnEnable()
     {
+        if (CityLauncher.IsCityMode) CityLauncher.Instance.RefreshPartner();
+        RefreshPlayers();
         if (SoundManager.Instance != null)
         {
             SoundManager.Instance.PlayLobbyMusic();
@@ -40,6 +51,33 @@ public class LobbyScreen : MonoBehaviour
         {
             SoundManager.Instance.PlayMainMusic();
         }
+    }
+
+    // The friend's profile can arrive a moment after the lobby opens: keep the names and characters current.
+    private void Update()
+    {
+        if (Time.unscaledTime < nextPlayersRefresh) return;
+        nextPlayersRefresh = Time.unscaledTime + 0.5f;
+        RefreshPlayers();
+    }
+
+    private void RefreshPlayers()
+    {
+        var partner = PlayerIdentity.Partner;
+        if (myNameText != null) myNameText.text = PlayerIdentity.MyName;
+        if (friendNameText != null) friendNameText.text = partner != null ? partner.firstName : "Waiting...";
+        ShowCharacter(myCharacter, PlayerIdentity.MyGender);
+        ShowCharacter(friendCharacter, partner != null ? partner.gender : -1);
+    }
+
+    // Unknown gender: leave whatever picture the scene already shows.
+    private static void ShowCharacter(Image slot, int gender)
+    {
+        if (slot == null) return;
+        var sprite = AvatarLibrary.Character(gender);
+        if (sprite == null) return;
+        slot.sprite = sprite;
+        slot.preserveAspect = true;
     }
 
     private void Start()

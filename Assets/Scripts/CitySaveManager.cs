@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class BuildingSaveData
 {
+    public int instanceId = -1; // -1 = not recorded (older saves); co-op needs the ids to match on both phones
     public string buildingId;
     public int gridX;
     public int gridY;
@@ -49,6 +50,10 @@ public class CitySaveManager : MonoBehaviour
     [Tooltip("Which city's save file to use. Later, a city-select screen will set this before entering Gameplay - for now, defaults to a single city so everything works exactly as before.")]
     public string currentCityId = "city_1";
 
+    /// Set while this phone is showing someone else's (the co-op host's) city: nothing is written
+    /// to disk, so the player's own saved city survives. Resets with the scene.
+    [System.NonSerialized] public bool blockSaving;
+
     private string SavePath => Path.Combine(Application.persistentDataPath, $"city_{UserDetails.SaveScope}_{currentCityId}_save.json");
 
     /// Deletes a scope's save file for a city without needing an instance - used when a guest
@@ -68,7 +73,8 @@ public class CitySaveManager : MonoBehaviour
     void Start()
     {
         LoadCity();
-        StartCoroutine(SyncProfileFromServer());
+        // In a shared city, funds and XP belong to the city, not to a player's profile.
+        if (!CityLauncher.IsCityMode) StartCoroutine(SyncProfileFromServer());
     }
 
     /// Server profile is the source of truth for funds and XP when logged in: fetched after the
@@ -104,6 +110,19 @@ public class CitySaveManager : MonoBehaviour
     [ContextMenu("Save City Now")]
     public void SaveCity()
     {
+        // The joining co-op player is looking at the HOST's city - it must never overwrite their own save.
+        if (blockSaving || Coop.IsGuest) return;
+
+        CitySaveData data = BuildSnapshot();
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(SavePath, json);
+        Debug.Log($"[CitySaveManager] Saved city '{currentCityId}' - {data.buildings.Count} building(s) to {SavePath}");
+        if (CityLauncher.IsCityMode) CityLauncher.NotifyChanged(JsonUtility.ToJson(data)); // host: upload to the backend soon
+    }
+
+    /// The whole city as save data (also what the co-op host sends to the joining player).
+    public CitySaveData BuildSnapshot()
+    {
         var data = new CitySaveData();
         data.cityId = currentCityId;
         data.funds = EconomyManager.Instance != null ? EconomyManager.Instance.currentFunds : 0;
@@ -116,6 +135,7 @@ public class CitySaveManager : MonoBehaviour
             {
                 var save = new BuildingSaveData
                 {
+                    instanceId = instance.instanceId,
                     buildingId = instance.data.buildingId,
                     gridX = instance.gridOrigin.x,
                     gridY = instance.gridOrigin.y,
@@ -135,15 +155,25 @@ public class CitySaveManager : MonoBehaviour
                 data.buildings.Add(save);
             }
         }
-
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
-        Debug.Log($"[CitySaveManager] Saved city '{currentCityId}' - {data.buildings.Count} building(s) to {SavePath}");
+        return data;
     }
 
     [ContextMenu("Load City Now")]
     public void LoadCity()
     {
+        if (CityLauncher.IsCityMode)
+        {
+            // A shared city: the host starts from the city's latest saved snapshot (none = brand-new
+            // city); the guest starts empty and receives the host's city once connected.
+            var launcher = CityLauncher.Instance;
+            currentCityId = launcher.CityId;
+            var net = NetworkSessionManager.Instance;
+            if (net == null || !net.IsHost) { blockSaving = true; return; }
+            if (string.IsNullOrEmpty(launcher.StartSnapshotJson)) { Debug.Log($"[CitySaveManager] New shared city '{currentCityId}' - starting fresh."); return; }
+            ApplySnapshot(JsonUtility.FromJson<CitySaveData>(launcher.StartSnapshotJson), true);
+            return;
+        }
+
         if (!File.Exists(SavePath))
         {
             Debug.Log($"[CitySaveManager] No save file found for city '{currentCityId}' - starting fresh.");
@@ -152,6 +182,17 @@ public class CitySaveManager : MonoBehaviour
 
         string json = File.ReadAllText(SavePath);
         CitySaveData data = JsonUtility.FromJson<CitySaveData>(json);
+        if (data == null) return;
+
+        ApplySnapshot(data, true);
+        Debug.Log($"[CitySaveManager] Loaded city '{currentCityId}' from {SavePath}");
+    }
+
+    /// Replaces the city in the scene with this data. applyOfflineProgress = true when it comes
+    /// from a file saved earlier (timers keep running while the app was closed); false when it is a
+    /// live snapshot from the co-op host (already current).
+    public void ApplySnapshot(CitySaveData data, bool applyOfflineProgress)
+    {
         if (data == null) return;
 
         if (EconomyManager.Instance != null)
@@ -163,9 +204,13 @@ public class CitySaveManager : MonoBehaviour
         // How much real-world time passed while the app was closed - subtracted from every
         // in-progress construction/upgrade timer below, so buildings genuinely keep building
         // while offline instead of freezing at whatever they were at on close.
-        long nowUnix = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        long elapsedSeconds = System.Math.Max(0L, nowUnix - data.savedAtUnixSeconds);
-        if (elapsedSeconds > 0) Debug.Log($"[CitySaveManager] {elapsedSeconds}s passed since last save - applying offline construction progress.");
+        long elapsedSeconds = 0;
+        if (applyOfflineProgress)
+        {
+            long nowUnix = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            elapsedSeconds = System.Math.Max(0L, nowUnix - data.savedAtUnixSeconds);
+            if (elapsedSeconds > 0) Debug.Log($"[CitySaveManager] {elapsedSeconds}s passed since last save - applying offline construction progress.");
+        }
 
         int loaded = 0;
         foreach (var saved in data.buildings)
@@ -192,11 +237,12 @@ public class CitySaveManager : MonoBehaviour
             Vector2Int cell = new Vector2Int(saved.gridX, saved.gridY);
             BuildingPlacementController.Instance.PlaceBuildingDirect(
                 buildingData, cell, saved.rotationSteps, saved.currentLevelIndex,
-                saved.constructionPhase, adjustedRemaining, saved.constructionTotal, saved.pendingUpgradeLevelIndex);
+                saved.constructionPhase, adjustedRemaining, saved.constructionTotal, saved.pendingUpgradeLevelIndex,
+                saved.instanceId);
             loaded++;
         }
 
-        Debug.Log($"[CitySaveManager] Loaded city '{currentCityId}' - {loaded}/{data.buildings.Count} building(s) from {SavePath}");
+        Debug.Log($"[CitySaveManager] Applied city '{data.cityId}' - {loaded}/{data.buildings.Count} building(s).");
     }
 
     /// Wipes the CURRENT city's save file - use this to test a fresh/first-time city without

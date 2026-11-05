@@ -5,6 +5,9 @@ public class GameUIManager : MonoBehaviour
 {
     public static GameUIManager Instance;
 
+    /// Set before loading the menu from a game: a signed-in player lands on the main menu instead of the splash and login.
+    public static bool ReturningFromGame;
+
     [Header("Screens")]
     [SerializeField] private SplashScreen splashScreen;
      [SerializeField] private LoginScreen loginScreen;
@@ -14,6 +17,7 @@ public class GameUIManager : MonoBehaviour
      [SerializeField] private LobbyScreen lobbyScreen;
      [SerializeField] private LoadingScreen loadingScreen;
      [SerializeField] private GameObject settingScreen;
+     [SerializeField] private ProfileScreen profileScreen;
 
     private void Awake()
     {
@@ -67,16 +71,24 @@ public class GameUIManager : MonoBehaviour
     {
         settingScreen.gameObject.SetActive(value);
     }
+    public void ProfileScreenToggle(bool value)
+    {
+        if (profileScreen != null) profileScreen.gameObject.SetActive(value);
+    }
+
     public void Init()
     {
-        splashScreen.gameObject.SetActive(true);
+        bool skipSplash = ReturningFromGame && UserDetails.Instance != null && UserDetails.Instance.isLoggedIn;
+        ReturningFromGame = false;
+        splashScreen.gameObject.SetActive(!skipSplash);
         mainScreen.gameObject.SetActive(false);
         loginScreen.gameObject.SetActive(false);
-        mainMenuScreen.gameObject.SetActive(false);
+        mainMenuScreen.gameObject.SetActive(skipSplash);
         invitePlayerScreen.gameObject.SetActive(false);
         lobbyScreen.gameObject.SetActive(false);
         loadingScreen.gameObject.SetActive(false);
         settingScreen.gameObject.SetActive(false);
+        if (profileScreen != null) profileScreen.gameObject.SetActive(false);
 
     }
   
