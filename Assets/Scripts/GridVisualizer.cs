@@ -14,6 +14,10 @@ public class GridVisualizer : MonoBehaviour
     public Color lightColor = new Color(0.85f, 0.85f, 0.85f);
     public Color darkColor = new Color(0.75f, 0.75f, 0.75f);
 
+    [Header("Blocked cells")]
+    [Tooltip("No checkerboard on cells that can't be built on (fillers, water, mountains - see Tools > Grid > Bake).")]
+    public bool hideOnBlockedCells = true;
+
     [Header("Optional: tint locked/occupied cells")]
     public bool showOccupancyOverlay = false; // turn on later once you want debug overlays
     public Color lockedColor = new Color(0.6f, 0.4f, 0.2f, 0.5f);   // trees/rocks
@@ -31,6 +35,39 @@ public class GridVisualizer : MonoBehaviour
 
     private void BuildCheckerTexture()
     {
+        var grid = GridManager.Instance;
+        int w = grid.width;
+        int h = grid.height;
+        var mat = meshRenderer.material; // instance, safe to modify without affecting the asset
+
+        if (hideOnBlockedCells)
+        {
+            // One pixel per cell: the usual checker, fully transparent on blocked cells. The grid
+            // material is transparent, so those cells simply show no grid. Built once at start
+            // (blocked cells are baked and never change while playing).
+            checkerTexture = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            checkerTexture.filterMode = FilterMode.Point;
+            checkerTexture.wrapMode = TextureWrapMode.Clamp;
+
+            var dark = (Color32)darkColor;
+            var light = (Color32)lightColor;
+            var none = new Color32(0, 0, 0, 0);
+            var pixels = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    var type = grid.GetType(new Vector2Int(x, y));
+                    bool blocked = type == GridManager.CellType.Blocked || type == GridManager.CellType.Locked;
+                    pixels[y * w + x] = blocked ? none : (((x + y) & 1) == 0 ? dark : light);
+                }
+            checkerTexture.SetPixels32(pixels);
+            checkerTexture.Apply();
+            mat.mainTexture = checkerTexture;
+            mat.mainTextureScale = Vector2.one;
+            mat.mainTextureOffset = Vector2.zero;
+            return;
+        }
+
         // 2x2 texture: [0,0]=dark [1,0]=light [0,1]=light [1,1]=dark - classic checker.
         checkerTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
         checkerTexture.filterMode = FilterMode.Point; // crisp edges, no blur between cells
@@ -42,11 +79,7 @@ public class GridVisualizer : MonoBehaviour
         checkerTexture.SetPixel(1, 1, darkColor);
         checkerTexture.Apply();
 
-        var mat = meshRenderer.material; // instance, safe to modify without affecting the asset
         mat.mainTexture = checkerTexture;
-
-        int w = GridManager.Instance.width;
-        int h = GridManager.Instance.height;
         // Tiling = half the grid dimensions, since our texture already encodes a 2x2 checker
         // pattern per repeat - so each texture repeat covers exactly 2 grid cells per axis.
         mat.mainTextureScale = new Vector2(w / 2f, h / 2f);
