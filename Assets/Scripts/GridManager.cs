@@ -31,6 +31,10 @@ public class GridManager : MonoBehaviour
         public bool hasFootpath; // independent of type - a Road cell can ALSO have a footpath attached
     }
 
+    [Header("Baked blocked cells")]
+    [Tooltip("Filler buildings, water, mountains... baked by Tools > Grid > Bake. Applied once in Awake, so it is ready before any building is placed or loaded.")]
+    public GridBlockData blockData;
+
     private Cell[,] grid;
 
     void Awake()
@@ -41,6 +45,27 @@ public class GridManager : MonoBehaviour
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 grid[x, y] = new Cell { type = CellType.Empty, occupantId = -1, occupantKind = OccupantKind.None };
+        ApplyBlockData();
+    }
+
+    /// Number of baked blocked cells that were applied (for debugging).
+    public int BlockedCellCount { get; private set; }
+
+    private void ApplyBlockData()
+    {
+        if (blockData == null) return;
+        if (!blockData.Matches(width, height))
+        {
+            Debug.LogWarning("GridManager: GridBlockData size does not match the grid - re-bake it (Tools > Grid > Bake).");
+            return;
+        }
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                if (blockData.Get(x, y) != GridBlockData.Free)
+                {
+                    LockCell(new Vector2Int(x, y), -1);
+                    BlockedCellCount++;
+                }
     }
 
     public bool InBounds(Vector2Int c) =>
