@@ -35,6 +35,18 @@ public class MultiplayerTestUI : MonoBehaviour
     [SerializeField] private RawImage camImage;
     [SerializeField] private TMP_InputField manualInput;
 
+    // Optional: set by Hometown > UI > Restyle Host & Join Screens. When they are empty the old simple layout is used.
+    [Header("Styled Host / Join layout (optional)")]
+    [Tooltip("White card holding the QR code. Hidden when there is no QR - the fields then move to the middle.")]
+    [SerializeField] private GameObject qrCard;
+    [Tooltip("Column of rows on the right of the QR. Slides to the middle when the QR is hidden.")]
+    [SerializeField] private RectTransform hostColumn;
+    [SerializeField] private GameObject hostCodeRow, hostScanRow, hostPlayersRow;
+    [SerializeField] private TMP_Text hostCodeLabel, hostCodeValue, hostWaitText;
+    [Tooltip("White card holding the camera picture. Hidden when the camera is not available - the fields then move to the middle.")]
+    [SerializeField] private GameObject joinCamCard;
+    [SerializeField] private RectTransform joinColumn;
+
     [Header("Buttons")]
     [SerializeField] private Button hostButton;
     [SerializeField] private Button joinButton, mainCloseButton, hostCancelButton, connectButton, joinCancelButton,
@@ -46,10 +58,13 @@ public class MultiplayerTestUI : MonoBehaviour
     private bool menuOpen;
     private string shownCode;
     private bool startSent, lobbyShown, everLive;
+    private Vector2 hostColumnHome, joinColumnHome;
 
     void Awake()
     {
         Instance = this;
+        if (hostColumn != null) hostColumnHome = hostColumn.anchoredPosition;
+        if (joinColumn != null) joinColumnHome = joinColumn.anchoredPosition;
         scanner = gameObject.AddComponent<QrScanner>();
         if (FindFirstObjectByType<EventSystem>() == null)
         {
@@ -129,6 +144,7 @@ public class MultiplayerTestUI : MonoBehaviour
             TryJoin(scanned);
         }
         if (joining && scanner.Error != null) joinStatus.text = scanner.Error;
+        if (joining) SetJoinCamera(scanner.Error == null);
         if (net.State == NetSessionState.Connected) { scanner.End(); joining = false; }
 
         int players = net.PlayerCount;
@@ -137,7 +153,7 @@ public class MultiplayerTestUI : MonoBehaviour
             case NetSessionState.Hosting:
                 string payload = menuMode ? MenuInvitePayload() : net.Session.ToPayload();
                 if (shownCode != payload) ShowInvite(payload);
-                qrImage.gameObject.SetActive(!string.IsNullOrEmpty(shownCode));
+                SetHostLayout(!string.IsNullOrEmpty(shownCode), true);
                 if (players >= 2)
                 {
                     Show(sessionPanel);
@@ -146,7 +162,12 @@ public class MultiplayerTestUI : MonoBehaviour
                 else
                 {
                     Show(hostPanel);
-                    hostPlayers.text = "Players connected: " + players + "\n" + net.StatusMessage;
+                    if (hostColumn != null)
+                    {
+                        hostPlayers.text = "Player connected: <b><color=#FFB02E>" + players + "</color></b>";
+                        hostWaitText.text = string.IsNullOrEmpty(shownCode) ? "Waiting for " + WaitingForName() + " to join..." : "Waiting for the other player...";
+                    }
+                    else hostPlayers.text = "Players connected: " + players + "\n" + net.StatusMessage;
                 }
                 break;
 
@@ -171,9 +192,13 @@ public class MultiplayerTestUI : MonoBehaviour
                     // creating / opening a city, or it failed: a plain status screen with a Cancel button
                     Show(hostPanel);
                     shownCode = null;
-                    qrImage.gameObject.SetActive(false);
-                    hostPayload.text = "";
-                    hostPlayers.text = CityLauncher.Instance.Status;
+                    SetHostLayout(false, false);
+                    if (hostColumn != null) hostWaitText.text = CityLauncher.Instance.Status;
+                    else
+                    {
+                        hostPayload.text = "";
+                        hostPlayers.text = CityLauncher.Instance.Status;
+                    }
                 }
                 else if ((overlayMode || menuMode) && !menuOpen)
                 {
@@ -187,6 +212,29 @@ public class MultiplayerTestUI : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    private static string WaitingForName() => CityLauncher.Instance != null ? CityLauncher.Instance.WaitingFor : "the other player";
+
+    /// Styled layout: QR card + code rows are shown only when there is a QR; without one the remaining rows
+    /// move to the middle of the popup (the column's vertical layout closes the gaps by itself).
+    private void SetHostLayout(bool qr, bool showPlayers)
+    {
+        if (hostColumn == null) { qrImage.gameObject.SetActive(qr); return; }
+        if (qrCard != null) qrCard.SetActive(qr);
+        qrImage.gameObject.SetActive(qr);
+        if (hostCodeRow != null) hostCodeRow.SetActive(qr);
+        if (hostScanRow != null) hostScanRow.SetActive(qr);
+        if (hostPlayersRow != null) hostPlayersRow.SetActive(showPlayers);
+        hostColumn.anchoredPosition = qr ? hostColumnHome : new Vector2(0f, hostColumnHome.y);
+    }
+
+    /// Styled Join layout: the camera card hides when the camera can't start; the fields move to the middle.
+    private void SetJoinCamera(bool visible)
+    {
+        if (joinColumn == null) return;
+        if (joinCamCard != null) joinCamCard.SetActive(visible);
+        joinColumn.anchoredPosition = visible ? joinColumnHome : new Vector2(0f, joinColumnHome.y);
     }
 
     private string SessionLine(int players)
@@ -285,16 +333,21 @@ public class MultiplayerTestUI : MonoBehaviour
         shownCode = payload;
         if (string.IsNullOrEmpty(payload))
         {
-            hostPayload.text = "Waiting for " + CityLauncher.Instance.WaitingFor + " to join...";
+            if (hostColumn == null) hostPayload.text = "Waiting for " + CityLauncher.Instance.WaitingFor + " to join...";
             return;
         }
         qrTexture = QrCodeUtil.Encode(payload);
         qrImage.texture = qrTexture;
-        if (menuMode) hostPayload.text = "Invite code\n" + CityLauncher.Instance.Invite.inviteCode + "\nOr scan the QR code.";
+        if (menuMode)
+        {
+            if (hostColumn != null) { hostCodeLabel.text = "Invite code"; hostCodeValue.text = CityLauncher.Instance.Invite.inviteCode; hostPayload.text = "Or scan the QR code."; }
+            else hostPayload.text = "Invite code\n" + CityLauncher.Instance.Invite.inviteCode + "\nOr scan the QR code.";
+        }
         else
         {
             JoinCode.TryParse(payload, out var code);
-            hostPayload.text = "Room code\n" + code.ToCode() + "\nOr scan the QR code.";
+            if (hostColumn != null) { hostCodeLabel.text = "Room code"; hostCodeValue.text = code.ToCode(); hostPayload.text = "Or scan the QR code."; }
+            else hostPayload.text = "Room code\n" + code.ToCode() + "\nOr scan the QR code.";
         }
     }
 
@@ -303,6 +356,7 @@ public class MultiplayerTestUI : MonoBehaviour
         joining = true;
         joinStatus.text = "Starting camera...";
         manualInput.text = "";
+        SetJoinCamera(true);
         scanner.Begin(camImage);
     }
 

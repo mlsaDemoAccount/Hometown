@@ -7,6 +7,8 @@ public class AvatarLibrary : ScriptableObject
 {
     [Tooltip("One sprite per avatar number (index 0 = first avatar in the Profile screen grid). Empty entries show a coloured placeholder.")]
     public Sprite[] avatars = new Sprite[12];
+    [Tooltip("Cropped small icons (same order as Avatars) for the main-menu profile card, friends list and other small badges. Empty entries fall back to the Avatars sprite.")]
+    public Sprite[] icons = new Sprite[12];
     [Tooltip("Big character shown in the lobby for a Male player.")]
     public Sprite maleCharacter;
     [Tooltip("Big character shown in the lobby for a Female player.")]
@@ -28,6 +30,15 @@ public class AvatarLibrary : ScriptableObject
         var library = Instance;
         if (library == null || library.avatars == null || index < 0 || index >= library.avatars.Length) return null;
         return library.avatars[index];
+    }
+
+    /// The cropped small icon for an avatar number; falls back to the full avatar picture.
+    public static Sprite Icon(int index)
+    {
+        var library = Instance;
+        if (library != null && library.icons != null && index >= 0 && index < library.icons.Length && library.icons[index] != null)
+            return library.icons[index];
+        return Avatar(index);
     }
 
     /// gender: 0 = Male, 1 = Female, anything else = unknown (null: keep what the scene shows).

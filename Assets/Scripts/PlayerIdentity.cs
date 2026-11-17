@@ -65,7 +65,7 @@ public static class PlayerIdentity
     {
         if (image == null) return;
         image.preserveAspect = true;
-        var sprite = AvatarLibrary.Avatar(index);
+        var sprite = AvatarLibrary.Icon(index); // cropped small icon (Profile screen keeps the full picture)
         if (sprite != null)
         {
             image.sprite = sprite;
