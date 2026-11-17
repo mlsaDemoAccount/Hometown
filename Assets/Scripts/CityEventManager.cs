@@ -31,6 +31,12 @@ public class CityEventManager : MonoBehaviour
     [Tooltip("Zoom level (orthoSize/height, matching MobileCameraController's minZoom/maxZoom range) the camera animates to when focusing on an event - so it actually gets a close look, not just a pan at whatever zoom the player happened to be at.")]
     public float cameraFocusZoom = 10f;
 
+    [Header("Zoom-Based Culling")]
+    [Tooltip("Zoomed OUT past 'Hide Events Above Zoom', spawned events (ambulance, police, garbage...) stop rendering/animating; zoomed back in they return. Same idea as traffic and pedestrians. Event timers keep running meanwhile.")]
+    public bool hideEventsWhenZoomedOut = true;
+    [Tooltip("Camera zoom (MobileCameraController.CurrentZoom, same units as its Min/Max Zoom) above which events are hidden.")]
+    public float hideEventsAboveZoom = 30f;
+
     [Header("Notification Center")]
     public NotificationCenter notificationCenter;
 
@@ -220,6 +226,7 @@ public class CityEventManager : MonoBehaviour
         var instance = obj.GetComponent<CityEventInstance>();
         if (instance == null) instance = obj.AddComponent<CityEventInstance>();
         instance.Initialize(data);
+        if (obj.GetComponent<EventZoomCulling>() == null) obj.AddComponent<EventZoomCulling>();
 
         activeEvents.Add(instance);
 
